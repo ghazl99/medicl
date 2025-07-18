@@ -26,39 +26,6 @@ class UserService
         return $this->userRepository->getSuppliers();
     }
 
-    public function getFilteredSuppliersByNamesOrWorkplace(array $filters = [])
-    {
-        $query = User::role('مورد');
-        $searchTerm = $filters['search_term'] ?? null;
-
-        if ($searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', '%'.$searchTerm.'%');
-
-                $q->orWhere('workplace_name', 'like', '%'.$searchTerm.'%');
-            });
-        }
-
-        return $query->get();
-    }
-
-    public function getFilteredPharmacistsByNamesOrWorkplace(array $filters = [])
-    {
-        $query = User::role('صيدلي');
-        $searchTerm = $filters['search_term'] ?? null;
-
-        if ($searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', '%'.$searchTerm.'%');
-
-                $q->orWhere('workplace_name', 'like', '%'.$searchTerm.'%');
-
-            });
-        }
-
-        return $query->get();
-    }
-
     public function registerUser(array $data, $image = null)
     {
         return DB::transaction(function () use ($data) {
@@ -73,6 +40,11 @@ class UserService
     public function getUserById(int $id): ?User
     {
         return $this->userRepository->findById($id);
+    }
+
+    public function getMedicinesBySupplier(int $supplierId)
+    {
+        return $this->userRepository->getSupplierMedicines($supplierId);
     }
 
     public function updateUser(User $user, array $data): User

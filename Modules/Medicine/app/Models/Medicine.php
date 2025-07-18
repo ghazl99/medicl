@@ -50,4 +50,10 @@ class Medicine extends Model
     {
         return $this->belongsToMany(Order::class, 'order_items', 'medicine_id', 'order_id');
     }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
+            ->withTimestamps();
+    }
 }

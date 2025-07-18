@@ -5,18 +5,13 @@
         <a href="{{ route('medicines.create') }}" class="btn btn-primary">إضافة دواء جديد</a>
     </div>
 
-    <form action="{{ route('medicines.index') }}" method="GET" class="mb-4">
-        <div class="mb-3">
-            <input type="text" id="medicine-search-input" name="search_term" class="form-control"
-                placeholder="ابحث باسم الدواء أو اسم الشركة المصنعة..." value="{{ request('search_term') }}">
-        </div>
-       
-    </form>
-
     <div class="table-responsive">
-        <table class="table table-bordered align-middle">
+        <table class="table table-striped table-bordered" id="medicines-datatable">
             <thead>
                 <tr>
+                    @hasanyrole('المشرف|صيدلي')
+                        <th>اسم المورد</th>
+                    @endrole
                     <th>اسم الدواء</th>
                     <th>الشركة المصنعة</th>
                     <th>الكمية المتوفرة</th>
@@ -34,60 +29,36 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('medicine-search-input');
-            const medicinesTableBody = document.getElementById('medicines-table-body');
-            let typingTimer;
-            const doneTypingInterval = 300;
-
-            searchInput.addEventListener('keyup', function() {
-                clearTimeout(typingTimer);
-                typingTimer = setTimeout(performSearch, doneTypingInterval);
+        $(document).ready(function() {
+            $('#medicines-datatable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                pageLength: 10,
+                language: {
+                    "sProcessing": "جاري التحميل...",
+                    "sZeroRecords": "لم يتم العثور على أية سجلات مطابقة",
+                    "sInfo": "عرض _START_ إلى _END_ من _TOTAL_ سجل",
+                    "sInfoEmpty": "عرض 0 إلى 0 من 0 سجل",
+                    "sInfoFiltered": "(تمت تصفية _MAX_ سجل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "بحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+                // حافظ على هذا الـ DOM ليأخذ حقل البحث كامل عرض الـ col-md-12
+                "dom": '<"row"<"col-sm-12 col-md-12"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5 text-md-end"p><"col-sm-12 col-md-7 text-md-start"i>>',
             });
-
-            searchInput.addEventListener('keydown', function() {
-                clearTimeout(typingTimer);
-            });
-
-            function performSearch() {
-                const searchValue = searchInput.value;
-                const url = new URL("{{ route('medicines.index') }}");
-
-                if (searchValue) {
-                    url.searchParams.set('search_term', searchValue);
-                } else {
-                    url.searchParams.delete('search_term');
-                }
-
-                fetch(url.toString(), {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        medicinesTableBody.innerHTML = '';
-                        if (data.html) {
-                            medicinesTableBody.innerHTML = data.html;
-                        } else {
-                            medicinesTableBody.innerHTML =
-                                '<tr><td colspan="7" class="text-center">لا توجد نتائج مطابقة.</td></tr>'; // colspan 7
-                        }
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                        medicinesTableBody.innerHTML =
-                            '<tr><td colspan="7" class="text-center text-danger">حدث خطأ أثناء البحث.</td></tr>'; // colspan 7
-                    });
-            }
         });
     </script>
 @endsection

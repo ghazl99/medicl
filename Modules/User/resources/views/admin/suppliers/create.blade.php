@@ -1,5 +1,6 @@
 @extends('core::components.layouts.master')
 @section('content')
+<div class="card-body">
         <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">إضافة مورد جديد</h2>
 
         <form method="POST" action="{{ route('register') }}">
@@ -82,11 +83,12 @@
 
                 {{-- الدور مخفي --}}
                 <input type="hidden" name="role" id="role" value="مورد" />
-                  @error('role')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <button type="submit" class="btn btn-primary btn-sm mt-4">إنشاء الحساب</button>
         </form>
-@endsection
+    </div>
+    @endsection

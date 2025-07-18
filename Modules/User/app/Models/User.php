@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles,Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -69,5 +69,11 @@ class User extends Authenticatable
     public function receivedOrders()
     {
         return $this->hasMany(Order::class, 'supplier_id');
+    }
+
+    public function Medicines()
+    {
+        return $this->belongsToMany(\Modules\Medicine\Models\Medicine::class, 'medicine_user', 'user_id', 'medicine_id')
+            ->withTimestamps();
     }
 }

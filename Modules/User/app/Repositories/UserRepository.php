@@ -31,6 +31,17 @@ class UserRepository implements UserRepositoryInterface
         return User::find($id);
     }
 
+    public function getSupplierMedicines(int $supplierId)
+    {
+        $user = User::findOrFail($supplierId);
+
+        $medicines = $user->medicines()
+            ->select('medicines.id', 'medicines.name', 'medicines.price')
+            ->get();
+
+        return response()->json($medicines);
+    }
+
     public function update(User $user, array $data): User
     {
         $user->fill($data);

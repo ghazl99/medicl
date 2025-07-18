@@ -14,5 +14,7 @@ interface UserRepositoryInterface
 
     public function findById(int $id): ?User;
 
+    public function getSupplierMedicines(int $supplierId);
+
     public function update(User $user, array $data): User;
 }

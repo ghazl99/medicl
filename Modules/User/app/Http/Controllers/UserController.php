@@ -23,46 +23,22 @@ class UserController extends Controller
         return view('user::admin.pharmacists.create');
     }
 
-    public function pharmacistsList(Request $request)
+    public function pharmacistsList()
     {
-        $filters = $request->only(['search_term']);
-
-        // تحديد ما إذا كان هناك مصطلح بحث
-        $searchTerm = $filters['search_term'] ?? null;
-
-        if ($searchTerm) {
-            $pharmacists = $this->userService->getFilteredPharmacistsByNamesOrWorkplace($filters);
-        } else {
-            $pharmacists = $this->userService->getPharmacists();
-        }
-
-        if ($request->ajax()) {
-            $html = view('user::admin.pharmacists._pharmacist_rows', compact('pharmacists'))->render();
-
-            return response()->json(['html' => $html]);
-        }
+        $pharmacists = $this->userService->getPharmacists();
 
         return view('user::admin.pharmacists.index', [
             'pharmacists' => $pharmacists,
-            'filters' => $filters,
         ]);
     }
 
     public function suppliersList(Request $request)
     {
-        $filters = $request->only(['search_term']);
 
-        $suppliers = $this->userService->getFilteredSuppliersByNamesOrWorkplace($filters);
-
-        if ($request->ajax()) {
-            $html = view('user::admin.suppliers._supplier_rows', compact('suppliers'))->render();
-
-            return response()->json(['html' => $html]);
-        }
+        $suppliers = $this->userService->getSuppliers();
 
         return view('user::admin.suppliers.index', [
             'suppliers' => $suppliers,
-            'filters' => $filters,
         ]);
     }
 

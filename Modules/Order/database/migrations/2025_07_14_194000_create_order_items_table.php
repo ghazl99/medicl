@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('medicine_id')
                 ->constrained('medicines')
                 ->onDelete('cascade');
-            $table->decimal('price_at_order', 10, 2);
             $table->unsignedInteger('quantity');
             $table->timestamps();
         });

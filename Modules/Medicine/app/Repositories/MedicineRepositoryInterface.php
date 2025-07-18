@@ -11,7 +11,7 @@ interface MedicineRepositoryInterface
      *
      * @return Collection<int, Medicine>
      */
-    public function index();
+    public function index($user);
 
     /**
      * Find a medicine by its ID.

@@ -11,9 +11,13 @@ class MedicineRepository implements MedicineRepositoryInterface
      *
      * @return Collection<int, Medicine>
      */
-    public function index()
+    public function index($user)
     {
-        return Medicine::all();
+        if ($user->hasRole(['المشرف', 'صيدلي'])) {
+            return Medicine::with('suppliers')->get();
+        } elseif ($user->hasRole('مورد')) {
+            return $user->Medicines()->get();
+        }
     }
 
     /**

@@ -1,92 +1,66 @@
 @extends('core::components.layouts.master')
+
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>إدارة الصيادلة</h3>
-        <a href="{{ route('register.pharmacists') }}" class="btn btn-primary">إضافة صيدلي</a>
-    </div>
-    {{-- فورم البحث --}}
-    <form action="{{ route('pharmacists.index') }}" method="GET" class="mb-4">
-        <div class="mb-3">
-            <input type="text" id="pharmacist-search-input" name="search_term" class="form-control"
-                placeholder="ابحث باسم الصيدلي أو اسم الصيدلية..." value="{{ request('search_term') }}">
+    <div class="card">
+
+        <div class="card-header">
+            <h3>إدارة الصيادلة</h3>
         </div>
-    </form>
-    <div class="table-responsive">
-        <table class="table table-bordered align-middle" id="pharmacists-table-body">
-            <thead>
-                <tr>
-                    <th>اسم الصيدلي</th>
-                    <th>رقم الهاتف</th>
-                    <th>اسم الصيدلية</th>
-                    <th>المدينة</th>
-                    <th>إجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                @include('user::admin.pharmacists._pharmacist_rows')
+        <div class="card-body">
 
-            </tbody>
-        </table>
-
+            <div class="d-flex justify-content-end align-items-end mb-4">
+                <a href="{{ route('register.pharmacists') }}" class="btn btn-primary">إضافة صيدلي</a>
+            </div>
+            <table class="table table-striped table-bordered" id="pharmacists-datatable">
+                <thead>
+                    <tr>
+                        <th>اسم الصيدلي</th>
+                        <th>رقم الهاتف</th>
+                        <th>اسم الصيدلية</th>
+                        <th>المدينة</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="suppliers-table-body"> {{-- **Add id to <tbody> here** --}}
+                    @include('user::admin.pharmacists._pharmacist_rows')
+                </tbody>
+            </table>
+        </div>
     </div>
-    </main>
 @endsection
+
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('pharmacist-search-input');
-            const pharmacistsTableBody = document.getElementById('pharmacists-table-body'); // تحديث ID
-            let typingTimer;
-            const doneTypingInterval = 300;
-
-            searchInput.addEventListener('keyup', function() {
-                clearTimeout(typingTimer);
-                typingTimer = setTimeout(performSearch, doneTypingInterval);
+        $(document).ready(function() {
+            $('#pharmacists-datatable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                pageLength: 10,
+                language: {
+                    "sProcessing": "جاري التحميل...",
+                    "sZeroRecords": "لم يتم العثور على أية سجلات مطابقة",
+                    "sInfo": "عرض _START_ إلى _END_ من _TOTAL_ سجل",
+                    "sInfoEmpty": "عرض 0 إلى 0 من 0 سجل",
+                    "sInfoFiltered": "(تمت تصفية _MAX_ سجل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "بحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+                // حافظ على هذا الـ DOM ليأخذ حقل البحث كامل عرض الـ col-md-12
+                "dom": '<"row"<"col-sm-12 col-md-12"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5 text-md-end"p><"col-sm-12 col-md-7 text-md-start"i>>',
             });
-
-            searchInput.addEventListener('keydown', function() {
-                clearTimeout(typingTimer);
-            });
-
-            function performSearch() {
-                const searchValue = searchInput.value;
-                const url = new URL("{{ route('pharmacists.index') }}"); // تحديث المسار
-
-                if (searchValue) {
-                    url.searchParams.set('search_term', searchValue);
-                } else {
-                    url.searchParams.delete('search_term');
-                }
-
-                fetch(url.toString(), {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        pharmacistsTableBody.innerHTML = ''; // تحديث ID
-                        if (data.html) {
-                            pharmacistsTableBody.innerHTML = data.html;
-                        } else {
-                            pharmacistsTableBody.innerHTML =
-                                '<tr><td colspan="5" class="text-center">لا توجد نتائج مطابقة.</td></tr>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                        pharmacistsTableBody.innerHTML =
-                            '<tr><td colspan="5" class="text-center text-danger">حدث خطأ أثناء البحث.</td></tr>';
-                    });
-            }
         });
     </script>
 @endsection

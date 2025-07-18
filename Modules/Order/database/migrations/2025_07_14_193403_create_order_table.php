@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pharmacist_id')
                 ->constrained('users')
@@ -20,6 +20,9 @@ return new class extends Migration
             $table->foreignId('supplier_id')
                 ->constrained('users')
                 ->onDelete('cascade');
+
+            $table->enum('status', ['pending', 'Confirmed', 'Processing', 'Delivered',
+                'completed', 'Cancelled', 'Rejected', 'Returned'])->default('pending');
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order');
+        Schema::dropIfExists('orders');
     }
 };

@@ -16,7 +16,6 @@ class medicineRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                'unique:medicines,name',
             ],
             'manufacturer' => [
                 'nullable',
