@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Modules\Medicine\Models\Medicine;
+use Modules\Order\Models\Order;
 use Modules\User\Models\User;
 use Modules\User\Repositories\UserRepository;
 use Modules\User\Repositories\UserRepositoryInterface;
@@ -38,6 +39,7 @@ class UserServiceProvider extends ServiceProvider
             $pharmacistCountCacheKey = 'pharmacists_count';
             $supplierCountCacheKey = 'suppliers_count';
             $medicineCountCacheKey = 'medicines_count';
+            $orderCountCacheKey = 'orders_count';
             $cacheDuration = 3600; // 1 hour
 
             // جلب عدد الصيادلة مع الكاش
@@ -45,18 +47,19 @@ class UserServiceProvider extends ServiceProvider
                 return User::role('صيدلي')->count();
             });
 
-            // جلب عدد الموردين مع الكاش
             $supplierCount = Cache::remember($supplierCountCacheKey, $cacheDuration, function () {
                 return User::role('مورد')->count();
             });
 
-            // جلب عدد الأدوية مع الكاش
             $medicineCount = Cache::remember($medicineCountCacheKey, $cacheDuration, function () {
                 return Medicine::count();
             });
 
+            $orderCount = Cache::remember($orderCountCacheKey, $cacheDuration, function () {
+                return Order::count();
+            });
             // تمرير المتغيرات إلى الـ View
-            $view->with(compact('pharmacistCount', 'supplierCount', 'medicineCount'));
+            $view->with(compact('pharmacistCount', 'supplierCount', 'medicineCount', 'orderCount'));
         });
     }
 

@@ -1,5 +1,6 @@
 <!-- Back-to-top -->
 <a href="#top" id="back-to-top"><i class="las la-angle-double-up"></i></a>
+
 <!-- JQuery min js -->
 <script src="{{URL::asset('assets/plugins/jquery/jquery.min.js')}}"></script>
 <!-- Bootstrap Bundle js -->
@@ -14,7 +15,6 @@
 <script src="{{URL::asset('assets/plugins/rating/jquery.barrating.js')}}"></script>
 
 <!--Internal  Perfect-scrollbar js -->
-<script src="{{URL::asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js')}}"></script>
 <script src="{{URL::asset('assets/plugins/perfect-scrollbar/p-scroll.js')}}"></script>
 <!--Internal Sparkline js -->
 <script src="{{URL::asset('assets/plugins/jquery-sparkline/jquery.sparkline.min.js')}}"></script>

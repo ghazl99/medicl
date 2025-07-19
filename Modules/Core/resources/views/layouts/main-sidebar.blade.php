@@ -13,6 +13,16 @@
     <div class="main-sidemenu">
 
         <ul class="side-menu">
+
+            {{-- dashboard --}}
+            <li class="side-item side-item-category">لوحة التحكم :</li>
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('dashboard') }}">
+                    <i class="side-menu__icon bi bi-house-door p-2" viewBox="0 0 24 24" ></i>
+                    <span class="side-menu__label">الرئيسية</span>
+                </a>
+            </li>
+
             {{-- users --}}
             <li class="side-item side-item-category">المستخدمين :</li>
             <li class="slide">

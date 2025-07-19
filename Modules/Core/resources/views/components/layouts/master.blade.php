@@ -15,13 +15,10 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
 
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    <!-- Custom style for RTL -->
-    <link rel="stylesheet" href="{{ asset('dist/css/custom.css') }}">
+
     {{-- dataTables --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
@@ -36,7 +33,7 @@
     <!-- /Loader -->
     @include('core::layouts.main-sidebar')
 
- <!-- main-content -->
+    <!-- main-content -->
     <div class="main-content app-content">
         @include('core::layouts.main-header')
         <!-- container -->
@@ -60,13 +57,12 @@
 
     <!-- dataTables Scripts -->
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
 
-    <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <!-- Bootstrap 4 rtl -->
     <script src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"></script>
 
@@ -74,6 +70,38 @@
     <script>
         $(document).ready(function() {
             $(".alert").slideDown(300).delay(4000).slideUp(300);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const toggleBtn = document.querySelector('.theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            // تحقق من الوضع المخزن
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                themeIcon.classList.remove('bi-moon-fill');
+                themeIcon.classList.add('bi-sun-fill');
+            }
+
+            toggleBtn.addEventListener('click', function() {
+                body.classList.toggle('dark-theme');
+                body.classList.toggle('light-theme');
+
+                // تحديث الأيقونة
+                themeIcon.classList.toggle('bi-moon-fill');
+                themeIcon.classList.toggle('bi-sun-fill');
+
+                // تخزين الوضع الجديد
+                if (body.classList.contains('dark-theme')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            });
         });
     </script>
 
