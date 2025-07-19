@@ -1,5 +1,10 @@
 @extends('core::components.layouts.master')
-
+@section('css')
+<!--  Owl-carousel css-->
+<link href="{{URL::asset('assets/plugins/owl-carousel/owl.carousel.css')}}" rel="stylesheet" />
+<!-- Maps css -->
+<link href="{{URL::asset('assets/plugins/jqvmap/jqvmap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <br>
     <div class="card">
@@ -7,7 +12,7 @@
             <h3 class="text-right">إدارة الموردين</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-start align-items-start mb-4">
+            <div class="d-flex justify-content-end mb-4">
                 <a href="{{ route('register.suppliers') }}" class="btn btn-primary">إضافة مورد</a>
             </div>
             <div class="table-responsive">

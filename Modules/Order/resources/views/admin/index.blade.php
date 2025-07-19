@@ -8,7 +8,7 @@
             <h3 class="text-right">إدارة الطلبات</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-start align-items-start mb-4">
+            <div class="d-flex justify-content-end mb-4">
                 <a href="{{ route('orders.create') }}" class="btn btn-primary">إضافة طلب</a>
             </div>
             <div class="table-responsive">

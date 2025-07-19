@@ -1,0 +1,58 @@
+<!-- main-sidebar -->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside class="app-sidebar sidebar-scroll">
+    <div class="main-sidebar-header active text-center">
+        <a href="{{ route('dashboard') }}"
+            class="desktop-logo logo-light active d-flex align-items-center justify-content-center gap-2 ">
+            <i class="fa fa-capsules p-1" style="font-size: 1.2rem;"></i>
+            <h4 class="font-weight-semibold mb-0"> نظام الصيدليات </h4>
+        </a>
+    </div>
+
+
+    <div class="main-sidemenu">
+
+        <ul class="side-menu">
+            {{-- users --}}
+            <li class="side-item side-item-category">المستخدمين :</li>
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('pharmacists.index') }}">
+                    <i class="side-menu__icon bi bi-person-badge p-2" viewBox="0 0 24 24" ></i>
+                    <span class="side-menu__label">الصيادلة</span>
+                </a>
+            </li>
+
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('suppliers.index') }}">
+                    <i class="side-menu__icon bi bi-truck " viewBox="0 0 24 24" style="transform: scaleX(-1);"></i>
+                    <span class="side-menu__label">الموردين</span>
+                </a>
+            </li>
+
+            {{-- medicines , orders and reports --}}
+            <li class="side-item side-item-category">المبيعات والمخزون :</li>
+            {{-- medicines --}}
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('medicines.index') }}">
+                    <i class="side-menu__icon bi bi-capsule p-2" viewBox="0 0 24 24"></i>
+                    <span class="side-menu__label">الأدوية</span>
+                </a>
+            </li>
+            {{-- orders --}}
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('orders.index') }}">
+                    <i class="side-menu__icon bi bi-bag-check p-2" viewBox="0 0 24 24"></i>
+                    <span class="side-menu__label">الطلبات</span>
+                </a>
+            </li>
+            {{-- reports --}}
+            <li class="slide">
+                <a class="side-menu__item" href="{{ route('orders.index') }}">
+                    <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>
+                    <span class="side-menu__label">تقارير المبيعات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+<!-- main-sidebar -->

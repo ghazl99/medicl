@@ -7,9 +7,10 @@
             <h3 class="text-right">إدارة الصيادلة</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-start align-items-start mb-4">
+            <div class="d-flex justify-content-end mb-4">
                 <a href="{{ route('register.pharmacists') }}" class="btn btn-primary">إضافة صيدلي</a>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-right" id="pharmacists-datatable" dir="rtl">
                     <thead class="text-right">

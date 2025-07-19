@@ -7,7 +7,7 @@
             <h3 class="text-right">إدارة الأدوية</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-start align-items-start mb-4">
+            <div class="d-flex justify-content-end mb-4">
                 <a href="{{  route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
             </div>
             <div class="table-responsive">
