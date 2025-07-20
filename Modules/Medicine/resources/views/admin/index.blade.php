@@ -3,34 +3,100 @@
 @section('content')
     <br>
     <div class="card">
-        <div class="card-header">
-            <h3 class="text-right">إدارة الأدوية</h3>
-        </div>
-        <div class="card-body">
-            <div class="d-flex justify-content-end mb-4">
-                <a href="{{  route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
+        @role('مورد')
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="text-right">إدارة الأدوية</h3>
+                
             </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
-                    <thead class="text-right">
-                        <tr>
-                            @hasanyrole('المشرف|صيدلي')
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form id="medicines-selection-form" method="POST" action="{{ route('checked-medicine') }}">
+                        @csrf
+                        <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
+                            <thead class="text-right">
+                                <tr>
+                                    <th><input type="checkbox" id="select-all"></th> {{-- تحديد الكل --}}
+
+                                    <th>اسم الدواء</th>
+                                    <th>الشركة المصنعة</th>
+                                    <th>الكمية المتوفرة</th>
+                                    <th>السعر</th>
+                                    <th>تاريخ الإضافة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicines-table-body">
+                                @foreach ($medicines as $medicine)
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="medicines[]" value="{{ $medicine->id }}"
+                                                @if (in_array($medicine->id, $supplierMedicineIds)) checked @endif>
+                                        </td>
+
+                                        <td>{{ $medicine->name }}</td>
+                                        <td>{{ $medicine->manufacturer }}</td>
+                                        <td>{{ $medicine->quantity_available }}</td>
+                                        <td>{{ $medicine->price }} $</td>
+                                        <td>{{ $medicine->created_at->format('Y-m-d') }}</td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <div class="text-left mt-3">
+                            <button type="submit" class="btn btn-success">إضافة الأدوية المحددة للمورد</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @else
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="text-right">جميع الأدوية</h3>
+                @role('المشرف')
+                 <a href="{{  route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
+                @endrole
+            </div>
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
+                        <thead class="text-right">
+                            <tr>
                                 <th>اسم المورد</th>
-                            @endrole
-                            <th>اسم الدواء</th>
-                            <th>الشركة المصنعة</th>
-                            <th>الكمية المتوفرة</th>
-                            <th>السعر</th>
-                            <th>تاريخ الإضافة</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="medicines-table-body"> {{-- **تأكد أن الـ ID هنا** --}}
-                        @include('medicine::admin._medicines_rows')
-                    </tbody>
-                </table>
+                                <th>اسم الدواء</th>
+                                <th>الشركة المصنعة</th>
+                                <th>الكمية المتوفرة</th>
+                                <th>السعر</th>
+                                <th>تاريخ الإضافة</th>
+                                @role('المشرف')
+                                    <th>إجراءات</th>
+                                @endrole
+                            </tr>
+                        </thead>
+                        <tbody id="medicines-table-body">
+                            @foreach ($medicines as $medicine)
+                                <tr>
+                                    <td>{{ $medicine->suppliers->pluck('name')->join(', ') }}</td>
+                                    <td>{{ $medicine->name }}</td>
+                                    <td>{{ $medicine->manufacturer }}</td>
+                                    <td>{{ $medicine->quantity_available }}</td>
+                                    <td>{{ $medicine->price }} $</td>
+                                    <td>{{ $medicine->created_at->format('Y-m-d') }}</td>
+                                    @role('المشرف')
+                                        <td>
+                                            <a href="{{ route('medicines.edit', $medicine->id) }}"
+                                                class="btn btn-sm btn-outline-primary">تعديل</a>
+
+                                        </td>
+                                    @endrole
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        @endrole
     </div>
 @endsection
 
@@ -55,15 +121,16 @@
                         "sPrevious": "السابق",
                         "sNext": "التالي",
                         "sLast": "الأخير"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
                     }
                 },
                 "dom": '<"row"<"col-sm-12"f>>' +
                     '<"row"<"col-sm-12"tr>>' +
                     '<"row"<"col-sm-6 text-right"i><"col-sm-6 text-left"p>>',
+            });
+
+            // تحديد الكل
+            $('#select-all').click(function() {
+                $('input[name="medicines[]"]').prop('checked', this.checked);
             });
         });
     </script>

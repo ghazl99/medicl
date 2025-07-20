@@ -38,16 +38,17 @@
         @include('core::layouts.main-header')
         <!-- container -->
         <div class="container-fluid">
-            @yield('page-header')
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-            @if (session('warning'))
-                <div class="alert alert-warning">{{ session('warning') }}</div>
-            @endif
+            <div class="mt-4">
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+                @if (session('warning'))
+                    <div class="alert alert-warning">{{ session('warning') }}</div>
+                @endif
+            </div>
             @yield('content')
             @include('core::layouts.sidebar')
             @include('core::layouts.models')

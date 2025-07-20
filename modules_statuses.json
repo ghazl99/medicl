@@ -3,5 +3,6 @@
     "User": true,
     "Medicine": true,
     "Order": true,
-    "Cart": true
+    "Cart": true,
+    "Warehouse": true
 }

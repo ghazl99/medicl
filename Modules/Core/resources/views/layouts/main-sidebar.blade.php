@@ -18,7 +18,7 @@
             <li class="side-item side-item-category">لوحة التحكم :</li>
             <li class="slide">
                 <a class="side-menu__item" href="{{ route('dashboard') }}">
-                    <i class="side-menu__icon bi bi-house-door p-2" viewBox="0 0 24 24" ></i>
+                    <i class="side-menu__icon bi bi-house-door p-2" viewBox="0 0 24 24"></i>
                     <span class="side-menu__label">الرئيسية</span>
                 </a>
             </li>
@@ -27,7 +27,7 @@
             <li class="side-item side-item-category">المستخدمين :</li>
             <li class="slide">
                 <a class="side-menu__item" href="{{ route('pharmacists.index') }}">
-                    <i class="side-menu__icon bi bi-person-badge p-2" viewBox="0 0 24 24" ></i>
+                    <i class="side-menu__icon bi bi-person-badge p-2" viewBox="0 0 24 24"></i>
                     <span class="side-menu__label">الصيادلة</span>
                 </a>
             </li>
@@ -43,11 +43,15 @@
             <li class="side-item side-item-category">المبيعات والمخزون :</li>
             {{-- medicines --}}
             <li class="slide">
-                <a class="side-menu__item" href="{{ route('medicines.index') }}">
-                    <i class="side-menu__icon bi bi-capsule p-2" viewBox="0 0 24 24"></i>
-                    <span class="side-menu__label">الأدوية</span>
-                </a>
+                <a class="side-menu__item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i class="side-menu__icon bi bi-capsule p-2" viewBox="0 0 24 24"></i><span class="side-menu__label">الأدوية</span><i class="angle fe fe-chevron-down"></i></a>
+                <ul class="slide-menu">
+                    <li><a class="slide-item" href="{{ route('medicines.index') }}">جميع الأدوية</a></li>
+                    @role('مورد')
+                    <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
+                    @endrole
+                </ul>
             </li>
+
             {{-- orders --}}
             <li class="slide">
                 <a class="side-menu__item" href="{{ route('orders.index') }}">

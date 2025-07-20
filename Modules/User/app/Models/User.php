@@ -89,6 +89,7 @@ class User extends Authenticatable
     public function Medicines()
     {
         return $this->belongsToMany(\Modules\Medicine\Models\Medicine::class, 'medicine_user', 'user_id', 'medicine_id')
+            ->withPivot('is_available')
             ->withTimestamps();
     }
 }

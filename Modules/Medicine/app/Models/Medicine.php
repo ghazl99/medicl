@@ -54,6 +54,7 @@ class Medicine extends Model
     public function suppliers()
     {
         return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
+            ->withPivot('is_available')
             ->withTimestamps();
     }
 }

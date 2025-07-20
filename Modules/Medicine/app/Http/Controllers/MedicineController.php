@@ -24,10 +24,21 @@ class MedicineController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $medicines = $this->medicineService->getAllMedicines($user);
+        $supplierMedicineIds = [];
+        $medicines = $this->medicineService->getAllMedicines();
+        if (Auth::user()->hasRole('مورد')) {
+            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
+        }
 
-        return view('medicine::admin.index', [
+        return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
+    }
+
+    public function getMedicinesBySupplier()
+    {
+        $user = Auth::user();
+        $medicines = $this->medicineService->getAllMedicinesSupplier($user);
+
+        return view('medicine::admin.medicineSupplier', [
             'medicines' => $medicines,
         ]);
     }
@@ -50,6 +61,17 @@ class MedicineController extends Controller
         $this->medicineService->createMedicine($validatedData, $user);
 
         return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
+    }
+
+    public function storeCheckedMedicine(Request $request)
+    {
+        $request->validate([
+            'medicines' => 'required|array',
+        ]);
+        $supplier_id = Auth::user()->id;
+        $this->medicineService->assignMedicinesToSupplier($request->medicines, $supplier_id);
+
+        return redirect()->back()->with('success', 'تم ربط الأدوية بالمورد بنجاح');
     }
 
     /**

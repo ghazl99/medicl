@@ -3,6 +3,7 @@
 namespace Modules\Medicine\Repositories;
 
 use Modules\Medicine\Models\Medicine;
+use Modules\User\Models\User;
 
 class MedicineRepository implements MedicineRepositoryInterface
 {
@@ -11,11 +12,14 @@ class MedicineRepository implements MedicineRepositoryInterface
      *
      * @return Collection<int, Medicine>
      */
-    public function index($user)
+    public function index()
     {
-        if ($user->hasRole(['المشرف', 'صيدلي'])) {
-            return Medicine::with('suppliers')->get();
-        } elseif ($user->hasRole('مورد')) {
+        return Medicine::with('suppliers')->get();
+    }
+
+    public function getMedicinesBySupplier($user)
+    {
+        if ($user->hasRole('مورد')) {
             return $user->Medicines()->get();
         }
     }
@@ -31,9 +35,15 @@ class MedicineRepository implements MedicineRepositoryInterface
     /**
      * Create a new medicine.
      */
-    public function create(array $data): Medicine
+    public function store(array $data): Medicine
     {
         return Medicine::create($data);
+    }
+
+    public function syncMedicinesToSupplier(array $medicineIds, int $supplierId): void
+    {
+        $supplier = User::findOrFail($supplierId);
+        $supplier->medicines()->sync($medicineIds); // many-to-many العلاقة
     }
 
     /**

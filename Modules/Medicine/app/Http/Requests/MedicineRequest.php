@@ -14,6 +14,7 @@ class medicineRequest extends FormRequest
         return [
             'name' => [
                 'required',
+                'unique:medicines,name',
                 'string',
                 'max:255',
             ],

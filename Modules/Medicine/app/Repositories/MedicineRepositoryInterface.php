@@ -11,7 +11,9 @@ interface MedicineRepositoryInterface
      *
      * @return Collection<int, Medicine>
      */
-    public function index($user);
+    public function index();
+
+    public function getMedicinesBySupplier($user);
 
     /**
      * Find a medicine by its ID.
@@ -21,7 +23,9 @@ interface MedicineRepositoryInterface
     /**
      * Create a new medicine.
      */
-    public function create(array $data): Medicine;
+    public function store(array $data): Medicine;
+
+    public function syncMedicinesToSupplier(array $medicineIds, int $supplierId): void;
 
     /**
      * Update an existing medicine.
