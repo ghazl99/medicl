@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
         ->name('pharmacists.index');
     Route::get('/suppliers', [Modules\User\Http\Controllers\UserController::class, 'suppliersList'])
         ->name('suppliers.index');
+    // update profile
+    Route::get('/profile/edit', [Modules\User\Http\Controllers\UserController::class, 'edit_profile'])->name('profile.edit');
+    Route::patch('/profile/update', [Modules\User\Http\Controllers\UserController::class, 'update_profile'])->name('profile.update');
 
     Route::delete('/profile', [Modules\User\Http\Controllers\UserController::class, 'destroy'])->name('profile.destroy');
 });

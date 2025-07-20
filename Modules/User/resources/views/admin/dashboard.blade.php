@@ -1,7 +1,7 @@
 @extends('core::components.layouts.master')
-@section('page-header')
-    <!-- breadcrumb -->
-    <div class="breadcrumb-header justify-content-between">
+
+@section('content')
+ <div class="breadcrumb-header justify-content-between">
         <div class="left-content">
             <div>
                 <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1 p-1">مرحبًا بك في نظام إدارة الصيدليات</h2>
@@ -10,13 +10,9 @@
                 </p>
             </div>
         </div>
-
     </div>
-    <!-- /breadcrumb -->
-@endsection
-@section('content')
-  <div class="row row-sm">
-    <div class="col-sm-12 col-xl-3 col-lg-6 col-md-6">
+<div class="row row-sm">
+    <div class="col-sm-12 col-xl-4 col-lg-6 col-md-6">
         <div class="card">
             <div class="card-body">
                 <div class="counter-status d-flex md-mb-0">
@@ -32,7 +28,7 @@
         </div>
     </div>
 
-    <div class="col-sm-12 col-xl-3 col-lg-6 col-md-6">
+    <div class="col-sm-12 col-xl-4 col-lg-6 col-md-6">
         <div class="card">
             <div class="card-body">
                 <div class="counter-status d-flex md-mb-0">
@@ -48,7 +44,7 @@
         </div>
     </div>
 
-    <div class="col-sm-12 col-xl-3 col-lg-6 col-md-6">
+    <div class="col-sm-12 col-xl-4 col-lg-6 col-md-6">
         <div class="card">
             <div class="card-body">
                 <div class="counter-status d-flex md-mb-0">
@@ -63,13 +59,15 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-sm-12 col-xl-3 col-lg-6 col-md-6">
+<div class="row row-sm">
+    <div class="col-sm-12 col-xl-6 col-lg-6 col-md-6">
         <div class="card">
             <div class="card-body">
                 <div class="counter-status d-flex md-mb-0">
                     <div class="counter-icon bg-warning-transparent">
-                        <i class="bi bi-bag text-warning"></i>
+                        <i class="bi bi-bag-check text-warning"></i>
                     </div>
                     <div class="mr-auto">
                         <h5 class="tx-13">عدد الطلبات</h5>
@@ -79,7 +77,21 @@
             </div>
         </div>
     </div>
+
+    <div class="col-sm-12 col-xl-6 col-lg-6 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="counter-status d-flex md-mb-0">
+                    <div class="counter-icon bg-info-transparent">
+                        <i class="bi bi-bar-chart-line text-info"></i>
+                    </div>
+                    <div class="mr-auto">
+                        <h5 class="tx-13">طلبات جديدة</h5>
+                        <h2 class="mb-0 tx-22 mb-1 mt-1">15</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 @endsection

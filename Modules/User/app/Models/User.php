@@ -6,6 +6,7 @@ namespace Modules\User\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Modules\Order\Models\Order;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'workplace_name',
         'city',
         'password',
+        'profile_photo',
     ];
 
     /**
@@ -49,6 +51,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo && Storage::disk('public')->exists('profile_photos/'.$this->profile_photo)) {
+            return url('storage/profile_photos/'.$this->profile_photo);
+        }
+
+        $firstLetter = strtoupper(mb_substr($this->name, 0, 1));
+
+        $name = urlencode($firstLetter);
+
+        return "https://ui-avatars.com/api/?name={$name}&background=0D8ABC&color=fff&size=256";
     }
 
     /**

@@ -1,5 +1,5 @@
 <!-- main-sidebar -->
-<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<div class="app-sidebar__overlay " data-toggle="sidebar"></div>
 <aside class="app-sidebar sidebar-scroll">
     <div class="main-sidebar-header active text-center">
         <a href="{{ route('dashboard') }}"

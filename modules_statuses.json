@@ -2,5 +2,6 @@
     "Core": true,
     "User": true,
     "Medicine": true,
-    "Order": true
+    "Order": true,
+    "Cart": true
 }

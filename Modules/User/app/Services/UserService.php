@@ -4,6 +4,7 @@ namespace Modules\User\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Modules\User\Models\User;
 use Modules\User\Repositories\UserRepositoryInterface;
 
@@ -50,6 +51,17 @@ class UserService
     public function updateUser(User $user, array $data): User
     {
         return DB::transaction(function () use ($user, $data) {
+            if (isset($data['profile_photo'])) {
+                if ($user->profile_photo) {
+                    Storage::disk('public')->delete('profile_photos/'.$user->profile_photo);
+                }
+
+                $path = $data['profile_photo']->store('profile_photos', 'public');
+                $data['profile_photo'] = basename($path);
+            } else {
+                unset($data['profile_photo']); // إزالة إذا غير موجودة
+            }
+
             return $this->userRepository->update($user, $data);
         });
     }

@@ -23,6 +23,7 @@ class UpdateUserRequest extends FormRequest
             'phone' => ['required', 'string', 'max:20'],
             'workplace_name' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
+            'profile_photo' => ['nullable', 'image', 'max:2048', 'mimes:png,jpg,jpeg'],
         ];
     }
 

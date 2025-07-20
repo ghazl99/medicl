@@ -118,6 +118,22 @@ class UserController extends Controller
         }
     }
 
+    public function edit_profile()
+    {
+        $user = Auth::user();
+
+        return view('user::admin.edit-profile', compact('user'));
+    }
+
+    public function update_profile(UpdateUserRequest $request)
+    {
+        $user = Auth::user();
+
+        $this->userService->updateUser($user, $request->validated());
+
+        return redirect()->route('profile.edit')->with('success', 'تم تحديث بياناتك بنجاح');
+    }
+
     /**
      * Delete the user's account.
      */
