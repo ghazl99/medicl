@@ -9,15 +9,15 @@ class OrderRepository implements OrderRepositoryInterface
     public function index($user)
     {
         if ($user->hasRole('المشرف')) {
-            $orders = Order::with(['pharmacist', 'supplier', 'medicines'])->get();
+            $orders = Order::with(['pharmacist', 'supplier', 'medicines'])->paginate(5);
         } elseif ($user->hasRole('صيدلي')) {
             $orders = Order::with(['pharmacist', 'supplier', 'medicines'])
                 ->where('pharmacist_id', $user->id)
-                ->get();
+                ->paginate(5);
         } elseif ($user->hasRole('مورد')) {
             $orders = Order::with(['pharmacist', 'supplier', 'medicines'])
                 ->where('supplier_id', $user->id)
-                ->get();
+                ->paginate(5);
         } else {
             $orders = collect();
         }

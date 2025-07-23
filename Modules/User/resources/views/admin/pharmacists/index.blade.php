@@ -23,9 +23,35 @@
                         </tr>
                     </thead>
                     <tbody id="pharmacists-table-body"> {{-- **Add id to <tbody> here** --}}
-                        @include('user::admin.pharmacists._pharmacist_rows')
+                        @forelse ($pharmacists as $pharmacist)
+                            <tr>
+                                <td>{{ $pharmacist->name }}</td>
+                                <td>{{ $pharmacist->phone }}</td>
+                                <td>{{ $pharmacist->workplace_name }}</td>
+                                <td>{{ $pharmacist->city }}</td>
+                                <td>
+                                    <a href="{{ route('users.edit', $pharmacist->id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1">تعديل</a>
+                                    {{-- إذا أردت إضافة زر حذف، فك تعليق هذا الجزء واضبط المسار --}}
+                                    {{-- <form action="{{ route('pharmacists.destroy', $pharmacist->id) }}" method="POST"
+                                        style="display:inline-block;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</button>
+                                    </form> --}}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">لا توجد صيادلة متاحون.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $pharmacists->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -35,32 +61,11 @@
     <script>
         $(document).ready(function() {
             $('#pharmacists-datatable').DataTable({
-                paging: true,
+                paging: fals,
                 searching: true,
                 ordering: true,
-                info: true,
-                pageLength: 10,
-                language: {
-                    "sProcessing": "جاري التحميل...",
-                    "sZeroRecords": "لم يتم العثور على أية سجلات مطابقة",
-                    "sInfo": "عرض _START_ إلى _END_ من _TOTAL_ سجل",
-                    "sInfoEmpty": "عرض 0 إلى 0 من 0 سجل",
-                    "sInfoFiltered": "(تمت تصفية _MAX_ سجل)",
-                    "sSearch": "بحث:",
-                    "oPaginate": {
-                        "sFirst": "الأول",
-                        "sPrevious": "السابق",
-                        "sNext": "التالي",
-                        "sLast": "الأخير"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
-                    }
-                },
-                "dom": '<"row"<"col-sm-12"f>>' +
-                    '<"row"<"col-sm-12"tr>>' +
-                    '<"row"<"col-sm-6 text-right"i><"col-sm-6 text-left"p>>',
+                info: fals,
+
             });
         });
     </script>

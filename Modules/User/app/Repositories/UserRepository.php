@@ -8,12 +8,12 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getPharmacists()
     {
-        return User::role('صيدلي')->get();
+        return User::role('صيدلي')->paginate(5);
     }
 
     public function getSuppliers()
     {
-        return User::role('مورد')->get();
+        return User::role('مورد')->paginate(5);
     }
 
     public function create(array $data): User

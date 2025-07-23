@@ -80,6 +80,9 @@
                             </tr>
                         @endforeach
                 </table>
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $orders->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -162,32 +165,12 @@
         $(document).ready(function() {
             $('#orders-datatable').DataTable({
 
-                paging: true,
+                paging: false,
                 searching: true,
                 ordering: true,
-                info: true,
+                info: false,
                 pageLength: 10,
-                language: {
-                    "sProcessing": "جاري التحميل...",
-                    "sZeroRecords": "لم يتم العثور على أية سجلات مطابقة",
-                    "sInfo": "عرض _START_ إلى _END_ من _TOTAL_ سجل",
-                    "sInfoEmpty": "عرض 0 إلى 0 من 0 سجل",
-                    "sInfoFiltered": "(تمت تصفية _MAX_ سجل)",
-                    "sSearch": "بحث:",
-                    "oPaginate": {
-                        "sFirst": "الأول",
-                        "sPrevious": "السابق",
-                        "sNext": "التالي",
-                        "sLast": "الأخير"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
-                    }
-                },
-                "dom": '<"row"<"col-sm-12"f>>' +
-                    '<"row"<"col-sm-12"tr>>' +
-                    '<"row"<"col-sm-6 text-right"i><"col-sm-6 text-left"p>>',
+
             });
         });
     </script>

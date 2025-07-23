@@ -17,13 +17,13 @@ class MedicineRepository implements MedicineRepositoryInterface
      */
     public function index()
     {
-        return Medicine::with('suppliers')->paginate(10);
+        return Medicine::with('suppliers')->paginate(5);
     }
 
     public function getMedicinesBySupplier($user)
     {
         if ($user->hasRole('مورد')) {
-            return $user->Medicines()->get();
+            return $user->Medicines()->paginate(5);
         }
     }
 

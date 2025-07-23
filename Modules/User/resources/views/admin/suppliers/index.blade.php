@@ -46,6 +46,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $suppliers->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -59,7 +62,6 @@
                 searching: true,
                 ordering: true,
                 info: false,
-                pageLength: 10,
 
             });
         });
