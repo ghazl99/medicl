@@ -2,8 +2,11 @@
 
 namespace Modules\Medicine\Repositories;
 
-use Modules\Medicine\Models\Medicine;
+use Log;
 use Modules\User\Models\User;
+use App\Imports\MedicineImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Medicine\Models\Medicine;
 
 class MedicineRepository implements MedicineRepositoryInterface
 {
@@ -14,7 +17,7 @@ class MedicineRepository implements MedicineRepositoryInterface
      */
     public function index()
     {
-        return Medicine::with('suppliers')->get();
+        return Medicine::with('suppliers')->paginate(10);
     }
 
     public function getMedicinesBySupplier($user)
@@ -40,10 +43,11 @@ class MedicineRepository implements MedicineRepositoryInterface
         return Medicine::create($data);
     }
 
+
     public function syncMedicinesToSupplier(array $medicineIds, int $supplierId): void
     {
         $supplier = User::findOrFail($supplierId);
-        $supplier->medicines()->sync($medicineIds); // many-to-many العلاقة
+        $supplier->medicines()->syncWithoutDetaching($medicineIds); // many-to-many العلاقة
     }
 
     /**

@@ -86,7 +86,7 @@
                     </div>
 
                     <div class="col-md-2 mb-3">
-                        <button type="button" class="btn btn-outline-danger btn-sm delete mt-4">
+                        <button type="button" class="btn btn-outline-danger delete mt-4">
                             <i class="fas fa-times"></i> حذف
                         </button>
                     </div>

@@ -52,7 +52,7 @@ class OrderController extends Controller
         $orderData = [
             'pharmacist_id' => $request->user()->id,
             'supplier_id' => $validated['supplier_id'],
-            'status' => 'pending',
+            'status' => 'قيد المعالجة',
         ];
 
         $order = $this->orderService->storeOrder($orderData, $validated);
@@ -60,12 +60,28 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'تم إضافة الطلب بنجاح.');
     }
 
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:قيد المعالجة,قيد التنفيذ,تم التسليم,ملغي',
+        ]);
+
+        try {
+            $this->orderService->updateStatus($id, $request->status);
+            return redirect()->back()->with('success', 'تم تحديث الحالة بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'حدث خطأ: ' . $e->getMessage());
+        }
+    }
     /**
      * Show the specified resource.
      */
     public function show($id)
     {
-        return view('order::show');
+        $order = $this->orderService->getOrderDetails($id);
+
+        return view('order::admin.show', compact('order'));
     }
 
     /**

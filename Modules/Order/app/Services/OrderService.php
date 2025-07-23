@@ -57,4 +57,14 @@ class OrderService
             return $order;
         });
     }
+
+    public function updateStatus($orderId, $status)
+    {
+        return $this->orderRepository->updateStatus($orderId, $status);
+    }
+
+    public function getOrderDetails($id)
+    {
+        return $this->orderRepository->find($id);
+    }
 }

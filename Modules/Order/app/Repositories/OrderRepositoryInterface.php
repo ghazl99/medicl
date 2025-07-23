@@ -11,4 +11,7 @@ interface OrderRepositoryInterface
     public function create(array $data): Order;
 
     public function find($id): ?Order;
+    
+    public function updateStatus($orderId, $status);
+
 }

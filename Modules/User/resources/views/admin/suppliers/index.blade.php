@@ -1,9 +1,9 @@
 @extends('core::components.layouts.master')
 @section('css')
-<!--  Owl-carousel css-->
-<link href="{{URL::asset('assets/plugins/owl-carousel/owl.carousel.css')}}" rel="stylesheet" />
-<!-- Maps css -->
-<link href="{{URL::asset('assets/plugins/jqvmap/jqvmap.min.css')}}" rel="stylesheet">
+    <!--  Owl-carousel css-->
+    <link href="{{ URL::asset('assets/plugins/owl-carousel/owl.carousel.css') }}" rel="stylesheet" />
+    <!-- Maps css -->
+    <link href="{{ URL::asset('assets/plugins/jqvmap/jqvmap.min.css') }}" rel="stylesheet">
 @endsection
 @section('content')
     <br>
@@ -27,7 +27,23 @@
                         </tr>
                     </thead>
                     <tbody id="suppliers-table-body">
-                        @include('user::admin.suppliers._supplier_rows')
+                        @forelse ($suppliers as $supplier)
+                            <tr>
+                                <td>{{ $supplier->name }}</td>
+                                <td>{{ $supplier->phone }}</td>
+                                <td>{{ $supplier->workplace_name }}</td>
+                                <td>{{ $supplier->city }}</td>
+                                <td>
+                                    <a href="{{ route('users.edit', $supplier->id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1">تعديل</a>
+                                    {{-- Form for delete if needed --}}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">لا توجد موردين متاحين.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -39,32 +55,12 @@
     <script>
         $(document).ready(function() {
             $('#suppliers-datatable').DataTable({
-                paging: true,
+                paging: false,
                 searching: true,
                 ordering: true,
-                info: true,
+                info: false,
                 pageLength: 10,
-                language: {
-                    "sProcessing": "جاري التحميل...",
-                    "sZeroRecords": "لم يتم العثور على أية سجلات مطابقة",
-                    "sInfo": "عرض _START_ إلى _END_ من _TOTAL_ سجل",
-                    "sInfoEmpty": "عرض 0 إلى 0 من 0 سجل",
-                    "sInfoFiltered": "(تمت تصفية _MAX_ سجل)",
-                    "sSearch": "بحث:",
-                    "oPaginate": {
-                        "sFirst": "الأول",
-                        "sPrevious": "السابق",
-                        "sNext": "التالي",
-                        "sLast": "الأخير"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
-                    }
-                },
-                "dom": '<"row"<"col-sm-12"f>>' +
-                    '<"row"<"col-sm-12"tr>>' +
-                    '<"row"<"col-sm-6 text-right"i><"col-sm-6 text-left"p>>',
+
             });
         });
     </script>

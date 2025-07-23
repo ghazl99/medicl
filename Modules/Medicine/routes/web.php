@@ -7,4 +7,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('medicines', MedicineController::class)->names('medicines');
     Route::post('add-medicine-checked', [MedicineController::class, 'storeCheckedMedicine'])->name('checked-medicine');
     Route::get('my-medicines', [MedicineController::class, 'getMedicinesBySupplier'])->name('my-medicines');
+    Route::post('/medicines/import', [MedicineController::class, 'import'])->name('medicines.import');
+
 });

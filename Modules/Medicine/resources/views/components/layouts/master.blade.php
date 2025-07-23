@@ -22,7 +22,6 @@
     </head>
 
     <body>
-        {{ $slot }}
 
         {{-- Vite JS --}}
         {{-- {{ module_vite('build-medicine', 'resources/assets/js/app.js') }} --}}

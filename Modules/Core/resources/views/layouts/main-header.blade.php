@@ -144,7 +144,7 @@
                 </div>
                 <!-- زر تبديل الوضع الليلي/النهاري -->
                 <div class="dropdown nav-item  theme-toggle"
-                    style="background-color: #f8f9fa; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    style="background-color: #f8f9fa; border-radius: 50%; width: 36px; height: 36px;top:8px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i class="bi bi-moon-fill text-dark" id="theme-icon"></i>
                 </div>
                 <!-- نهاية زر تبديل الوضع -->

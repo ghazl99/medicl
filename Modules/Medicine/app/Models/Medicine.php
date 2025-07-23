@@ -25,20 +25,28 @@ class Medicine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'manufacturer',
-        'quantity_available',
-        'price',
+        'type',
+        'composition',
+        'form',
+        'company',
+        'note',
+        'net_dollar_old',
+        'public_dollar_old',
+        'net_dollar_new',
+        'public_dollar_new',
+        'net_syp',
+        'public_syp',
+        'note_2',
+        'price_change_percentage',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'quantity_available' => 'integer',
-        'price' => 'decimal:2', // يُحدد أن الحقل price يجب أن يُعامل كرقم عشري بدقة رقمين بعد الفاصلة
+        'net_dollar_old'     => 'decimal:2',
+        'public_dollar_old'  => 'decimal:2',
+        'net_dollar_new'     => 'decimal:2',
+        'public_dollar_new'  => 'decimal:2',
+        'net_syp'            => 'decimal:2',
+        'public_syp'         => 'decimal:2',
     ];
 
     /**

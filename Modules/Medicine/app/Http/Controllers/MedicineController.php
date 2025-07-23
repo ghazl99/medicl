@@ -2,11 +2,14 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Imports\MedicineImport;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Modules\Medicine\Http\Requests\medicineRequest;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Medicine\Http\Requests\MedicineImportRequest;
 use Modules\Medicine\Services\MedicineService;
+use Modules\Medicine\Http\Requests\medicineRequest;
 
 class MedicineController extends Controller
 {
@@ -59,6 +62,15 @@ class MedicineController extends Controller
         $validatedData = $request->validated();
         $user = Auth::user();
         $this->medicineService->createMedicine($validatedData, $user);
+
+        return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
+    }
+
+    public function import(MedicineImportRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        Excel::queueImport(new MedicineImport($validatedData), $validatedData['file']);
 
         return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
     }
