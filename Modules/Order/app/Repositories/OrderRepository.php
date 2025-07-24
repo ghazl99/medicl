@@ -9,13 +9,13 @@ class OrderRepository implements OrderRepositoryInterface
     public function index($user)
     {
         if ($user->hasRole('المشرف')) {
-            $orders = Order::with(['pharmacist', 'supplier', 'medicines'])->paginate(5);
+            $orders = Order::with(['pharmacist', 'supplier'])->paginate(5);
         } elseif ($user->hasRole('صيدلي')) {
-            $orders = Order::with(['pharmacist', 'supplier', 'medicines'])
+            $orders = Order::with('supplier')
                 ->where('pharmacist_id', $user->id)
                 ->paginate(5);
         } elseif ($user->hasRole('مورد')) {
-            $orders = Order::with(['pharmacist', 'supplier', 'medicines'])
+            $orders = Order::with('pharmacist')
                 ->where('supplier_id', $user->id)
                 ->paginate(5);
         } else {
@@ -40,6 +40,14 @@ class OrderRepository implements OrderRepositoryInterface
         $order = Order::findOrFail($orderId);
         $order->status = $status;
         $order->save();
+
+        return $order;
+    }
+
+    public function rejectMedicine($orderId, $medicineId)
+    {
+        $order = Order::findOrFail($orderId);
+        $order->medicines()->updateExistingPivot($medicineId, ['status' => 'مرفوض']);
 
         return $order;
     }

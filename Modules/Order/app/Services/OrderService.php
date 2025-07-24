@@ -67,4 +67,9 @@ class OrderService
     {
         return $this->orderRepository->find($id);
     }
+
+    public function rejectMedicineInOrder($orderId, $medicineId)
+    {
+        return $this->orderRepository->rejectMedicine($orderId, $medicineId);
+    }
 }

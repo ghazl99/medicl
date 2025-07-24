@@ -13,4 +13,7 @@ interface OrderRepositoryInterface
     public function find($id): ?Order;
 
     public function updateStatus($orderId, $status);
+
+    /** Update a single order_item status */
+    public function rejectMedicine($orderId, $medicineId);
 }

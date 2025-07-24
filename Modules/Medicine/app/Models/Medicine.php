@@ -56,7 +56,9 @@ class Medicine extends Model
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'order_items', 'medicine_id', 'order_id');
+        return $this->belongsToMany(Order::class, 'order_items', 'medicine_id', 'order_id')
+            ->withPivot(['quantity', 'status'])
+            ->withTimestamps();
     }
 
     public function suppliers()

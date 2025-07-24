@@ -20,6 +20,8 @@ return new class extends Migration
                 ->constrained('medicines')
                 ->onDelete('cascade');
             $table->unsignedInteger('quantity');
+            $table->enum('status', ['مقبول', 'مرفوض'])->default('مقبول');
+
             $table->timestamps();
         });
     }

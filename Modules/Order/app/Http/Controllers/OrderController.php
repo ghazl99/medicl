@@ -76,6 +76,16 @@ class OrderController extends Controller
     }
 
     /**
+     * Reject a specific medicine within the order.
+     */
+    public function rejectMedicine($orderId, $medicineId)
+    {
+        $this->orderService->rejectMedicineInOrder($orderId, $medicineId);
+
+        return redirect()->back()->with('success', 'The medicine has been rejected successfully.');
+    }
+
+    /**
      * Show the specified resource.
      */
     public function show($id)
