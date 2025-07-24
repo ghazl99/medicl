@@ -32,7 +32,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function find($id): Order
     {
-        return Order::with(['pharmacist', 'supplier', 'medicines'])->findOrFail($id);
+        return Order::findOrFail($id);
     }
 
     public function updateStatus($orderId, $status)
