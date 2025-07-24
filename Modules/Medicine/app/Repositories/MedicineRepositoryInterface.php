@@ -36,4 +36,29 @@ interface MedicineRepositoryInterface
      * Delete a medicine by its ID.
      */
     public function delete(int $id): ?bool;
+
+    /**
+     * Find the pivot record between a medicine and a supplier.
+     *
+     * This method retrieves the pivot row from the 'medicine_user' table
+     * that links the given medicine with the specified supplier.
+     *
+     * @param  int  $medicineId  The ID of the medicine.
+     * @param  int  $supplierId  The ID of the supplier (user).
+     * @return mixed Returns the pivot model instance or null if not found.
+     */
+    public function findPivotByMedicineAndSupplier(int $medicineId, int $supplierId);
+
+    /**
+     * Update the 'is_available' status in the pivot table for a specific medicine and supplier.
+     *
+     * This method updates the availability status (true/false) for the
+     * medicine-supplier relationship in the 'medicine_user' pivot table.
+     *
+     * @param  int  $medicineId  The ID of the medicine.
+     * @param  int  $supplierId  The ID of the supplier (user).
+     * @param  bool  $status  The new availability status (true = available, false = not available).
+     * @return bool Returns true if the update was successful, otherwise false.
+     */
+    public function updatePivotAvailability(int $medicineId, int $supplierId, bool $status);
 }

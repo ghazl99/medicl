@@ -3,8 +3,6 @@
 namespace Modules\Order\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
-use Modules\Medicine\Models\Medicine;
 
 class orderRequest extends FormRequest
 {
@@ -21,8 +19,6 @@ class orderRequest extends FormRequest
             'quantities.*' => ['required', 'integer', 'min:1'],
         ];
     }
-
-  
 
     /**
      * Determine if the user is authorized to make this request.

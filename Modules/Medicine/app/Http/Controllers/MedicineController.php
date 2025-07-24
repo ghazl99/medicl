@@ -2,14 +2,14 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Imports\MedicineImport;
 use App\Http\Controllers\Controller;
+use App\Imports\MedicineImport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Medicine\Http\Requests\MedicineImportRequest;
-use Modules\Medicine\Services\MedicineService;
 use Modules\Medicine\Http\Requests\medicineRequest;
+use Modules\Medicine\Services\MedicineService;
 
 class MedicineController extends Controller
 {
@@ -136,4 +136,25 @@ class MedicineController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id) {}
+
+    /**
+     * Toggle medicine availability for the current supplier.
+     *
+     * @param  int  $medicineId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toggleAvailability($medicineId)
+    {
+        try {
+            // Get current supplier ID
+            $supplierId = Auth::id();
+
+            // Toggle availability via MedicineService
+            $this->medicineService->toggleAvailability($medicineId, $supplierId);
+
+            return back()->with('success', 'تم تغيير حالة التوفر بنجاح.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
 }

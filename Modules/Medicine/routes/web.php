@@ -8,5 +8,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('add-medicine-checked', [MedicineController::class, 'storeCheckedMedicine'])->name('checked-medicine');
     Route::get('my-medicines', [MedicineController::class, 'getMedicinesBySupplier'])->name('my-medicines');
     Route::post('/medicines/import', [MedicineController::class, 'import'])->name('medicines.import');
-
+    Route::post('/medicines/{medicine}/toggle-availability', [MedicineController::class, 'toggleAvailability'])
+        ->name('medicines.toggle-availability');
 });

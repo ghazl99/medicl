@@ -41,12 +41,12 @@ class Medicine extends Model
     ];
 
     protected $casts = [
-        'net_dollar_old'     => 'decimal:2',
-        'public_dollar_old'  => 'decimal:2',
-        'net_dollar_new'     => 'decimal:2',
-        'public_dollar_new'  => 'decimal:2',
-        'net_syp'            => 'decimal:2',
-        'public_syp'         => 'decimal:2',
+        'net_dollar_old' => 'decimal:2',
+        'public_dollar_old' => 'decimal:2',
+        'net_dollar_new' => 'decimal:2',
+        'public_dollar_new' => 'decimal:2',
+        'net_syp' => 'decimal:2',
+        'public_syp' => 'decimal:2',
     ];
 
     /**

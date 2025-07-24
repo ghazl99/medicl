@@ -85,4 +85,23 @@ class MedicineService
     {
         return $this->medicineRepository->delete($id);
     }
+
+    /**
+     * Toggle availability for a medicine-supplier relationship.
+     */
+    public function toggleAvailability(int $medicineId, int $supplierId): bool
+    {
+        // Find the pivot record
+        $pivot = $this->medicineRepository->findPivotByMedicineAndSupplier($medicineId, $supplierId);
+
+        if (! $pivot) {
+            throw new \Exception('Medicine is not linked with the supplier.');
+        }
+
+        // Flip availability
+        $currentStatus = (bool) $pivot->pivot->is_available;
+        $this->medicineRepository->updatePivotAvailability($medicineId, $supplierId, ! $currentStatus);
+
+        return ! $currentStatus;
+    }
 }

@@ -60,7 +60,6 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'تم إضافة الطلب بنجاح.');
     }
 
-
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -69,11 +68,13 @@ class OrderController extends Controller
 
         try {
             $this->orderService->updateStatus($id, $request->status);
+
             return redirect()->back()->with('success', 'تم تحديث الحالة بنجاح');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'حدث خطأ: '.$e->getMessage());
         }
     }
+
     /**
      * Show the specified resource.
      */
