@@ -61,7 +61,7 @@
     .app-sidebar .side-menu__label,
     .app-sidebar .side-menu__icon {
         color: #fff !important;
-        font-size: 17px;
+        font-size: 18px;
         transition: all 0.3s ease;
     }
 
@@ -85,7 +85,7 @@
     .app-sidebar .side-menu_item.active .side-menu__icon,
     .app-sidebar .side-menu_item.active .side-menu__label {
         color: #2563eb !important;
-        font-size: 17px;
+        font-size: 18px;
     }
 
     /* عنصر العنوان (category) */
