@@ -146,6 +146,7 @@
         color: #fff;
         border-radius: 0 32px 32px 0;
     }
+
     .dark-theme .app-sidebar .side-menu_item.active,
     .dark-theme .app-sidebar .side-menu_item:active,
     .dark-theme .app-sidebar .side-menu_item.active:focus {
@@ -157,8 +158,10 @@
     }
 </style>
 <!-- main-sidebar -->
-<aside class="app-sidebar sidebar-scroll">
-    <a class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي"><i class="bi bi-moon-stars"></i></a>
+<aside class=" app-sidebar sidebar-scroll">
+    <a class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي">
+        <i class="bi bi-moon-stars" id="theme-icon"></i>
+    </a>
     <div class="sidebar-title mb-4">
         <div class="logo">
             <i class="bi bi-capsule-pill" style="font-size:2.2rem;color:#38bdf8;"></i>

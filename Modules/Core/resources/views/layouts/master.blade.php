@@ -73,38 +73,39 @@
             $(".alert").slideDown(300).delay(4000).slideUp(300);
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const body = document.body;
-            const toggleBtn = document.querySelector('.theme-toggle');
-            const themeIcon = document.getElementById('theme-icon');
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const body = document.body;
+        const toggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('theme-icon');
 
-            // تحقق من الوضع المخزن
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
+        // تحميل الوضع المحفوظ
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            body.classList.remove('light-theme');
+            themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
+        } else {
+            body.classList.add('light-theme');
+        }
+
+        // تبديل الوضع عند الضغط
+        toggleBtn.addEventListener('click', function () {
+            body.classList.toggle('dark-theme');
+            body.classList.toggle('light-theme');
+
+            // تبديل الأيقونة
+            if (body.classList.contains('dark-theme')) {
+                themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars');
+                localStorage.setItem('theme', 'light');
             }
-
-            toggleBtn.addEventListener('click', function() {
-                body.classList.toggle('dark-theme');
-                body.classList.toggle('light-theme');
-
-                // تحديث الأيقونة
-                themeIcon.classList.toggle('bi-moon-fill');
-                themeIcon.classList.toggle('bi-sun-fill');
-
-                // تخزين الوضع الجديد
-                if (body.classList.contains('dark-theme')) {
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                }
-            });
         });
-    </script>
+    });
+</script>
+
 
     @yield('scripts')
 </body>

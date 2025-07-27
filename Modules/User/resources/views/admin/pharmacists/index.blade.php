@@ -61,10 +61,10 @@
     <script>
         $(document).ready(function() {
             $('#pharmacists-datatable').DataTable({
-                paging: fals,
+                paging: false,
                 searching: true,
                 ordering: true,
-                info: fals,
+                info: false,
 
             });
         });
