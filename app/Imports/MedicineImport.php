@@ -2,10 +2,11 @@
 
 namespace App\Imports;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\Category\Models\Category;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 class MedicineImport implements ShouldQueue, ToModel, WithChunkReading, WithHeadingRow
 {
@@ -14,9 +15,13 @@ class MedicineImport implements ShouldQueue, ToModel, WithChunkReading, WithHead
      */
     public function model(array $row)
     {
+        $categoryName = $row['الصنف'];
 
+        // نبحث عن الصنف أو ننشئه إذا غير موجود
+        $category = Category::firstOrCreate(['name' => $categoryName]);
         return new \Modules\Medicine\Models\Medicine([
-            'type' => $row['الصنف'],
+            'category_id' => $category->id,
+            'type' => $row['النوع'],
             'composition' => $row['التركيب'],
             'form' => $row['الشكل'],
             'company' => $row['الشركة'],

@@ -2,19 +2,23 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Imports\MedicineImport;
 use Illuminate\Http\Request;
+use App\Imports\MedicineImport;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use Modules\Medicine\Http\Requests\MedicineImportRequest;
-use Modules\Medicine\Http\Requests\medicineRequest;
+use Modules\Category\Services\CategoryService;
 use Modules\Medicine\Services\MedicineService;
+use Modules\Medicine\Http\Requests\medicineRequest;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Modules\Medicine\Http\Requests\MedicineImportRequest;
 
 class MedicineController extends Controller
 {
     public function __construct(
-        protected MedicineService $medicineService
+        protected MedicineService $medicineService,
+        protected CategoryService $categoryService,
+
     ) {}
 
     /**
@@ -35,6 +39,17 @@ class MedicineController extends Controller
 
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
+    public function showImage(Media $media)
+    {
+        $path = $media->getPath();
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
+    }
+
 
     public function getMedicinesBySupplier()
     {
@@ -51,7 +66,9 @@ class MedicineController extends Controller
      */
     public function create()
     {
-        return view('medicine::admin.create');
+        $categories = $this->categoryService->getAllcategories();
+
+        return view('medicine::admin.create', compact('categories'));
     }
 
     /**
@@ -59,11 +76,15 @@ class MedicineController extends Controller
      */
     public function store(medicineRequest $request)
     {
-        $validatedData = $request->validated();
-        $user = Auth::user();
-        $this->medicineService->createMedicine($validatedData, $user);
+        try {
+            $validatedData = $request->validated();
+            $user = Auth::user();
+            $this->medicineService->createMedicine($validatedData, $user);
 
-        return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
+            return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function import(MedicineImportRequest $request)

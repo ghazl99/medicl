@@ -9,7 +9,7 @@
 Project        :   Rapo - HTML5 Bootstrap Admin Template
 Version        :   V.1
 Create Date    :   05/02/20
-Copyright      :   Spruko Technologies Private Limited 
+Copyright      :   Spruko Technologies Private Limited
 Author         :   SprukoSoft
 Author URL     :   https://themeforest.net/user/sprukosoft
 Support	       :   support@spruko.com
@@ -57,7 +57,7 @@ License        :   Licensed under ThemeForest License
 	** TEXT SIZES & FONTS
 	** CUSTOM CSS
 
-	
+
 /*---FONTS IMPORT --- */
 body.dark-theme {
   color: #fff;
@@ -229,9 +229,7 @@ body.dark-theme {
   border-left: 1px solid rgba(222, 228, 236, 0.1);
   border-right: 0; }
 
-.dark-theme .main-sidebar-header {
-  background: #1f2940;
-  background: #1f2940; }
+
 
 .dark-theme .side-menu__label, .dark-theme .side-menu .side-menu__icon {
   color: #a0aac3;
@@ -244,7 +242,6 @@ body.dark-theme {
   color: rgba(255, 255, 255, 0.4) !important; }
 
 .dark-theme .main-sidebar-header {
-  border-bottom: 1px solid rgba(222, 228, 236, 0.1);
   border-left: 1px solid rgba(222, 228, 236, 0.1); }
 
 .dark-theme .main-sidebar-loggedin .media-body h6 {

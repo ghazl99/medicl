@@ -93,6 +93,8 @@
                         <thead class="text-right">
                             <tr>
                                 <th>ID</th>
+                                <th>النوع</th>
+                                <th>صورة المنتج</th>
                                 <th>الصنف</th>
                                 <th>التركيب</th>
                                 <th>الشكل</th>
@@ -112,6 +114,20 @@
                             @foreach ($medicines as $k => $medicine)
                                 <tr>
                                     <td>{{ $k + 1 }}</td>
+                                    <td>{{ $medicine->category ? $medicine->category->name : 'غير محدد' }}</td>
+
+                                    <td>
+                                        @php
+                                            $media = $medicine->getFirstMedia('medicine_images');
+                                        @endphp
+                                        @if ($media)
+                                            <img src="{{ route('medicines.image', $media->id) }}" alt="صورة الدواء"
+                                                width="50" height="50">
+                                        @else
+                                            <span>لا توجد صورة</span>
+                                        @endif
+                                    </td>
+
                                     <td>{{ $medicine->type }}</td>
                                     <td>{{ $medicine->composition }}</td>
                                     <td>{{ $medicine->form }}</td>

@@ -2,15 +2,17 @@
 
 namespace Modules\Medicine\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Order\Models\Order;
-
+use Modules\Category\Models\Category;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 // use Modules\Medicine\Database\Factories\MedicineFactory;
 
-class Medicine extends Model
+class Medicine extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory,InteractsWithMedia;
 
     /**
      * The table associated with the model.
@@ -25,6 +27,7 @@ class Medicine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'category_id',
         'type',
         'composition',
         'form',
@@ -66,5 +69,10 @@ class Medicine extends Model
         return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
             ->withPivot('is_available')
             ->withTimestamps();
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

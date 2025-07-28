@@ -24,6 +24,7 @@
         height: 60px;
         background: #fff;
         border-radius: 50%;
+        margin-top: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -33,8 +34,8 @@
 
     .app-sidebar .theme-toggle {
         position: absolute;
-        top: 1.2rem;
-        left: 1.2rem;
+        bottom: 3.2rem;
+        left: 2.2rem;
         background: rgba(255, 255, 255, 0.13);
         border: none;
         border-radius: 50%;
@@ -158,74 +159,87 @@
     }
 </style>
 <!-- main-sidebar -->
-<aside class=" app-sidebar sidebar-scroll">
-    <a class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي">
-        <i class="bi bi-moon-stars" id="theme-icon"></i>
-    </a>
-    <div class="sidebar-title mb-4">
-        <div class="logo">
-            <i class="bi bi-capsule-pill" style="font-size:2.2rem;color:#38bdf8;"></i>
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+
+<aside class=" app-sidebar sidebar-scroll sidebar-left">
+    <div class="main-sidebar-header active">
+        <a class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي">
+            <i class="bi bi-moon-stars" id="theme-icon"></i>
+        </a>
+        <div class="sidebar-title mb-4">
+            <div class="logo">
+                <i class="bi bi-capsule-pill" style="font-size:2.2rem;color:#38bdf8;"></i>
+            </div>
+            <h2>نظام الصيدليات</h2>
         </div>
-        <h2>نظام الصيدليات</h2>
     </div>
-    <ul class="side-menu">
 
-        {{-- dashboard --}}
-        @hasanyrole('المشرف|مورد')
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('dashboard') }}">
-                    <i class="side-menu__icon bi bi-house-door p-2"></i>
-                    <span class="side-menu__label">الرئيسية</span>
-                </a>
-            </li>
-        @endhasanyrole
-        @role('المشرف')
-            {{-- users --}}
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('pharmacists.index') }}">
-                    <i class="side-menu__icon bi bi-person-badge p-2" viewBox="0 0 24 24"></i>
-                    <span class="side-menu__label">الصيادلة</span>
-                </a>
-            </li>
+        <ul class="main-sidemenu side-menu">
 
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('suppliers.index') }}">
-                    <i class="side-menu__icon bi bi-truck " viewBox="0 0 24 24" style="transform: scaleX(-1);"></i>
-                    <span class="side-menu__label">الموردين</span>
-                </a>
-            </li>
-        @endrole
-        @hasanyrole('المشرف|صيدلي|مورد')
-            {{-- medicines --}}
-            <li class="slide">
-                <a class="side-menu_item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i
-                        class="side-menu__icon bi bi-capsule p-2" viewBox="0 0 24 24"></i><span
-                        class="side-menu__label">الأدوية</span><i class="angle fe fe-chevron-down"></i></a>
-                <ul class="slide-menu">
-                    <li><a class="slide-item" href="{{ route('medicines.index') }}">جميع الأدوية</a></li>
-                    @role('مورد')
-                        <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
-                    @endrole
-                </ul>
-            </li>
+            {{-- dashboard --}}
+            @hasanyrole('المشرف|مورد')
+                <li class="slide">
+                    <a class="side-menu_item" href="{{ route('dashboard') }}">
+                        <i class="side-menu__icon bi bi-house-door p-2"></i>
+                        <span class="side-menu__label">الرئيسية</span>
+                    </a>
+                </li>
+            @endhasanyrole
+            @role('المشرف')
+                {{-- users --}}
+                <li class="slide">
+                    <a class="side-menu_item" href="{{ route('pharmacists.index') }}">
+                        <i class="side-menu__icon bi bi-person-badge p-2" viewBox="0 0 24 24"></i>
+                        <span class="side-menu__label">الصيادلة</span>
+                    </a>
+                </li>
 
-            {{-- orders --}}
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('orders.index') }}">
-                    <i class="side-menu__icon bi bi-bag-check p-2" viewBox="0 0 24 24"></i>
-                    <span class="side-menu__label">الطلبات</span>
-                </a>
-            </li>
-        @endhasanyrole
-        @hasanyrole('المشرف|مورد')
-            {{-- reports --}}
-            <li class="slide">
-                <a class="side-menu_item" href="#">
-                    <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>
-                    <span class="side-menu__label">تقارير المبيعات</span>
-                </a>
-            </li>
-        @endhasanyrole
-    </ul>
+                <li class="slide">
+                    <a class="side-menu_item" href="{{ route('suppliers.index') }}">
+                        <i class="side-menu__icon bi bi-truck " viewBox="0 0 24 24" style="transform: scaleX(-1);"></i>
+                        <span class="side-menu__label">الموردين</span>
+                    </a>
+                </li>
+            @endrole
+            @hasanyrole('المشرف|صيدلي|مورد')
+                {{-- categories --}}
+                <li class="slide">
+                    <a class="side-menu_item" href="{{ route('category.index') }}">
+                        <i class="side-menu__icon bi bi-grid p-2" viewBox="0 0 24 24"></i>
+
+                        <span class="side-menu__label">الأصناف</span>
+                    </a>
+                </li>
+                {{-- medicines --}}
+                <li class="slide">
+                    <a class="side-menu_item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i
+                            class="side-menu__icon bi bi-capsule p-2" viewBox="0 0 24 24"></i><span
+                            class="side-menu__label">الأدوية</span><i class="angle fe fe-chevron-down"></i></a>
+                    <ul class="slide-menu">
+                        <li><a class="slide-item" href="{{ route('medicines.index') }}">جميع الأدوية</a></li>
+                        @role('مورد')
+                            <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
+                        @endrole
+                    </ul>
+                </li>
+
+                {{-- orders --}}
+                <li class="slide">
+                    <a class="side-menu_item" href="{{ route('orders.index') }}">
+                        <i class="side-menu__icon bi bi-bag-check p-2" viewBox="0 0 24 24"></i>
+                        <span class="side-menu__label">الطلبات</span>
+                    </a>
+                </li>
+            @endhasanyrole
+            @hasanyrole('المشرف|مورد')
+                {{-- reports --}}
+                <li class="slide">
+                    <a class="side-menu_item" href="#">
+                        <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>
+                        <span class="side-menu__label">تقارير المبيعات</span>
+                    </a>
+                </li>
+            @endhasanyrole
+        </ul>
 </aside>
 <!-- main-sidebar -->

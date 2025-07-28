@@ -51,19 +51,29 @@ class MedicineService
     public function createMedicine(array $data, $user): Medicine
     {
         return DB::transaction(function () use ($data, $user) {
+            $image = $data['image'] ?? null;
+            unset($data['image']);
+
             $medicine = $this->medicineRepository->store($data);
 
-            if (! $user) {
+            if (!$user) {
                 throw new \Exception('المستخدم غير موجود أو غير مسجل الدخول.');
             }
 
             if ($user->hasRole('مورد')) {
-                $user->Medicines()->attach($medicine->id);
+                $user->medicines()->attach($medicine->id);
+            }
+
+            if ($image) {
+                $medicine
+                    ->addMedia($image)
+                    ->toMediaCollection('medicine_images', 'private_media');
             }
 
             return $medicine;
         });
     }
+
 
     public function assignMedicinesToSupplier(array $medicineIds, int $supplierId): void
     {

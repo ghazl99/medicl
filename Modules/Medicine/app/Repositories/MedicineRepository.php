@@ -14,7 +14,7 @@ class MedicineRepository implements MedicineRepositoryInterface
      */
     public function index()
     {
-        return Medicine::with('suppliers')->paginate(5);
+        return Medicine::with('suppliers','category')->paginate(5);
     }
 
     public function getMedicinesBySupplier($user)

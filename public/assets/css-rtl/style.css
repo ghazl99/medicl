@@ -20996,8 +20996,6 @@ object, embed, video {
   align-items: center;
   padding: 0 20px;
   width: 240px;
-  background: #fff;
-  border-bottom: 1px solid #eae8f1;
   position: fixed;
   border-left: 1px solid #eae8f1;
   white-space: nowrap;
@@ -21181,7 +21179,6 @@ object, embed, video {
   box-shadow: 0 0 11px rgba(0, 0, 0, 0.13); }
 
 .main-sidebar-header {
-  background: #fff;
   z-index: 9; }
 
 .main-sidebar-body .nav-label {
