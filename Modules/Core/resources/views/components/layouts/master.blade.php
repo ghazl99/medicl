@@ -38,16 +38,7 @@
         @include('core::layouts.main-header')
         <!-- container -->
         <div class="container-fluid">
-            @yield('page-header')
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-            @if (session('warning'))
-                <div class="alert alert-warning">{{ session('warning') }}</div>
-            @endif
+
             @yield('content')
             @include('core::layouts.sidebar')
             @include('core::layouts.models')
@@ -56,8 +47,6 @@
     </div>
 
     <!-- dataTables Scripts -->
-
-    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
@@ -66,44 +55,84 @@
     <!-- Bootstrap 4 rtl -->
     <script src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"></script>
 
-    <!-- Alert Auto-hide -->
+     {{-- SweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- رسائل الجلسة باستخدام Swal --}}
     <script>
-        $(document).ready(function() {
-            $(".alert").slideDown(300).delay(4000).slideUp(300);
+        function getSwalThemeOptions() {
+            const isDark = document.body.classList.contains('dark-theme');
+            return isDark ?
+                {
+                    background: '#141b2d',
+                    color: '#ffffff'
+                } :
+                {
+                    background: '#ffffff',
+                    color: '#000000'
+                };
+        }
+
+        window.addEventListener('load', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'نجاح',
+                    text: @json(session('success')),
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    ...getSwalThemeOptions()
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: @json(session('error')),
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    ...getSwalThemeOptions()
+                });
+            @endif
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const body = document.body;
-            const toggleBtn = document.querySelector('.theme-toggle');
-            const themeIcon = document.getElementById('theme-icon');
 
-            // تحقق من الوضع المخزن
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const body = document.body;
+        const toggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        // تحميل الوضع المحفوظ
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            body.classList.remove('light-theme');
+            themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
+        } else {
+            body.classList.add('light-theme');
+        }
+
+        // تبديل الوضع عند الضغط
+        toggleBtn.addEventListener('click', function () {
+            body.classList.toggle('dark-theme');
+            body.classList.toggle('light-theme');
+
+            // تبديل الأيقونة
+            if (body.classList.contains('dark-theme')) {
+                themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars');
+                localStorage.setItem('theme', 'light');
             }
-
-            toggleBtn.addEventListener('click', function() {
-                body.classList.toggle('dark-theme');
-                body.classList.toggle('light-theme');
-
-                // تحديث الأيقونة
-                themeIcon.classList.toggle('bi-moon-fill');
-                themeIcon.classList.toggle('bi-sun-fill');
-
-                // تخزين الوضع الجديد
-                if (body.classList.contains('dark-theme')) {
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                }
-            });
         });
-    </script>
+    });
+</script>
+
 
     @yield('scripts')
 </body>
