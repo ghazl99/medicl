@@ -21,9 +21,9 @@ class MedicineService
      *
      * @return Collection<int, Medicine>
      */
-    public function getAllMedicines()
+    public function getAllMedicines(?string $keyword = null)
     {
-        return $this->medicineRepository->index();
+        return $this->medicineRepository->index($keyword);
     }
 
     public function getAllMedicinesSupplier($user)

@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Laravel\Scout\Searchable;
+use Laravel\Scout\Attributes\SearchUsingPrefix;
+
 // use Modules\Medicine\Database\Factories\MedicineFactory;
 
 class Medicine extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, Searchable;
 
     /**
      * The table associated with the model.
@@ -74,5 +77,20 @@ class Medicine extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    #[SearchUsingPrefix(['composition', 'type','form', 'company', 'note'])]
+    public function toSearchableArray()
+    {
+
+        $this->loadMissing('category');
+        return [
+            'type' => $this->type,
+            'composition' => $this->composition,
+            'form' => $this->form,
+            'company' => $this->company,
+            'note' => $this->note,
+            
+        ];
     }
 }

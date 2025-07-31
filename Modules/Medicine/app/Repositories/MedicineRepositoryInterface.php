@@ -11,7 +11,7 @@ interface MedicineRepositoryInterface
      *
      * @return Collection<int, Medicine>
      */
-    public function index();
+    public function index(?string $keyword = null);
 
     public function getMedicinesBySupplier($user);
 

@@ -107,8 +107,14 @@
                 <h3 class="text-right">إدارة الأدوية</h3>
                 <a href="{{ route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
             </div>
-
             <div class="card-body">
+                <div class="mb-3 text-right">
+                <form action="{{ route('medicines.index') }}" method="GET" class="form-inline d-flex justify-content-end">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="ابحث عن دواء..."
+                        class="form-control" style="max-width: 300px; margin-left: 10px;" />
+                    <button type="submit" class="btn btn-primary">بحث</button>
+                </form>
+            </div>
                 <div class="table-responsive">
                     <form id="medicines-selection-form" method="POST" action="{{ route('checked-medicine') }}">
                         @csrf
@@ -202,7 +208,14 @@
                 @endrole
             </div>
             <div class="card-body">
-
+                <div class="mb-3 text-right">
+                    <form action="{{ route('medicines.index') }}" method="GET"
+                        class="form-inline d-flex justify-content-end">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="ابحث عن دواء..."
+                            class="form-control" style="max-width: 300px; margin-left: 10px;" />
+                        <button type="submit" class="btn btn-primary">بحث</button>
+                    </form>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
                         <thead class="text-right">
@@ -330,10 +343,9 @@
         $(document).ready(function() {
             $('#medicines-datatable').DataTable({
                 paging: false,
-                searching: true,
+                searching: false,
                 ordering: true,
                 info: false,
-                pageLength: 10,
 
 
             });

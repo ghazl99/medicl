@@ -29,10 +29,14 @@ class MedicineController extends Controller
      *
      * @return View|JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
+        $keyword = $request->input('search', null);
+
+        $medicines = $this->medicineService->getAllMedicines($keyword);
+
         $supplierMedicineIds = [];
-        $medicines = $this->medicineService->getAllMedicines();
+
         if (Auth::user()->hasRole('مورد')) {
             $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
         }
