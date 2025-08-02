@@ -109,10 +109,16 @@
             </div>
             <div class="card-body">
                 <div class="mb-3 text-right">
-                    <form action="{{ route('medicines.index') }}" method="GET" class="form-inline d-flex justify-content-end">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="ابحث عن دواء..."
-                            class="form-control" style="max-width: 300px; margin-left: 10px;" />
-                        <button type="submit" class="btn btn-primary">بحث</button>
+                    <form action="{{ route('medicines.index') }}" method="GET" class="mb-3">
+                        <div class="row justify-content-start">
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    placeholder="ابحث عن دواء..." class="form-control" />
+                            </div>
+                            <div class="col-auto mb-2">
+                                <button type="submit" class="btn btn-primary w-100">بحث</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="table-responsive">

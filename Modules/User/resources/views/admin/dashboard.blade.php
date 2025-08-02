@@ -138,7 +138,7 @@
                                 <h2 class="mb-0  text-danger">{{ $myMedicineCount }}</h2>
                             </div>
                         </div>
-                        <a href="{{ route('medicines.my') }}" class=" mt-3 align-self-end">
+                        <a href="{{ route('my-medicines') }}" class=" mt-3 align-self-end">
                             عرض التفاصيل <i class="bi bi-arrow-left-short"></i>
                         </a>
                     </div>
@@ -158,7 +158,7 @@
                                 <h2 class="mb-0 text-warning">{{ $myOrderCount }}</h2>
                             </div>
                         </div>
-                        <a href="{{ route('orders.my') }}" class=" mt-3 align-self-end">
+                        <a href="{{ route('orders.index') }}" class=" mt-3 align-self-end">
                             عرض التفاصيل <i class="bi bi-arrow-left-short"></i>
                         </a>
                     </div>

@@ -8,7 +8,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('user::admin\dashboard');
+    return view('user::admin.dashboard');
 })->middleware(['auth', 'verified', 'approved'])->name('dashboard');
 
 Route::middleware(['auth', 'approved'])->group(function () {

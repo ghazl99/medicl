@@ -35,7 +35,7 @@ class UserServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-        View::composer('user::admin\dashboard', function ($view) {
+        View::composer('user::admin.dashboard', function ($view) {
             $user = Auth::user(); // المستخدم الحالي
             $cacheDuration = 3600; // 1 ساعة
 

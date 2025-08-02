@@ -87,7 +87,7 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'supplier_id');
     }
 
-    public function Medicines()
+    public function medicines()
     {
         return $this->belongsToMany(\Modules\Medicine\Models\Medicine::class, 'medicine_user', 'user_id', 'medicine_id')
             ->withPivot('is_available')
