@@ -116,23 +116,27 @@
                     <label for="workplace_name" class="form-label">اسم مكان العمل</label>
                     <input type="text" class="form-control @error('workplace_name') is-invalid @enderror"
                         id="workplace_name" name="workplace_name" value="{{ old('workplace_name') }}"
-                        placeholder="اسم الصيدلية أو الشركة" required />
+                        placeholder="اسم المستودع " required />
                     @error('workplace_name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
-                {{-- المدينة --}}
+                {{-- المنطقة --}}
                 <div class="col-6">
-                    <label for="city" class="form-label">المدينة</label>
+                    <label for="city" class="form-label">المنطقة</label>
                     <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
-                        name="city" value="{{ old('city') }}" placeholder="اسم المدينة" required />
+                        name="city" value="{{ old('city') }}" placeholder="اسم المنطقة" required />
                     @error('city')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
-
+                {{-- الدور مخفي --}}
+                <input type="hidden" name="role" id="role" value="مورد" />
+                @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
 
             </div>
 

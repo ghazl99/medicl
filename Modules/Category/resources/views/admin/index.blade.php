@@ -114,6 +114,7 @@
                     <thead class="text-right">
                         <tr>
                             <th>الاسم</th>
+                            <th>أصناف فرعية</th>
                             <th>صورة</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -121,8 +122,26 @@
                     <tbody id="medicines-table-body">
                         @foreach ($categories as $k => $category)
                             <tr>
-
                                 <td>{{ $category->name }}</td>
+                                <td>
+                                    @if ($category->children->count() > 0)
+                                        <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#subcats-{{ $category->id }}" aria-expanded="false"
+                                            aria-controls="subcats-{{ $category->id }}">
+                                            عرض {{ $category->children->count() }} صنف فرعي
+                                        </button>
+                                        <div class="collapse mt-2" id="subcats-{{ $category->id }}">
+                                            <ul style="padding-right: 15px; margin: 0; list-style-type: disc;">
+                                                @foreach ($category->children as $child)
+                                                    <li>{{ $child->name }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @else
+                                        <span class="text-muted">لا توجد أصناف فرعية</span>
+                                    @endif
+                                </td>
+
                                 <td>
                                     @php
                                         $media = $category->getFirstMedia('category_images');

@@ -9,9 +9,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/dashboard', function () {
     return view('user::admin\dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'approved'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'approved'])->group(function () {
     Route::resource('users', Modules\User\Http\Controllers\UserController::class)->names('users');
 
     // create user "pharmacits and suppliers"

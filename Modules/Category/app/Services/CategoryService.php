@@ -1,8 +1,11 @@
 <?php
 
 namespace Modules\Category\Services;
+
 use Illuminate\Http\UploadedFile;
 
+use Illuminate\Support\Facades\DB;
+use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepositoryInterface;
 
 class CategoryService
@@ -14,7 +17,7 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
-     /**
+    /**
      * Get all categories.
      *
      * @return Collection<int, Medicine>
@@ -26,17 +29,29 @@ class CategoryService
 
     public function store(array $data)
     {
-        return $this->categoryRepository->store($data);
+        DB::beginTransaction();
+
+        try {
+            $category = $this->categoryRepository->store($data);
+
+            DB::commit();
+
+            return $category;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
-    public function updateCategory(int $id, array $data, ?UploadedFile $imageFile = null): bool
+
+    public function updateCategory(Category $category, array $data, ?UploadedFile $imageFile = null): bool
     {
-        $category = $this->categoryRepository->find($id);
+
         if (!$category) {
             return false;
         }
 
-        $category->update($data);
+        $this->categoryRepository->update($category,$data);
 
         if ($imageFile) {
             $category->clearMediaCollection('category_images');

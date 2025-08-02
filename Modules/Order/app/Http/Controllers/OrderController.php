@@ -5,7 +5,7 @@ namespace Modules\Order\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Modules\Order\Http\Requests\orderRequest;
+use Modules\Order\Http\Requests\OrderRequest;
 use Modules\Order\Services\OrderService;
 use Modules\User\Services\UserService;
 
@@ -24,7 +24,7 @@ class OrderController extends Controller
         $user = Auth::user();
         $orders = $this->orderService->getAllOrders($user);
 
-        return view('order::admin\index', compact('orders'));
+        return view('order::admin.index', compact('orders'));
     }
 
     public function getMedicinesBySupplier($id)
@@ -42,10 +42,10 @@ class OrderController extends Controller
     {
         $suppliers = $this->userService->getSuppliers();
 
-        return view('order::admin\create', compact('suppliers'));
+        return view('order::admin.create', compact('suppliers'));
     }
 
-    public function store(orderRequest $request)
+    public function store(OrderRequest $request)
     {
         $validated = $request->validated();
 

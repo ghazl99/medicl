@@ -21,6 +21,7 @@ class AdminSeeder extends Seeder
             'phone' => '+90000000000',
             'workplace_name' => 'إدارة النظام',
             'city' => 'ادلب',
+            'is_approved' => 1,
         ])->assignRole('المشرف');
     }
 }

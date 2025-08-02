@@ -1,4 +1,8 @@
 @extends('core::components.layouts.master')
+@section('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+@endsection
 
 @section('content')
     <br>
@@ -26,6 +30,14 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                    <div class="col-md-12 mt-3">
+                        <label for="subcategories" class="form-label">أقسام فرعية (اختياري)</label>
+                        <select name="subcategories[]" id="subcategories" class="form-control" multiple="multiple">
+                            {{-- فارغ بدون خيارات مبدئية --}}
+                        </select>
+                        <small class="text-muted">يمكنك كتابة أقسام جديدة مباشرة وسيتم إضافتها تلقائيًا.</small>
+                    </div>
+
 
                 </div>
 
@@ -34,3 +46,16 @@
         </div>
     </div>
 @endsection
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(function () {
+        $('#subcategories').select2({
+            tags: true,
+            tokenSeparators: [',', '،']
+        });
+    });
+</script>
+@endsection
+

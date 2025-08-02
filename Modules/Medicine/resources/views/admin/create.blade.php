@@ -86,7 +86,7 @@
                     </div>
 
                     <!-- نت دولار حالي -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="net_dollar_old" class="form-label">نت دولار حالي</label>
                         <input type="number" step="0.01"
                             class="form-control " id="net_dollar_old"
@@ -94,10 +94,10 @@
                         @error('net_dollar_old')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <!-- عموم دولار حالي -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="public_dollar_old" class="form-label">عموم دولار حالي</label>
                         <input type="number" step="0.01"
                             class="form-control " id="public_dollar_old"
@@ -105,11 +105,11 @@
                         @error('public_dollar_old')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <!-- نت دولار جديد -->
                     <div class="col-md-6">
-                        <label for="net_dollar_new" class="form-label">نت دولار جديد</label>
+                        <label for="net_dollar_new" class="form-label">نت دولار </label>
                         <input type="number" step="0.01"
                             class="form-control " id="net_dollar_new"
                             name="net_dollar_new" value="{{ old('net_dollar_new') }}" placeholder="ادخل السعر" />
@@ -120,7 +120,7 @@
 
                     <!-- عموم دولار جديد -->
                     <div class="col-md-6">
-                        <label for="public_dollar_new" class="form-label">عموم دولار جديد</label>
+                        <label for="public_dollar_new" class="form-label">عموم دولار </label>
                         <input type="number" step="0.01"
                             class="form-control" id="public_dollar_new"
                             name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" />
@@ -130,7 +130,7 @@
                     </div>
 
                     <!-- نت سوري -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="net_syp" class="form-label">نت سوري</label>
                         <input type="number" step="0.01" class="form-control "
                             id="net_syp" name="net_syp" value="{{ old('net_syp') }}"
@@ -138,10 +138,10 @@
                         @error('net_syp')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <!-- عموم سوري -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="public_syp" class="form-label">عموم سوري</label>
                         <input type="number" step="0.01"
                             class="form-control" id="public_syp"
@@ -150,20 +150,20 @@
                         @error('public_syp')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <!-- ملاحظات 2 -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="note_2" class="form-label">ملاحظات إضافية</label>
                         <input type="text" class="form-control" id="note_2"
                             name="note_2" value="{{ old('note_2') }}" placeholder="ملاحظات إضافية" />
                         @error('note_2')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <!-- نسبة تغير السعر -->
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <label for="price_change_percentage" class="form-label">نسبة تغير السعر (%)</label>
                         <input type="number" step="0.01"
                             class="form-control"
@@ -172,7 +172,7 @@
                         @error('price_change_percentage')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                    </div>
+                    </div> --}}
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-sm mt-4">إضافة الدواء</button>

@@ -6,9 +6,9 @@ use Modules\User\Models\User;
 
 interface UserRepositoryInterface
 {
-    public function getPharmacists();
+    public function getPharmacists(?string $keyword = null);
 
-    public function getSuppliers();
+    public function getSuppliers(?string $keyword = null);
 
     public function create(array $data): User;
 

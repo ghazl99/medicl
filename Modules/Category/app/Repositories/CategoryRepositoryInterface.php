@@ -2,6 +2,8 @@
 
 namespace Modules\Category\Repositories;
 
+use Modules\Category\Models\Category;
+
 interface CategoryRepositoryInterface
 {
     /**
@@ -12,5 +14,5 @@ interface CategoryRepositoryInterface
     public function index();
     public function store(array $data);
     public function find(int $id): mixed;
-    public function update(int $id, array $data): mixed;
+    public function update(Category $category, array $data): mixed;
 }

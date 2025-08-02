@@ -1,28 +1,72 @@
 @extends('core::components.layouts.master')
 
-@section('content')
-    <div class="card">
-        <div class="card-header">تعديل الصنف</div>
-        <div class="card-body">
-            <form action="{{ route('category.update', $category->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+@section('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endsection
 
-                <div class="form-group">
-                    <label for="name">اسم الصنف</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $category->name) }}" required>
+@section('content')
+<br>
+<div class="card">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">تعديل الصنف</h2>
+
+        <form method="POST" action="{{ route('category.update', $category->id) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="name" class="form-label">اسم الصنف</label>
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                        name="name" value="{{ old('name', $category->name) }}" placeholder="ادخل اسم الصنف" required autofocus />
+                    @error('name')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
-                <div class="form-group mt-3">
-                    <label for="image">صورة الصنف (اختياري)</label>
-                    <input type="file" name="image" id="image" class="form-control">
-                    @if($category->getFirstMediaUrl('category_images'))
-                        <img src="{{ $category->getFirstMediaUrl('category_images') }}" alt="صورة الصنف" style="width: 80px; height: 80px; margin-top:10px;">
+                <div class="col-md-6">
+                    <label for="image" class="form-label">صورة الصنف (اختياري)</label>
+                    <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
+                        name="image" accept="image/*" />
+                    @error('image')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+
+                    @php
+                        $mediaUrl = $category->getFirstMediaUrl('category_images');
+                    @endphp
+                    @if ($mediaUrl)
+                        <img src="{{ $mediaUrl }}" alt="صورة الصنف" style="width: 80px; height: 80px; margin-top:10px; border-radius: 6px;">
                     @endif
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-3">تحديث</button>
-            </form>
-        </div>
+                <div class="col-md-12 mt-3">
+                    <label for="subcategories" class="form-label">أقسام فرعية (اختياري)</label>
+                    <select name="subcategories[]" id="subcategories" class="form-control" multiple="multiple">
+                        {{-- عرض الأقسام الفرعية الحالية كخيارات محددة --}}
+                        @foreach ($category->children as $child)
+                            <option value="{{ $child->name }}" selected>{{ $child->name }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">يمكنك كتابة أقسام جديدة مباشرة وسيتم إضافتها تلقائيًا.</small>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm mt-4">تحديث</button>
+        </form>
     </div>
+</div>
+@endsection
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(function () {
+        $('#subcategories').select2({
+            tags: true,
+            tokenSeparators: [',', '،'],
+        });
+    });
+</script>
 @endsection

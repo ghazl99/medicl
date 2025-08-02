@@ -24,6 +24,8 @@ class UpdateUserRequest extends FormRequest
             'workplace_name' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'profile_photo' => ['nullable', 'image', 'max:2048', 'mimes:png,jpg,jpeg'],
+            'is_approved' => ['nullable', 'boolean'],
+
         ];
     }
 

@@ -79,18 +79,16 @@ class Medicine extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
-    #[SearchUsingPrefix(['composition', 'type','form', 'company', 'note'])]
     public function toSearchableArray()
     {
 
-        $this->loadMissing('category');
         return [
             'type' => $this->type,
             'composition' => $this->composition,
             'form' => $this->form,
             'company' => $this->company,
             'note' => $this->note,
-            
+
         ];
     }
 }

@@ -3,17 +3,18 @@
 namespace Modules\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
+use Laravel\Scout\Searchable;
 use Modules\Order\Models\Order;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    use HasFactory, HasRoles, Notifiable, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +28,7 @@ class User extends Authenticatable
         'workplace_name',
         'city',
         'password',
-        'profile_photo',
+        'profile_photo','is_approved'
     ];
 
     /**
@@ -91,5 +92,15 @@ class User extends Authenticatable
         return $this->belongsToMany(\Modules\Medicine\Models\Medicine::class, 'medicine_user', 'user_id', 'medicine_id')
             ->withPivot('is_available')
             ->withTimestamps();
+    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'workplace_name' => $this->workplace_name,
+            'city' => $this->city,
+        ];
     }
 }

@@ -23,9 +23,10 @@ class UserController extends Controller
         return view('user::admin.pharmacists.create');
     }
 
-    public function pharmacistsList()
+    public function pharmacistsList(Request $request)
     {
-        $pharmacists = $this->userService->getPharmacists();
+        $keyword = $request->input('search', null);
+        $pharmacists = $this->userService->getPharmacists($keyword);
 
         return view('user::admin.pharmacists.index', [
             'pharmacists' => $pharmacists,
@@ -34,8 +35,8 @@ class UserController extends Controller
 
     public function suppliersList(Request $request)
     {
-
-        $suppliers = $this->userService->getSuppliers();
+        $keyword = $request->input('search', null);
+        $suppliers = $this->userService->getSuppliers($keyword);
 
         return view('user::admin.suppliers.index', [
             'suppliers' => $suppliers,
@@ -44,7 +45,7 @@ class UserController extends Controller
 
     public function create_suppliers()
     {
-        return view('user::admin.suppliers.create');
+        return view('user::auth.register');
     }
 
     /**

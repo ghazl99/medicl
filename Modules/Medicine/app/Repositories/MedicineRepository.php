@@ -26,7 +26,7 @@ class MedicineRepository implements MedicineRepositoryInterface
                 ->paginate(5);
         }
 
-        return Medicine::with(['suppliers', 'category'])->simplePaginate(5);
+        return Medicine::with(['suppliers', 'category'])->paginate(5);
     }
 
 

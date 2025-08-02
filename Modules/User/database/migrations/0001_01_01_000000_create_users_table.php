@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone', 15)->unique();
             $table->string('workplace_name', 100);
             $table->string('city', 50);
+            $table->boolean('is_approved')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile_photo')->nullable();

@@ -14,7 +14,7 @@ class CategoryRepository implements CategoryRepositoryInterface
      */
     public function index()
     {
-        return Category::paginate(5);
+        return Category::whereNull('parent_id')->with('children')->paginate(20);
     }
 
     public function store(array $data)
@@ -23,6 +23,16 @@ class CategoryRepository implements CategoryRepositoryInterface
             'name' => $data['name'],
         ]);
 
+        if (!empty($data['subcategories'])) {
+            foreach ($data['subcategories'] as $subcategoryName) {
+                if (!empty($subcategoryName)) {
+                    Category::create([
+                        'name' => $subcategoryName,
+                        'parent_id' => $category->id, // ربط القسم الفرعي بالقسم الرئيسي
+                    ]);
+                }
+            }
+        }
         if (isset($data['image'])) {
             $category
                 ->addMedia($data['image'])
@@ -37,13 +47,31 @@ class CategoryRepository implements CategoryRepositoryInterface
         return Category::find($id);
     }
 
-    public function update(int $id, array $data): mixed
+    public function update(Category $category, array $data): mixed
     {
-        $category = $this->find($id);
         if (!$category) {
             return false;
         }
 
-        return $category->update($data);
+        // تحديث اسم القسم
+        $category->update([
+            'name' => $data['name'],
+        ]);
+
+        // حذف الأقسام الفرعية القديمة
+        $category->children()->delete();
+
+        // إعادة إدخال الأقسام الفرعية الجديدة
+        if (!empty($data['subcategories'])) {
+            foreach ($data['subcategories'] as $subcategoryName) {
+                if (!empty($subcategoryName)) {
+                    $category->children()->create([
+                        'name' => $subcategoryName,
+                    ]);
+                }
+            }
+        }
+
+        return $category;
     }
 }

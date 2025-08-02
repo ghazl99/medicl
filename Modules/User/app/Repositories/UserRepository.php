@@ -6,14 +6,29 @@ use Modules\User\Models\User;
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function getPharmacists()
+    public function getPharmacists(?string $keyword = null)
     {
-        return User::role('صيدلي')->paginate(5);
+
+        $query = User::role('صيدلي');
+
+        if ($keyword) {
+            $searchedUserIds = User::search($keyword)->keys();
+            $query->whereIn('id', $searchedUserIds);
+        }
+
+        return $query->paginate(5);
     }
 
-    public function getSuppliers()
+    public function getSuppliers(?string $keyword = null)
     {
-        return User::role('مورد')->paginate(5);
+        $query =User::role('مورد');
+
+        if ($keyword) {
+            $searchedUserIds = User::search($keyword)->keys();
+            $query->whereIn('id', $searchedUserIds);
+        }
+
+        return $query->paginate(5);
     }
 
     public function create(array $data): User

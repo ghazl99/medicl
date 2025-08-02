@@ -4,6 +4,7 @@ namespace Modules\Category\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepository;
 use Modules\Category\Services\CategoryService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -40,6 +41,8 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048|mimes:png,jpg',
+            'subcategories' => 'nullable|array',
+            'subcategories.*' => 'nullable|string|max:255'
         ]);
 
         $this->categoryService->store($validated + ['image' => $request->file('image')]);
@@ -68,14 +71,8 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id)
+    public function edit(Category $category)
     {
-        $category = $this->categoryRepository->find($id);
-
-        if (!$category) {
-            abort(404);
-        }
-
         return view('category::admin.edit', compact('category'));
     }
 
@@ -83,18 +80,18 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request,Category $category)
     {
-        $request->validate([
+        $validated =$request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048|mimes:png,jpg',
+            'subcategories' => 'nullable|array',
+            'subcategories.*' => 'nullable|string|max:255'
         ]);
 
         $image = $request->file('image');
 
-        $success = $this->categoryService->updateCategory($id, [
-            'name' => $request->input('name'),
-        ], $image);
+        $success = $this->categoryService->updateCategory($category, $validated, $image);
 
         if ($success) {
             return redirect()->route('category.index')->with('success', 'تم تحديث الصنف بنجاح.');

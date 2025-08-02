@@ -5,5 +5,7 @@
     "Order": true,
     "Cart": true,
     "Warehouse": true,
-    "Category": true
+    "Category": true,
+    "SubCategory": true,
+    "Offer": true
 }

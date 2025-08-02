@@ -15,6 +15,20 @@
             <div class="d-flex justify-content-end mb-4">
                 <a href="{{ route('register.suppliers') }}" class="btn btn-primary">إضافة مورد</a>
             </div>
+            <div class="mb-3 text-right">
+                    <form action="{{ route('suppliers.index') }}" method="GET" class="mb-3">
+                        <div class="row justify-content-start">
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    placeholder="ابحث عن دواء..." class="form-control" />
+                            </div>
+                            <div class="col-auto mb-2">
+                                <button type="submit" class="btn btn-primary w-100">بحث</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-right" id="suppliers-datatable" dir="rtl">
                     <thead class="text-right">
@@ -23,6 +37,7 @@
                             <th>رقم الهاتف</th>
                             <th>اسم الشركة</th>
                             <th>المدينة</th>
+                            <th>الحالة</th>
                             <th>إجراءات</th>
                         </tr>
                     </thead>
@@ -33,6 +48,13 @@
                                 <td>{{ $supplier->phone }}</td>
                                 <td>{{ $supplier->workplace_name }}</td>
                                 <td>{{ $supplier->city }}</td>
+                                <td>
+                                    @if ($supplier->is_approved)
+                                        <span class="badge bg-success">معتمد</span>
+                                    @else
+                                        <span class="badge bg-danger">غير معتمد</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('users.edit', $supplier->id) }}"
                                         class="btn btn-sm btn-outline-primary me-1">تعديل</a>
@@ -59,7 +81,7 @@
         $(document).ready(function() {
             $('#suppliers-datatable').DataTable({
                 paging: false,
-                searching: true,
+                searching: false,
                 ordering: true,
                 info: false,
 
