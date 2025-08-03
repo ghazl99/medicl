@@ -3,7 +3,6 @@
 namespace Modules\Category\Repositories;
 
 use Modules\Category\Models\Category;
-use Modules\Category\Repositories\CategoryRepositoryInterface;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
@@ -23,9 +22,9 @@ class CategoryRepository implements CategoryRepositoryInterface
             'name' => $data['name'],
         ]);
 
-        if (!empty($data['subcategories'])) {
+        if (! empty($data['subcategories'])) {
             foreach ($data['subcategories'] as $subcategoryName) {
-                if (!empty($subcategoryName)) {
+                if (! empty($subcategoryName)) {
                     Category::create([
                         'name' => $subcategoryName,
                         'parent_id' => $category->id, // ربط القسم الفرعي بالقسم الرئيسي
@@ -49,7 +48,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function update(Category $category, array $data): mixed
     {
-        if (!$category) {
+        if (! $category) {
             return false;
         }
 
@@ -62,9 +61,9 @@ class CategoryRepository implements CategoryRepositoryInterface
         $category->children()->delete();
 
         // إعادة إدخال الأقسام الفرعية الجديدة
-        if (!empty($data['subcategories'])) {
+        if (! empty($data['subcategories'])) {
             foreach ($data['subcategories'] as $subcategoryName) {
-                if (!empty($subcategoryName)) {
+                if (! empty($subcategoryName)) {
                     $category->children()->create([
                         'name' => $subcategoryName,
                     ]);

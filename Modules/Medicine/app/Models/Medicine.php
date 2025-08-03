@@ -2,14 +2,13 @@
 
 namespace Modules\Medicine\Models;
 
-use Modules\Order\Models\Order;
-use Modules\Category\Models\Category;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
+use Modules\Category\Models\Category;
+use Modules\Order\Models\Order;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Laravel\Scout\Searchable;
-use Laravel\Scout\Attributes\SearchUsingPrefix;
 
 // use Modules\Medicine\Database\Factories\MedicineFactory;
 
@@ -70,7 +69,14 @@ class Medicine extends Model implements HasMedia
     public function suppliers()
     {
         return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
-            ->withPivot('is_available')
+            ->withPivot(
+                'is_available',
+                'notes',
+                'offer_buy_quantity',
+                'offer_free_quantity',
+                'offer_start_date',
+                'offer_end_date'
+            )
             ->withTimestamps();
     }
 

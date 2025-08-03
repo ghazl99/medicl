@@ -11,17 +11,18 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CategoryController extends Controller
 {
-
     public function __construct(
         protected CategoryService $categoryService,
         protected CategoryRepository $categoryRepository
     ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $categories = $this->categoryService->getAllcategories();
+
         return view('category::admin.index', compact('categories'));
     }
 
@@ -42,7 +43,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048|mimes:png,jpg',
             'subcategories' => 'nullable|array',
-            'subcategories.*' => 'nullable|string|max:255'
+            'subcategories.*' => 'nullable|string|max:255',
         ]);
 
         $this->categoryService->store($validated + ['image' => $request->file('image')]);
@@ -54,12 +55,13 @@ class CategoryController extends Controller
     {
         $path = $media->getPath();
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             abort(404);
         }
 
         return response()->file($path);
     }
+
     /**
      * Show the specified resource.
      */
@@ -76,17 +78,16 @@ class CategoryController extends Controller
         return view('category::admin.edit', compact('category'));
     }
 
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,Category $category)
+    public function update(Request $request, Category $category)
     {
-        $validated =$request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048|mimes:png,jpg',
             'subcategories' => 'nullable|array',
-            'subcategories.*' => 'nullable|string|max:255'
+            'subcategories.*' => 'nullable|string|max:255',
         ]);
 
         $image = $request->file('image');

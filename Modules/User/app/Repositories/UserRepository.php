@@ -21,7 +21,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function getSuppliers(?string $keyword = null)
     {
-        $query =User::role('مورد');
+        $query = User::role('مورد');
 
         if ($keyword) {
             $searchedUserIds = User::search($keyword)->keys();

@@ -3,13 +3,14 @@
 namespace Modules\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Laravel\Scout\Searchable;
-use Modules\Order\Models\Order;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Scout\Searchable;
+use Modules\Medicine\Models\Medicine;
+use Modules\Order\Models\Order;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -28,7 +29,7 @@ class User extends Authenticatable
         'workplace_name',
         'city',
         'password',
-        'profile_photo','is_approved'
+        'profile_photo', 'is_approved',
     ];
 
     /**
@@ -89,8 +90,12 @@ class User extends Authenticatable
 
     public function medicines()
     {
-        return $this->belongsToMany(\Modules\Medicine\Models\Medicine::class, 'medicine_user', 'user_id', 'medicine_id')
-            ->withPivot('is_available')
+        return $this->belongsToMany(Medicine::class, 'medicine_user')
+            ->withPivot([
+                'is_available', 'notes',
+                'offer_buy_quantity', 'offer_free_quantity',
+                'offer_start_date', 'offer_end_date',
+            ])
             ->withTimestamps();
     }
 

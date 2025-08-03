@@ -56,7 +56,7 @@ class MedicineService
 
             $medicine = $this->medicineRepository->store($data);
 
-            if (!$user) {
+            if (! $user) {
                 throw new \Exception('المستخدم غير موجود أو غير مسجل الدخول.');
             }
 
@@ -73,7 +73,6 @@ class MedicineService
             return $medicine;
         });
     }
-
 
     public function assignMedicinesToSupplier(array $medicineIds, int $supplierId): void
     {

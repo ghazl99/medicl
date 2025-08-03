@@ -3,7 +3,6 @@
 namespace Modules\Category\Services;
 
 use Illuminate\Http\UploadedFile;
-
 use Illuminate\Support\Facades\DB;
 use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepositoryInterface;
@@ -43,15 +42,14 @@ class CategoryService
         }
     }
 
-
     public function updateCategory(Category $category, array $data, ?UploadedFile $imageFile = null): bool
     {
 
-        if (!$category) {
+        if (! $category) {
             return false;
         }
 
-        $this->categoryRepository->update($category,$data);
+        $this->categoryRepository->update($category, $data);
 
         if ($imageFile) {
             $category->clearMediaCollection('category_images');

@@ -2,16 +2,16 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Imports\MedicineImport;
 use App\Http\Controllers\Controller;
+use App\Imports\MedicineImport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Category\Services\CategoryService;
-use Modules\Medicine\Services\MedicineService;
-use Modules\Medicine\Http\Requests\medicineRequest;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Modules\Medicine\Http\Requests\MedicineImportRequest;
+use Modules\Medicine\Http\Requests\medicineRequest;
+use Modules\Medicine\Services\MedicineService;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MedicineController extends Controller
 {
@@ -43,17 +43,17 @@ class MedicineController extends Controller
 
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
+
     public function showImage(Media $media)
     {
         $path = $media->getPath();
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             abort(404);
         }
 
         return response()->file($path);
     }
-
 
     public function getMedicinesBySupplier()
     {

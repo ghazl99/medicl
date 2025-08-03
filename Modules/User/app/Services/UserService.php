@@ -39,6 +39,7 @@ class UserService
                     $data['is_approved'] = 0;
                 }
             }
+
             // Create the user using the repository
             return $this->userRepository->create($data);
         });
@@ -60,7 +61,7 @@ class UserService
 
             if (isset($data['profile_photo'])) {
                 if ($user->profile_photo) {
-                    Storage::disk('public')->delete('profile_photos/' . $user->profile_photo);
+                    Storage::disk('public')->delete('profile_photos/'.$user->profile_photo);
                 }
 
                 $path = $data['profile_photo']->store('profile_photos', 'public');

@@ -194,6 +194,14 @@
                     <span class="side-menu__label">الأصناف</span>
                 </a>
             </li>
+
+            {{-- offers --}}
+            <li class="slide">
+                <a class="side-menu_item" href="{{ route('offers.index') }}">
+                    <i class="side-menu__icon bi bi-tags p-2"></i>
+                    <span class="side-menu__label">العروض</span>
+                </a>
+            </li>
         @endhasanyrole
         @role('المشرف')
             {{-- users --}}

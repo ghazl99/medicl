@@ -12,7 +12,10 @@ interface CategoryRepositoryInterface
      * @return Collection<int, Medicine>
      */
     public function index();
+
     public function store(array $data);
+
     public function find(int $id): mixed;
+
     public function update(Category $category, array $data): mixed;
 }

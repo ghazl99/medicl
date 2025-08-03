@@ -2,8 +2,8 @@
 
 namespace Modules\Medicine\Repositories;
 
-use Modules\User\Models\User;
 use Modules\Medicine\Models\Medicine;
+use Modules\User\Models\User;
 
 class MedicineRepository implements MedicineRepositoryInterface
 {
@@ -17,18 +17,17 @@ class MedicineRepository implements MedicineRepositoryInterface
         if ($keyword) {
             return Medicine::search($keyword)
                 ->query(function ($query) use ($keyword) {
-                $query->with(['category', 'suppliers']);
+                    $query->with(['category', 'suppliers']);
 
-                $query->orWhereHas('category', function ($q) use ($keyword) {
-                    $q->where('name', 'like', '%' . $keyword . '%');
-                });
-            })
+                    $query->orWhereHas('category', function ($q) use ($keyword) {
+                        $q->where('name', 'like', '%'.$keyword.'%');
+                    });
+                })
                 ->paginate(5);
         }
 
         return Medicine::with(['suppliers', 'category'])->paginate(5);
     }
-
 
     public function getMedicinesBySupplier($user)
     {

@@ -15,7 +15,7 @@ class EnsureUserIsApproved
     {
         $user = Auth::user();
 
-        if (!$user || $user->is_approved != 1) {
+        if (! $user || $user->is_approved != 1) {
             // إذا المستخدم غير موافق عليه
             abort(403, 'حسابك قيد المراجعة. الرجاء الانتظار حتى تتم الموافقة.');
         }
