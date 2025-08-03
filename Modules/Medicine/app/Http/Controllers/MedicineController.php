@@ -32,15 +32,26 @@ class MedicineController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->input('search', null);
-
         $medicines = $this->medicineService->getAllMedicines($keyword);
 
         $supplierMedicineIds = [];
-
         if (Auth::user()->hasRole('مورد')) {
             $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
         }
 
+        // Handle AJAX request
+        if ($request->ajax()) {
+            $viewName = Auth::user()->hasRole('مورد')
+                ? 'medicine::admin._medicines_supplier_table_rows' // New partial for supplier view
+                : 'medicine::admin._medicines_admin_table_rows';   // New partial for admin view
+
+            return response()->json([
+                'html' => view($viewName, compact('medicines', 'supplierMedicineIds'))->render(),
+                'pagination' => (string) $medicines->links()
+            ]);
+        }
+
+        // Handle regular request (initial page load)
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
 
@@ -55,16 +66,22 @@ class MedicineController extends Controller
         return response()->file($path);
     }
 
-    public function getMedicinesBySupplier()
+    public function getMedicinesBySupplier(Request $request)
     {
+        $keyword = $request->input('search', null);
         $user = Auth::user();
-        $medicines = $this->medicineService->getAllMedicinesSupplier($user);
+        $medicines = $this->medicineService->getAllMedicinesSupplier($keyword, $user);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('medicine::admin._myMedicine_supplier_table_rows', ['medicines' => $medicines])->render(),
+                'pagination' => (string) $medicines->links()
+            ]);
+        }
         return view('medicine::admin.medicineSupplier', [
             'medicines' => $medicines,
-        ]);
+        ]); // Corrected line
     }
-
     /**
      * Show the form for creating a new resource.
      */

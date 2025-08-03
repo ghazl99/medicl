@@ -20,7 +20,7 @@ class MedicineRepository implements MedicineRepositoryInterface
                     $query->with(['category', 'suppliers']);
 
                     $query->orWhereHas('category', function ($q) use ($keyword) {
-                        $q->where('name', 'like', '%'.$keyword.'%');
+                        $q->where('name', 'like', '%' . $keyword . '%');
                     });
                 })
                 ->paginate(5);
@@ -29,12 +29,41 @@ class MedicineRepository implements MedicineRepositoryInterface
         return Medicine::with(['suppliers', 'category'])->paginate(5);
     }
 
-    public function getMedicinesBySupplier($user)
+    public function getMedicinesBySupplier(?string $keyword = null, $user)
     {
         if ($user->hasRole('مورد')) {
-            return $user->Medicines()->paginate(5);
+            if ($keyword) {
+                // 1. جلب أدوية المورد IDs
+                $userMedicineIds = $user->medicines()->pluck('medicines.id');
+
+                // 2. البحث عبر Scout
+                $searchResults = Medicine::search($keyword)->get();
+
+                // 3. تصفية النتائج حسب أدوية المورد
+                $filtered = $searchResults->whereIn('id', $userMedicineIds);
+
+                // 4. ترقيم الصفحات يدوياً (paginate)
+                $perPage = 5;
+                $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+                $currentItems = $filtered->slice(($currentPage - 1) * $perPage, $perPage)->values();
+                $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $currentItems,
+                    $filtered->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+                );
+
+                return $paginated;
+            }
+
+            // بدون بحث، جلب الأدوية مع التحميل المسبق (eager loading) مع الترقيم
+            return $user->medicines()->with(['category', 'suppliers'])->paginate(5);
         }
+
+        return collect(); // إذا لم يكن المورد
     }
+
 
     /**
      * Find a medicine by its ID.

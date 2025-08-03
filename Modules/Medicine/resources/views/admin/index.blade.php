@@ -2,24 +2,23 @@
 @section('css')
     <style>
         /* Style the Image Used to Trigger the Modal */
-        #myImg {
+        .myImg { /* Changed from #myImg to .myImg as it's a class now */
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
         }
 
-        #myImg:hover {
+        .myImg:hover {
             opacity: 0.7;
         }
 
         /* The Modal (background) */
-        .modal {
+        .modal-overlay { /* Changed class to avoid conflict with Bootstrap modal */
             display: none;
             /* Hidden by default */
             position: fixed;
             /* Stay in place */
-            z-index: 1;
-            /* Sit on top */
+            z-index: 1050; /* Higher z-index than Bootstrap modals */
             padding-top: 100px;
             /* Location of the box */
             left: 0;
@@ -37,7 +36,7 @@
         }
 
         /* Modal Content (Image) */
-        .modal-content {
+        .modal-content-img { /* Changed class */
             margin: auto;
             display: block;
             width: 80%;
@@ -57,7 +56,7 @@
         }
 
         /* Add Animation - Zoom in the Modal */
-        .modal-content,
+        .modal-content-img,
         #caption {
             animation-name: zoom;
             animation-duration: 0.6s;
@@ -93,7 +92,7 @@
 
         /* 100% Image Width on Smaller Screens */
         @media only screen and (max-width: 700px) {
-            .modal-content {
+            .modal-content-img {
                 width: 100%;
             }
         }
@@ -109,15 +108,14 @@
             </div>
             <div class="card-body">
                 <div class="mb-3 text-right">
-                    <form action="{{ route('medicines.index') }}" method="GET" class="mb-3">
+                    {{-- Form for supplier role --}}
+                    <form id="supplier-medicines-search-form" class="mb-3">
                         <div class="row justify-content-start">
                             <div class="col-md-4 col-sm-6 mb-2">
-                                <input type="text" name="search" value="{{ request('search') }}"
-                                    placeholder="ابحث عن دواء..." class="form-control" />
+                                <input type="text" name="search" id="supplier-medicines-search-input"
+                                    value="{{ request('search') }}" placeholder="ابحث عن دواء..." class="form-control" />
                             </div>
-                            <div class="col-auto mb-2">
-                                <button type="submit" class="btn btn-primary w-100">بحث</button>
-                            </div>
+                            {{-- Removed the search button --}}
                         </div>
                     </form>
                 </div>
@@ -135,62 +133,16 @@
                                     <th>الشكل</th>
                                     <th>الشركة</th>
                                     <th>ملاحظات</th>
-                                    <!--<th>نت دولار حالي</th>-->
-                                    <!--<th>عموم دولار حالي</th>-->
                                     <th>النت دولار </th>
                                     <th>العموم دولار </th>
-                                    <!--<th>نت سوري</th>-->
-                                    <!--<th>عموم سوري</th>-->
-                                    <!--<th>ملاحظات 2</th>-->
-                                    <!--<th>نسبة تغير السعر</th>-->
                                 </tr>
                             </thead>
                             <tbody id="medicines-table-body">
-                                @foreach ($medicines as $k => $medicine)
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" name="medicines[]" value="{{ $medicine->id }}"
-                                                @if (in_array($medicine->id, $supplierMedicineIds)) checked @endif>
-                                        </td>
-                                        <td>{{ $medicine->category ? $medicine->category->name : 'غير محدد' }}</td>
-
-                                        <td>
-                                            @php
-                                                $media = $medicine->getFirstMedia('medicine_images');
-                                            @endphp
-                                            @if ($media)
-                                                <img src="{{ route('medicines.image', $media->id) }}" class="myImg"
-                                                    alt="صورة الدواء"
-                                                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor:pointer;">
-                                            @else
-                                                <span>لا توجد صورة</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $medicine->type }}</td>
-                                        <td>{{ $medicine->composition }}</td>
-                                        <td>{{ $medicine->form }}</td>
-                                        <td>{{ $medicine->company }}</td>
-                                        <td>{{ $medicine->note }}</td>
-                                        <!--<td>{{ $medicine->net_dollar_old !== null ? number_format($medicine->net_dollar_old, 2) : '-' }}-->
-                                        <!--</td>-->
-                                        <!--<td>{{ $medicine->public_dollar_old !== null ? number_format($medicine->public_dollar_old, 2) : '-' }}-->
-                                        <!--</td>-->
-                                        <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}
-                                        </td>
-                                        <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}
-                                        </td>
-                                        <!--<td>{{ $medicine->net_syp !== null ? number_format($medicine->net_syp, 2) : '-' }}</td>-->
-                                        <!--<td>{{ $medicine->public_syp !== null ? number_format($medicine->public_syp, 2) : '-' }}-->
-                                        <!--</td>-->
-                                        <!--<td>{{ $medicine->note_2 }}</td>-->
-                                        <!--<td>-->
-                                        <!--    {{ $medicine->price_change_percentage !== null ? number_format($medicine->price_change_percentage, 2) . '%' : '-' }}-->
-                                        <!--</td>-->
-                                    </tr>
-                                @endforeach
+                                {{-- Initial load of table rows for supplier --}}
+                                @include('medicine::admin._medicines_supplier_table_rows', compact('medicines', 'supplierMedicineIds'))
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-center mt-4">
+                        <div class="d-flex justify-content-center mt-4" id="medicines-pagination-links">
                             {{ $medicines->links() }}
                         </div>
 
@@ -201,7 +153,7 @@
                     </form>
                 </div>
             </div>
-        @else
+        @else {{-- For 'المشرف' role --}}
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="text-right">جميع الأدوية</h3>
                 @role('المشرف')
@@ -215,18 +167,16 @@
             </div>
             <div class="card-body">
                 <div class="mb-3 text-right">
-                    <form action="{{ route('medicines.index') }}" method="GET" class="mb-3">
+                    {{-- Form for admin role --}}
+                    <form id="admin-medicines-search-form" class="mb-3">
                         <div class="row justify-content-start">
                             <div class="col-md-4 col-sm-6 mb-2">
-                                <input type="text" name="search" value="{{ request('search') }}"
-                                    placeholder="ابحث عن دواء..." class="form-control" />
+                                <input type="text" name="search" id="admin-medicines-search-input"
+                                    value="{{ request('search') }}" placeholder="ابحث عن دواء..." class="form-control" />
                             </div>
-                            <div class="col-auto mb-2">
-                                <button type="submit" class="btn btn-primary w-100">بحث</button>
-                            </div>
+                            {{-- Removed the search button --}}
                         </div>
                     </form>
-
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
@@ -240,69 +190,25 @@
                                 <th>الشكل</th>
                                 <th>الشركة</th>
                                 <th>ملاحظات</th>
-                                <!--<th>نت دولار حالي</th>-->
-                                <!--<th>عموم دولار حالي</th>-->
                                 <th>النت دولار </th>
                                 <th>العموم دولار </th>
-                                <!--<th>نت سوري</th>-->
-                                <!--<th>عموم سوري</th>-->
-                                <!--<th>ملاحظات 2</th>-->
-                                <!--<th>نسبة تغير السعر</th>-->
+                                <th>التوفر</th>
+                                <th>الإجراءات</th> {{-- Added actions column for admin --}}
                             </tr>
                         </thead>
                         <tbody id="medicines-table-body">
-                            @foreach ($medicines as $k => $medicine)
-                                <tr>
-                                    <td>{{ $k + 1 }}</td>
-                                    <td>{{ $medicine->category ? $medicine->category->name : 'غير محدد' }}</td>
-
-                                    <td>
-                                        @php
-                                            $media = $medicine->getFirstMedia('medicine_images');
-                                        @endphp
-                                        @if ($media)
-                                            <img src="{{ route('medicines.image', $media->id) }}" class="myImg"
-                                                alt="صورة الدواء"
-                                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor:pointer;">
-                                        @else
-                                            <span>لا توجد صورة</span>
-                                        @endif
-                                    </td>
-
-                                    <td>{{ $medicine->type }}</td>
-                                    <td>{{ $medicine->composition }}</td>
-                                    <td>{{ $medicine->form }}</td>
-                                    <td>{{ $medicine->company }}</td>
-                                    <td>{{ $medicine->note }}</td>
-                                    <!--<td>{{ $medicine->net_dollar_old !== null ? number_format($medicine->net_dollar_old, 2) : '-' }}-->
-                                    <!--</td>-->
-                                    <!--<td>{{ $medicine->public_dollar_old !== null ? number_format($medicine->public_dollar_old, 2) : '-' }}-->
-                                    <!--</td>-->
-                                    <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}
-                                    </td>
-                                    <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}
-                                    </td>
-                                    <!--<td>{{ $medicine->net_syp !== null ? number_format($medicine->net_syp, 2) : '-' }}</td>-->
-                                    <!--<td>{{ $medicine->public_syp !== null ? number_format($medicine->public_syp, 2) : '-' }}-->
-                                    <!--</td>-->
-                                    <!--<td>{{ $medicine->note_2 }}</td>-->
-                                    <!--<td>-->
-                                    <!--    {{ $medicine->price_change_percentage !== null ? number_format($medicine->price_change_percentage, 2) . '%' : '-' }}-->
-                                    <!--</td>-->
-                                </tr>
-                            @endforeach
+                            {{-- Initial load of table rows for admin --}}
+                            @include('medicine::admin._medicines_admin_table_rows', compact('medicines'))
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-center mt-4">
+                    <div class="d-flex justify-content-center mt-4" id="medicines-pagination-links">
                         {{ $medicines->links() }}
                     </div>
-
                 </div>
             </div>
         @endrole
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -315,7 +221,6 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="file">اختر ملف الإكسل للاستيراد:</label>
@@ -326,7 +231,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
                         <button type="submit" class="btn btn-primary">استيراد</button>
@@ -336,16 +240,9 @@
         </div>
     </div>
 
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-
-        <!-- The Close Button -->
+    <div id="imageModalOverlay" class="modal-overlay"> {{-- Changed ID and class --}}
         <span class="close_myModal" style="color: white">&times;</span>
-
-        <!-- Modal Content (The Image) -->
-        <img class="modal-content" id="img01">
-
-        <!-- Modal Caption (Image Text) -->
+        <img class="modal-content-img" id="modalImageContent"> {{-- Changed ID and class --}}
         <div id="caption"></div>
     </div>
 @endsection
@@ -353,45 +250,104 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Initialize DataTable but disable its default search/paging if you're handling it via AJAX
             $('#medicines-datatable').DataTable({
-                paging: false,
-                searching: false,
-                ordering: true,
+                paging: false, // Laravel's pagination will handle this
+                searching: false, // Custom AJAX search will handle this
+                ordering: true, // You can keep ordering for client-side sorting if desired
                 info: false,
-
-
+                // Add any other DataTable options you need
             });
 
-            // تحديد الكل
-            $('#select-all').click(function() {
-                $('input[name="medicines[]"]').prop('checked', this.checked);
-            });
-            // جلب عناصر الصور
-            const modal = document.getElementById("myModal");
-            const modalImg = document.getElementById("img01");
-            const captionText = document.getElementById("caption");
-            const closeBtn = document.getElementsByClassName("close_myModal")[0];
+            let searchTimeout = null; // Variable to hold the timeout ID
 
-            // تحديد كل الصور ذات الكلاس myImg
-            const images = document.querySelectorAll('.myImg');
+            // --- AJAX Search on keyup (for both supplier and admin search inputs) ---
+            // Use a common class or listen to both IDs
+            $('#supplier-medicines-search-input, #admin-medicines-search-input').on('keyup', function() {
+                clearTimeout(searchTimeout); // Clear any existing timeout
+                let keyword = $(this).val();
 
-            images.forEach(img => {
-                img.onclick = function() {
-                    modal.style.display = "block";
-                    modalImg.src = this.src;
-                    captionText.innerHTML = this.alt || "";
-                }
+                searchTimeout = setTimeout(function() {
+                    fetchMedicines(keyword); // Call the function after a delay
+                }, 300); // 300ms delay after the user stops typing
             });
 
-            // زر الإغلاق
-            closeBtn.onclick = function() {
-                modal.style.display = "none";
+            // --- AJAX Pagination Clicks ---
+            // Use event delegation for dynamically loaded pagination links
+            $(document).on('click', '#medicines-pagination-links .pagination a', function(e) {
+                e.preventDefault(); // Prevent default link behavior (page reload)
+
+                let pageUrl = $(this).attr('href');
+                // Get the current search keyword from whichever search input is visible/active
+                let currentSearchKeyword = $('#supplier-medicines-search-input').length ?
+                    $('#supplier-medicines-search-input').val() :
+                    $('#admin-medicines-search-input').val();
+
+                // Call the fetch function with the specific page URL and current search term
+                fetchMedicines(currentSearchKeyword, pageUrl);
+            });
+
+            // --- Helper Function to Fetch Medicines via AJAX ---
+            function fetchMedicines(keyword, url = "{{ route('medicines.index') }}") {
+                let finalUrl = new URL(url);
+                finalUrl.searchParams.set('search', keyword); // Add or update the search param
+
+                $.ajax({
+                    url: finalUrl.toString(),
+                    type: "GET",
+                    success: function(response) {
+                        $('#medicines-table-body').html(response.html); // Update table rows
+                        $('#medicines-pagination-links').html(response.pagination); // Update pagination links
+
+                        // Re-attach "select all" functionality after new rows are loaded (for supplier role)
+                        $('#select-all').off('click').on('click', function() {
+                            $('input[name="medicines[]"]').prop('checked', this.checked);
+                        });
+
+                        // Re-attach image modal functionality to newly loaded images
+                        attachImageModalListeners();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: ", status, error, xhr.responseText);
+                        // Optional: Display a user-friendly error message
+                        $('#medicines-table-body').html(
+                            `<tr><td colspan="11" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`
+                        );
+                        $('#medicines-pagination-links').empty(); // Clear pagination on error
+                    }
+                });
             }
 
-            // إغلاق المودال إذا ضغط المستخدم خارج الصورة
-            modal.onclick = function(event) {
-                if (event.target === modal) {
-                    modal.style.display = "none";
+            // --- Image Modal Logic ---
+            const imageModal = document.getElementById("imageModalOverlay"); // Corrected ID
+            const modalImage = document.getElementById("modalImageContent"); // Corrected ID
+            const captionText = document.getElementById("caption");
+            const closeModalBtn = document.getElementsByClassName("close_myModal")[0];
+
+            function attachImageModalListeners() {
+                const images = document.querySelectorAll('.myImg'); // Select all images with class 'myImg'
+
+                images.forEach(img => {
+                    img.onclick = function() {
+                        imageModal.style.display = "block";
+                        modalImage.src = this.src;
+                        captionText.innerHTML = this.alt || "";
+                    }
+                });
+            }
+
+            // Initial attachment of listeners
+            attachImageModalListeners();
+
+            // Close button for image modal
+            closeModalBtn.onclick = function() {
+                imageModal.style.display = "none";
+            }
+
+            // Close image modal if user clicks outside the image
+            imageModal.onclick = function(event) {
+                if (event.target === imageModal) {
+                    imageModal.style.display = "none";
                 }
             }
         });

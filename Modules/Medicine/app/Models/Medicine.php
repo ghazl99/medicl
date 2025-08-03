@@ -70,12 +70,7 @@ class Medicine extends Model implements HasMedia
     {
         return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
             ->withPivot(
-                'is_available',
-                'notes',
-                'offer_buy_quantity',
-                'offer_free_quantity',
-                'offer_start_date',
-                'offer_end_date'
+                'is_available'
             )
             ->withTimestamps();
     }

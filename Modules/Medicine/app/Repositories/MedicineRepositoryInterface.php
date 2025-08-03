@@ -13,7 +13,7 @@ interface MedicineRepositoryInterface
      */
     public function index(?string $keyword = null);
 
-    public function getMedicinesBySupplier($user);
+    public function getMedicinesBySupplier(?string $keyword = null, $user);
 
     /**
      * Find a medicine by its ID.

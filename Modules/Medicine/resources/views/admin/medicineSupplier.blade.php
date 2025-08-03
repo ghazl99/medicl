@@ -108,6 +108,10 @@
             <a href="{{ route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
         </div>
         <div class="card-body">
+            {{-- حقل البحث --}}
+            <div class="mb-3">
+                <input type="text" id="medicine-search-input" class="form-control" placeholder="ابحث عن دواء...">
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
@@ -133,70 +137,11 @@
                         </tr>
                     </thead>
                     <tbody id="medicines-table-body">
-                        @foreach ($medicines as $k => $medicine)
-                            <tr>
-                                <td>{{ $k + 1 }}</td>
-                                <td>{{ $medicine->category ? $medicine->category->name : 'غير محدد' }}</td>
-
-                                <td>
-                                    @php
-                                        $media = $medicine->getFirstMedia('medicine_images');
-                                    @endphp
-                                    @if ($media)
-                                        <img src="{{ route('medicines.image', $media->id) }}" class="myImg"
-                                            alt="صورة الدواء"
-                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor:pointer;">
-                                    @else
-                                        <span>لا توجد صورة</span>
-                                    @endif
-                                </td>
-                                <td>{{ $medicine->type }}</td>
-                                <td>{{ $medicine->composition }}</td>
-                                <td>{{ $medicine->form }}</td>
-                                <td>{{ $medicine->company }}</td>
-                                <td>{{ $medicine->note }}</td>
-                                <!--<td>{{ $medicine->net_dollar_old !== null ? number_format($medicine->net_dollar_old, 2) : '-' }}-->
-                                <!--</td>-->
-                                <!--<td>{{ $medicine->public_dollar_old !== null ? number_format($medicine->public_dollar_old, 2) : '-' }}-->
-                                <!--</td>-->
-                                <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}
-                                </td>
-                                <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}
-                                </td>
-                                <!--<td>{{ $medicine->net_syp !== null ? number_format($medicine->net_syp, 2) : '-' }}</td>-->
-                                <!--<td>{{ $medicine->public_syp !== null ? number_format($medicine->public_syp, 2) : '-' }}-->
-                                <!--</td>-->
-                                <!--<td>{{ $medicine->note_2 }}</td>-->
-                                <!--<td>{{ $medicine->price_change_percentage !== null ? number_format($medicine->price_change_percentage, 2) . '%' : '-' }}-->
-                                <!--</td>-->
-                                <td class="text-center">
-                                    <div class="mb-2">
-                                        @if ($medicine->pivot->is_available ?? false)
-                                            <span class="badge bg-primary">متوفر</span>
-                                        @else
-                                            <span class="badge bg-danger">غير متوفر</span>
-                                        @endif
-                                    </div>
-
-                                    <form action="{{ route('medicines.toggle-availability', $medicine->id) }}"
-                                        method="POST" style="display:inline-block;">
-                                        @csrf
-                                        @if ($medicine->pivot->is_available ?? false)
-                                            <button type="submit" class="addMore btn btn-sm btn-outline-danger"
-                                                title="تعطيل دواء"><i class="bi bi-x-circle"></i></button>
-                                        @else
-                                            <button type="submit" class="addMore btn btn-sm btn-outline-primary"
-                                                title="تفعيل دواء"><i class="bi bi-check-circle"></i></button>
-                                        @endif
-                                    </form>
-                                </td>
-
-                            </tr>
-                        @endforeach
+                        @include('medicine::admin._myMedicine_supplier_table_rows', compact('medicines'))
                     </tbody>
 
                 </table>
-                <div class="d-flex justify-content-center mt-4">
+                <div class="d-flex justify-content-center mt-4" id="pagination-links">
                     {{ $medicines->links() }}
                 </div>
             </div>
@@ -216,52 +161,87 @@
         <div id="caption"></div>
     </div>
 @endsection
-
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#medicines-datatable').DataTable({
-                paging: false,
-                searching: true,
-                ordering: true,
-                info: false,
-                pageLength: 10,
+            // وظيفة البحث الديناميكي والترقيم
+            function fetchMedicines(page = 1, searchQuery = '') {
+                $.ajax({
+                    url: "{{ route('my-medicines') }}", // تأكد أن هذا هو المسار الصحيح لوحدة التحكم الخاصة بك
+                    method: 'GET',
+                    data: {
+                        page: page,
+                        search: searchQuery
+                    },
+                    success: function(response) {
+                        $('#medicines-table-body').html(response.html);
+                        $('#pagination-links').html(response.pagination);
+                        // أعد ربط وظيفة المودال بعد تحديث المحتوى
+                        bindImageModalEvents();
+                    },
+                    error: function(xhr) {
+                        console.error("حدث خطأ أثناء جلب البيانات:", xhr);
+                    }
+                });
+            }
 
+            // عند الكتابة في حقل البحث
+            let searchTimeout;
+            $('#medicine-search-input').on('keyup', function() {
+                clearTimeout(searchTimeout);
+                let searchQuery = $(this).val();
+                searchTimeout = setTimeout(function() {
+                    fetchMedicines(1, searchQuery); // ابدأ دائمًا من الصفحة الأولى عند البحث
+                }, 300); // تأخير 300 مللي ثانية لمنع الطلبات المتعددة عند الكتابة السريعة
             });
 
-            // تحديد الكل
+            // عند النقر على روابط الترقيم
+            $(document).on('click', '#pagination-links .pagination a', function(e) {
+                e.preventDefault();
+                let page = $(this).attr('href').split('page=')[1];
+                let searchQuery = $('#medicine-search-input').val();
+                fetchMedicines(page, searchQuery);
+            });
+
+            // وظيفة ربط أحداث فتح المودال للصور
+            function bindImageModalEvents() {
+                const modal = document.getElementById("myModal");
+                const modalImg = document.getElementById("img01");
+                const captionText = document.getElementById("caption");
+                const closeBtn = document.getElementsByClassName("close_myModal")[0];
+
+                const images = document.querySelectorAll(
+                    '.myImg'); // استخدام .myImg بدلاً من #myImg لربط جميع الصور
+
+                images.forEach(img => {
+                    img.onclick = function() {
+                        modal.style.display = "block";
+                        modalImg.src = this.src;
+                        captionText.innerHTML = this.alt || "";
+                    }
+                });
+
+                closeBtn.onclick = function() {
+                    modal.style.display = "none";
+                }
+
+                modal.onclick = function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            }
+
+            // استدعاء وظيفة ربط المودال عند تحميل الصفحة لأول مرة
+            bindImageModalEvents();
+
+            // تحديد الكل - هذا الكود يجب أن يكون داخل $(document).ready()
             $('#select-all').click(function() {
                 $('input[name="medicines[]"]').prop('checked', this.checked);
             });
 
-             // جلب عناصر الصور
-            const modal = document.getElementById("myModal");
-            const modalImg = document.getElementById("img01");
-            const captionText = document.getElementById("caption");
-            const closeBtn = document.getElementsByClassName("close_myModal")[0];
-
-            // تحديد كل الصور ذات الكلاس myImg
-            const images = document.querySelectorAll('.myImg');
-
-            images.forEach(img => {
-                img.onclick = function() {
-                    modal.style.display = "block";
-                    modalImg.src = this.src;
-                    captionText.innerHTML = this.alt || "";
-                }
-            });
-
-            // زر الإغلاق
-            closeBtn.onclick = function() {
-                modal.style.display = "none";
-            }
-
-            // إغلاق المودال إذا ضغط المستخدم خارج الصورة
-            modal.onclick = function(event) {
-                if (event.target === modal) {
-                    modal.style.display = "none";
-                }
-            }
+            // لا تحتاج إلى جلب عناصر الصور وربط الأحداث هنا مرة أخرى
+            // لأن bindImageModalEvents() تقوم بذلك عند تحميل الصفحة وعند تحديث الجدول
         });
     </script>
 @endsection

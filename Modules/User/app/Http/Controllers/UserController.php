@@ -28,15 +28,33 @@ class UserController extends Controller
         $keyword = $request->input('search', null);
         $pharmacists = $this->userService->getPharmacists($keyword);
 
-        return view('user::admin.pharmacists.index', [
-            'pharmacists' => $pharmacists,
-        ]);
+        if ($request->ajax()) {
+            $html = view('user::admin.pharmacists._pharmacists_table_rows', compact('pharmacists'))->render();
+            // Convert pagination links to a string to send in JSON response
+            $pagination = (string) $pharmacists->links();
+            return response()->json([
+                'html' => $html,
+                'pagination' => $pagination // Send pagination HTML
+            ]);
+        }
+
+        return view('user::admin.pharmacists.index', compact('pharmacists'));
     }
+
 
     public function suppliersList(Request $request)
     {
         $keyword = $request->input('search', null);
+        // Assuming getSuppliers method exists in UserService and returns paginated results
         $suppliers = $this->userService->getSuppliers($keyword);
+
+        // Check if the request is an AJAX request
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('user::admin.suppliers._suppliers_table_rows', ['suppliers' => $suppliers])->render(),
+                'pagination' => (string) $suppliers->links() // Convert pagination to string
+            ]);
+        }
 
         return view('user::admin.suppliers.index', [
             'suppliers' => $suppliers,

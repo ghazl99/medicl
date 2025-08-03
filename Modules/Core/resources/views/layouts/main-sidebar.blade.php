@@ -196,12 +196,12 @@
             </li>
 
             {{-- offers --}}
-            <li class="slide">
+            {{-- <li class="slide">
                 <a class="side-menu_item" href="{{ route('offers.index') }}">
                     <i class="side-menu__icon bi bi-tags p-2"></i>
                     <span class="side-menu__label">العروض</span>
                 </a>
-            </li>
+            </li> --}}
         @endhasanyrole
         @role('المشرف')
             {{-- users --}}

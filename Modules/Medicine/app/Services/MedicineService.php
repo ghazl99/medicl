@@ -26,9 +26,9 @@ class MedicineService
         return $this->medicineRepository->index($keyword);
     }
 
-    public function getAllMedicinesSupplier($user)
+    public function getAllMedicinesSupplier(?string $keyword = null, $user)
     {
-        return $this->medicineRepository->getMedicinesBySupplier($user);
+        return $this->medicineRepository->getMedicinesBySupplier($keyword,$user);
     }
     /**
      * Get medicines filtered by 'name' or 'manufacturer' using a single search term.
