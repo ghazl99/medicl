@@ -61,7 +61,7 @@ class MedicineRepository implements MedicineRepositoryInterface
             return $user->medicines()->with(['category', 'suppliers'])->paginate(5);
         }
 
-        return collect(); // إذا لم يكن المورد
+        return collect(); 
     }
 
 

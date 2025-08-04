@@ -11,4 +11,5 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::post('/medicines/{medicine}/toggle-availability', [MedicineController::class, 'toggleAvailability'])
         ->name('medicines.toggle-availability');
     Route::get('/medicines/image/{media}', [MedicineController::class, 'showImage'])->name('medicines.image');
+
 });

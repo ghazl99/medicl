@@ -189,6 +189,9 @@
                     ordering: true,
                     info: false,
                     pageLength: 10,
+                    language: {
+                        search: "بحث:"
+                    }
                 });
 
                 // جلب عناصر الصور

@@ -54,6 +54,10 @@
                  @endif
              </form>
          </td>
-
+         <td>
+             <a href="{{ route('offers.create', $medicine->id) }}" class="btn btn-sm btn-warning">
+                 <i class="fas fa-tags"></i> عرض
+             </a>
+         </td>
      </tr>
  @endforeach

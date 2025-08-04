@@ -21,8 +21,6 @@ return new class extends Migration
             $table->date('offer_start_date');
             $table->date('offer_end_date');
 
-            $table->enum('status', ['active', 'expired', 'cancelled'])->default('active');
-
             $table->text('notes')->nullable();
             $table->timestamps();
         });

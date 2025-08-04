@@ -110,7 +110,11 @@
         <div class="card-body">
             {{-- حقل البحث --}}
             <div class="mb-3">
-                <input type="text" id="medicine-search-input" class="form-control" placeholder="ابحث عن دواء...">
+                <div class="row justify-content-start">
+                    <div class="col-md-4 col-sm-6 mb-2">
+                        <input type="text" id="medicine-search-input" class="form-control" placeholder="ابحث عن دواء...">
+                    </div>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -134,6 +138,7 @@
                             <!--<th>ملاحظات 2</th>-->
                             <!--<th>نسبة تغير السعر</th>-->
                             <th>التوفر</th>
+                            <th>عرض</th>
                         </tr>
                     </thead>
                     <tbody id="medicines-table-body">

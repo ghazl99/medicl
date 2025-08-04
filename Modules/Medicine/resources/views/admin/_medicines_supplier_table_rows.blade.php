@@ -25,6 +25,7 @@
         <td>{{ $medicine->note }}</td>
         <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}</td>
         <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}</td>
+        
     </tr>
 @empty
     <tr>

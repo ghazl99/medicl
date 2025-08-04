@@ -2,7 +2,8 @@
 @section('css')
     <style>
         /* Style the Image Used to Trigger the Modal */
-        .myImg { /* Changed from #myImg to .myImg as it's a class now */
+        .myImg {
+            /* Changed from #myImg to .myImg as it's a class now */
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
@@ -13,12 +14,14 @@
         }
 
         /* The Modal (background) */
-        .modal-overlay { /* Changed class to avoid conflict with Bootstrap modal */
+        .modal-overlay {
+            /* Changed class to avoid conflict with Bootstrap modal */
             display: none;
             /* Hidden by default */
             position: fixed;
             /* Stay in place */
-            z-index: 1050; /* Higher z-index than Bootstrap modals */
+            z-index: 1050;
+            /* Higher z-index than Bootstrap modals */
             padding-top: 100px;
             /* Location of the box */
             left: 0;
@@ -36,7 +39,8 @@
         }
 
         /* Modal Content (Image) */
-        .modal-content-img { /* Changed class */
+        .modal-content-img {
+            /* Changed class */
             margin: auto;
             display: block;
             width: 80%;
@@ -139,7 +143,9 @@
                             </thead>
                             <tbody id="medicines-table-body">
                                 {{-- Initial load of table rows for supplier --}}
-                                @include('medicine::admin._medicines_supplier_table_rows', compact('medicines', 'supplierMedicineIds'))
+                                @include(
+                                    'medicine::admin._medicines_supplier_table_rows',
+                                    compact('medicines', 'supplierMedicineIds'))
                             </tbody>
                         </table>
                         <div class="d-flex justify-content-center mt-4" id="medicines-pagination-links">
@@ -153,17 +159,21 @@
                     </form>
                 </div>
             </div>
-        @else {{-- For 'المشرف' role --}}
+        @else
+            {{-- For 'المشرف' role --}}
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="text-right">جميع الأدوية</h3>
                 @role('المشرف')
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('medicines.create') }}" class="btn btn-primary mr-1">إضافة دواء</a>
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importModal">
-                            استيراد ملف إكسل
+                    <div class="d-flex flex-column flex-md-row flex-wrap mb-3">
+                        <a href="{{ route('medicines.create') }}" class="btn btn-primary mb-2 mb-md-0 mr-md-2">
+                            إضافة دواء
+                        </a>
+                        <button type="button" class="btn btn-success mb-2 mb-md-0" data-toggle="modal" data-target="#importModal">
+                            استيراد <i class="fas fa-file-import ml-1"></i>
                         </button>
                     </div>
                 @endrole
+
             </div>
             <div class="card-body">
                 <div class="mb-3 text-right">
@@ -192,8 +202,7 @@
                                 <th>ملاحظات</th>
                                 <th>النت دولار </th>
                                 <th>العموم دولار </th>
-                                <th>التوفر</th>
-                                <th>الإجراءات</th> {{-- Added actions column for admin --}}
+                                
                             </tr>
                         </thead>
                         <tbody id="medicines-table-body">
@@ -297,7 +306,8 @@
                     type: "GET",
                     success: function(response) {
                         $('#medicines-table-body').html(response.html); // Update table rows
-                        $('#medicines-pagination-links').html(response.pagination); // Update pagination links
+                        $('#medicines-pagination-links').html(response
+                            .pagination); // Update pagination links
 
                         // Re-attach "select all" functionality after new rows are loaded (for supplier role)
                         $('#select-all').off('click').on('click', function() {

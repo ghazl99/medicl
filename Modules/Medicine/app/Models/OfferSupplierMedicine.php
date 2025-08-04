@@ -18,7 +18,6 @@ class OfferSupplierMedicine extends Model
         'offer_free_quantity',
         'offer_start_date',
         'offer_end_date',
-        'status',
         'notes',];
 
    protected $casts = [

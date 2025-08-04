@@ -229,6 +229,7 @@
                     <li><a class="slide-item" href="{{ route('medicines.index') }}">جميع الأدوية</a></li>
                     @role('مورد')
                         <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
+                        <li><a class="slide-item" href="{{ route('offers.index') }}">العروض الأدوية</a></li>
                     @endrole
                 </ul>
             </li>
