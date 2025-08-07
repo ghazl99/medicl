@@ -4,13 +4,32 @@ namespace Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Modules\User\Http\Requests\RegisterRequest;
 use Modules\User\Http\Requests\UpdateUserRequest;
 use Modules\User\Services\UserService;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:المشرف', only: [
+                'create_pharmacists',
+                'pharmacistsList',
+                'suppliersList',
+                'show',
+                'edit',
+                'update',
+                'destroy',
+                'edit_profile',
+                'update_profile',
+            ]),
+        ];
+    }
+
     public function __construct(
         protected UserService $userService
     ) {}
@@ -32,15 +51,15 @@ class UserController extends Controller
             $html = view('user::admin.pharmacists._pharmacists_table_rows', compact('pharmacists'))->render();
             // Convert pagination links to a string to send in JSON response
             $pagination = (string) $pharmacists->links();
+
             return response()->json([
                 'html' => $html,
-                'pagination' => $pagination // Send pagination HTML
+                'pagination' => $pagination, // Send pagination HTML
             ]);
         }
 
         return view('user::admin.pharmacists.index', compact('pharmacists'));
     }
-
 
     public function suppliersList(Request $request)
     {
@@ -52,7 +71,7 @@ class UserController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('user::admin.suppliers._suppliers_table_rows', ['suppliers' => $suppliers])->render(),
-                'pagination' => (string) $suppliers->links() // Convert pagination to string
+                'pagination' => (string) $suppliers->links(), // Convert pagination to string
             ]);
         }
 
@@ -83,9 +102,10 @@ class UserController extends Controller
 
                 return redirect()->route('pharmacists.index');
             } elseif ($user->hasRole('مورد')) {
+
                 session()->flash('success', 'تم إضافة المورد بنجاح! 🚚');
 
-                return redirect()->route('suppliers.index');
+                return redirect()->route('login')->with('success', 'تم إنشاء الحساب بنجاح!  🎉');
             }
         } catch (\Exception $e) {
             // Return to the previous page with an error message

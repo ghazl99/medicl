@@ -2,8 +2,9 @@
 
 namespace Modules\Offer\Repositories;
 
-interface  OfferRepository
+interface OfferRepository
 {
     public function allWithMedicines();
+
     public function store(array $data);
 }

@@ -9,16 +9,19 @@
                 @csrf
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="category_id" >الصنف</label>
-                        <select class="form-control" name="category_id"
-                            id="category_id" required>
+                        <label for="category_id">الصنف</label>
+                        <select class="form-control" name="category_id" id="category_id" required>
                             <option value="">اختر صنفًا</option>
                             @foreach ($categories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
+                                @foreach ($category->children as $child)
+                                    <option value="{{ $child->id }}"
+                                        {{ old('category_id') == $child->id ? 'selected' : '' }}>
+                                        {{ $category->name }} - {{ $child->name }}
+                                    </option>
+                                @endforeach
                             @endforeach
+
+
                         </select>
                         @error('category_id')
                             <small class="text-danger">{{ $message }}</small>
@@ -27,8 +30,7 @@
 
                     <div class="col-md-6">
                         <label for="image" class="form-label">صورة الدواء</label>
-                        <input type="file" class="form-control" id="image"
-                            name="image" accept="image/*" />
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*" />
                         @error('image')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -37,9 +39,8 @@
                     <!-- الصنف -->
                     <div class="col-md-6">
                         <label for="type" class="form-label">الصنف</label>
-                        <input type="text" class="form-control "
-                            id="type" name="type" value="{{ old('type') }}"
-                            placeholder="ادخل تركيب الدواء" />
+                        <input type="text" class="form-control " id="type" name="type"
+                            value="{{ old('type') }}" placeholder="ادخل تركيب الدواء" />
                         @error('type')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -47,9 +48,8 @@
                     <!-- التركيب -->
                     <div class="col-md-6">
                         <label for="composition" class="form-label">التركيب</label>
-                        <input type="text" class="form-control"
-                            id="composition" name="composition" value="{{ old('composition') }}"
-                            placeholder="ادخل تركيب الدواء" />
+                        <input type="text" class="form-control" id="composition" name="composition"
+                            value="{{ old('composition') }}" placeholder="ادخل تركيب الدواء" />
                         @error('composition')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -58,8 +58,8 @@
                     <!-- الشكل -->
                     <div class="col-md-6">
                         <label for="form" class="form-label">الشكل</label>
-                        <input type="text" class="form-control" id="form"
-                            name="form" value="{{ old('form') }}" placeholder="ادخل شكل الدواء" />
+                        <input type="text" class="form-control" id="form" name="form"
+                            value="{{ old('form') }}" placeholder="ادخل شكل الدواء" />
                         @error('form')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -68,8 +68,8 @@
                     <!-- الشركة المصنعة -->
                     <div class="col-md-6">
                         <label for="company" class="form-label">الشركة المصنعة</label>
-                        <input type="text" class="form-control " id="company"
-                            name="company" value="{{ old('company') }}" placeholder="ادخل اسم الشركة" />
+                        <input type="text" class="form-control " id="company" name="company"
+                            value="{{ old('company') }}" placeholder="ادخل اسم الشركة" />
                         @error('company')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -78,8 +78,8 @@
                     <!-- ملاحظات -->
                     <div class="col-md-6">
                         <label for="note" class="form-label">ملاحظات</label>
-                        <input type="text" class="form-control " id="note"
-                            name="note" value="{{ old('note') }}" placeholder="أدخل ملاحظات إن وجدت" />
+                        <input type="text" class="form-control " id="note" name="note"
+                            value="{{ old('note') }}" placeholder="أدخل ملاحظات إن وجدت" />
                         @error('note')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -110,9 +110,8 @@
                     <!-- نت دولار جديد -->
                     <div class="col-md-6">
                         <label for="net_dollar_new" class="form-label">نت دولار </label>
-                        <input type="number" step="0.01"
-                            class="form-control " id="net_dollar_new"
-                            name="net_dollar_new" value="{{ old('net_dollar_new') }}" placeholder="ادخل السعر" />
+                        <input type="number" step="0.01" class="form-control " id="net_dollar_new" name="net_dollar_new"
+                            value="{{ old('net_dollar_new') }}" placeholder="ادخل السعر" />
                         @error('net_dollar_new')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -121,8 +120,7 @@
                     <!-- عموم دولار جديد -->
                     <div class="col-md-6">
                         <label for="public_dollar_new" class="form-label">عموم دولار </label>
-                        <input type="number" step="0.01"
-                            class="form-control" id="public_dollar_new"
+                        <input type="number" step="0.01" class="form-control" id="public_dollar_new"
                             name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" />
                         @error('public_dollar_new')
                             <small class="text-danger">{{ $message }}</small>

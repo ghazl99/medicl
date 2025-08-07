@@ -105,7 +105,9 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="text-right">إدارة الأصناف</h3>
+            @role('المشرف')
             <a href="{{ route('category.create') }}" class="btn btn-primary">إضافة صنف</a>
+            @endrole
         </div>
 
         <div class="card-body">
@@ -116,7 +118,9 @@
                             <th>الاسم</th>
                             <th>أصناف فرعية</th>
                             <th>صورة</th>
+                            @role('المشرف')
                             <th>الإجراءات</th>
+                            @endrole
                         </tr>
                     </thead>
                     <tbody id="medicines-table-body">
@@ -153,10 +157,12 @@
                                         <span class="text-muted">لا توجد صورة</span>
                                     @endif
                                 </td>
+                                @role('المشرف')
                                 <td>
                                     <a href="{{ route('category.edit', $category->id) }}"
                                         class="btn btn-sm btn-warning">تعديل</a>
                                 </td>
+                                @endrole
                             </tr>
                         @endforeach
                     </tbody>

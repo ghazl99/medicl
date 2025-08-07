@@ -220,6 +220,13 @@
             </li>
         @endrole
         @hasanyrole('المشرف|صيدلي|مورد')
+            @php
+                $newMedicinesCount = \Modules\Medicine\Models\Medicine::where('is_new', true)
+                    ->whereDate('new_start_date', '<=', now())
+                    ->whereDate('new_end_date', '>=', now())
+                    ->count();
+            @endphp
+
             {{-- medicines --}}
             <li class="slide">
                 <a class="side-menu_item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i
@@ -227,9 +234,12 @@
                         class="side-menu__label">الأدوية</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
                     <li><a class="slide-item" href="{{ route('medicines.index') }}">جميع الأدوية</a></li>
+                    @if ($newMedicinesCount > 0)
+                        <li><a class="slide-item" href="{{ route('medicines.new') }}">الأدوية جديدة</a></li>
+                    @endif
                     @role('مورد')
                         <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
-                        <li><a class="slide-item" href="{{ route('offers.index') }}">العروض الأدوية</a></li>
+                        <li><a class="slide-item" href="{{ route('offers.index') }}">عروض الأدوية</a></li>
                     @endrole
                 </ul>
             </li>

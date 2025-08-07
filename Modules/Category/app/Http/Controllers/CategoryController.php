@@ -4,13 +4,24 @@ namespace Modules\Category\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepository;
 use Modules\Category\Services\CategoryService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class CategoryController extends Controller
+class CategoryController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:المشرف', only: ['create', 'store', 'show', 'edit', 'update', 'destroy']),
+
+            new Middleware('role:مورد|المشرف', only: ['index', 'showImage']),
+        ];
+    }
+
     public function __construct(
         protected CategoryService $categoryService,
         protected CategoryRepository $categoryRepository

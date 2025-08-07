@@ -131,8 +131,8 @@
                             <th>ملاحظات</th>
                             <!--<th>نت دولار حالي</th>-->
                             <!--<th>عموم دولار حالي</th>-->
-                            <th>النت دولار </th>
-                            <th>العموم دولار </th>
+                            <th>النت </th>
+                            <th>العموم </th>
                             <!--<th>نت سوري</th>-->
                             <!--<th>عموم سوري</th>-->
                             <!--<th>ملاحظات 2</th>-->
@@ -247,6 +247,74 @@
 
             // لا تحتاج إلى جلب عناصر الصور وربط الأحداث هنا مرة أخرى
             // لأن bindImageModalEvents() تقوم بذلك عند تحميل الصفحة وعند تحديث الجدول
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // عند الضغط على أي مكان في خلية الملاحظة (td)
+            $(document).on('click', '.note-cell', function() {
+                // إخفاء النص
+                $(this).find('.note-text').addClass('d-none');
+                // إظهار حقل الإدخال وتركيزه
+                $(this).find('.note-input').removeClass('d-none').focus();
+            });
+
+            // عند فقدان التركيز من حقل الإدخال
+            $(document).on('blur', '.note-input', function() {
+                saveNote($(this));
+            });
+
+            // عند الضغط على زر Enter داخل حقل الإدخال
+            $(document).on('keypress', '.note-input', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $(this).blur(); // يحفز حدث blur ليتم الحفظ
+                }
+            });
+
+            // دالة لحفظ الملاحظة عبر AJAX
+            function saveNote($input) {
+                const $td = $input.closest('.note-cell');
+                const medicineUserId = $td.data('id'); // الحصول على معرف الدواء من data-id
+                const newNote = $input.val();
+                const $span = $td.find('.note-text');
+                console.log('medicineUserId:', medicineUserId);
+
+                $.ajax({
+                    url: `/medicine-user/${medicineUserId}/update-note`,
+                    method: 'POST',
+                    data: {
+                        notes: newNote,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // تحديث النص وعرضه
+                        $span.text(newNote).removeClass('d-none');
+                        // إخفاء حقل الإدخال
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم الحفظ',
+                            text: 'تم تحديث الملاحظة بنجاح',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function() {
+                        // في حالة الخطأ، إظهار النص وإخفاء الإدخال
+                        $span.removeClass('d-none');
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل الحفظ',
+                            text: 'حدث خطأ أثناء تحديث الملاحظة',
+                            confirmButtonText: 'موافق'
+                        });
+                    }
+                });
+            }
         });
     </script>
 @endsection

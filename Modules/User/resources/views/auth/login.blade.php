@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - نظام إدارة الصيدليات</title>
+    <link rel="icon" href="{{ URL::asset('assets/img/capsule.png') }}" type="image/x-icon" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <style>
         body {
@@ -89,17 +91,59 @@
             </div> --}}
 
             <div class="flex items-center justify-end mt-4">
-                {{-- @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                        href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif --}}
-
+                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                   href="{{ route('register.suppliers') }}">
+                    {{ __('إنشاء حساب للمورد') }}
+                </a>
+                    <br>
                 <button type="submit" class="btn btn-primary w-100">دخول</button>
             </div>
         </form>
     </div>
+     {{-- SweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- رسائل الجلسة باستخدام Swal --}}
+    <script>
+        function getSwalThemeOptions() {
+            const isDark = document.body.classList.contains('dark-theme');
+            return isDark ?
+                {
+                    background: '#141b2d',
+                    color: '#ffffff'
+                } :
+                {
+                    background: '#ffffff',
+                    color: '#000000'
+                };
+        }
+
+        window.addEventListener('load', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'نجاح',
+                    text: @json(session('success')),
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    ...getSwalThemeOptions()
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: @json(session('error')),
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    ...getSwalThemeOptions()
+                });
+            @endif
+        });
+    </script>
 </body>
 
 </html>

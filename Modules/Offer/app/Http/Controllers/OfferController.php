@@ -2,14 +2,14 @@
 
 namespace Modules\Offer\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Medicine\Models\Medicine;
 use Modules\Medicine\Models\MedicineUser;
-use Modules\Offer\Services\OfferService;
-use Modules\Offer\Http\Requests\OfferRequest;
 use Modules\Medicine\Services\MedicineService;
+use Modules\Offer\Http\Requests\OfferRequest;
+use Modules\Offer\Services\OfferService;
 
 class OfferController extends Controller
 {
@@ -17,12 +17,14 @@ class OfferController extends Controller
         protected OfferService $offerService,
         protected MedicineService $medicineService,
     ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $offers = $this->offerService->getAll();
+
         return view('offer::admin.index', compact('offers'));
     }
 
@@ -36,6 +38,7 @@ class OfferController extends Controller
             'medicine_id' => $medicine->id,
             'user_id' => $user->id,
         ]);
+
         return view('offer::admin.create', compact('medicineUser'));
     }
 
@@ -53,7 +56,6 @@ class OfferController extends Controller
             return redirect()->back()->withInput()->withErrors($e->getMessage());
         }
     }
-
 
     /**
      * Show the specified resource.

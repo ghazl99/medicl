@@ -2,59 +2,64 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Imports\MedicineImport;
 use Illuminate\Http\Request;
+use App\Imports\MedicineImport;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Modules\Medicine\Models\Medicine;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Category\Services\CategoryService;
-use Modules\Medicine\Http\Requests\MedicineImportRequest;
-use Modules\Medicine\Http\Requests\medicineRequest;
 use Modules\Medicine\Services\MedicineService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Modules\Medicine\Http\Requests\medicineRequest;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Modules\Medicine\Http\Requests\MedicineImportRequest;
 
-class MedicineController extends Controller
+class MedicineController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:المشرف|مورد|صيدلي', only: ['index', 'showImage','newMedicines']),
+            new Middleware('role:المشرف|مورد', only: ['create', 'store', 'edit', 'update', 'destroy',
+            'import','storeCheckedMedicine','toggleAvailability','updateNote']),
+            new Middleware('role:المشرف', only: ['toggleNewStatus'])
+        ];
+    }
+
     public function __construct(
         protected MedicineService $medicineService,
         protected CategoryService $categoryService,
-
     ) {}
 
-    /**
-     * Display a listing of the resource.
-     */
-    /**
-     * Display a listing of the medicines with filtering capabilities.
-     *
-     * @return View|JsonResponse
-     */
+    // List medicines
     public function index(Request $request)
     {
         $keyword = $request->input('search', null);
         $medicines = $this->medicineService->getAllMedicines($keyword);
 
         $supplierMedicineIds = [];
-        if (Auth::user()->hasRole('مورد')) {
+        if (Auth::user()->hasRole('\u0645\u0648\u0631\u062f')) {
             $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
         }
 
         // Handle AJAX request
         if ($request->ajax()) {
-            $viewName = Auth::user()->hasRole('مورد')
-                ? 'medicine::admin._medicines_supplier_table_rows' // New partial for supplier view
-                : 'medicine::admin._medicines_admin_table_rows';   // New partial for admin view
+            $viewName = Auth::user()->hasRole('\u0645\u0648\u0631\u062f')
+                ? 'medicine::admin._medicines_supplier_table_rows'
+                : 'medicine::admin._medicines_admin_table_rows';
 
             return response()->json([
                 'html' => view($viewName, compact('medicines', 'supplierMedicineIds'))->render(),
-                'pagination' => (string) $medicines->links()
+                'pagination' => (string) $medicines->links(),
             ]);
         }
 
-        // Handle regular request (initial page load)
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
 
+    // Display medicine image
     public function showImage(Media $media)
     {
         $path = $media->getPath();
@@ -66,6 +71,7 @@ class MedicineController extends Controller
         return response()->file($path);
     }
 
+    // Show supplier's medicines
     public function getMedicinesBySupplier(Request $request)
     {
         $keyword = $request->input('search', null);
@@ -75,16 +81,14 @@ class MedicineController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('medicine::admin._myMedicine_supplier_table_rows', ['medicines' => $medicines])->render(),
-                'pagination' => (string) $medicines->links()
+                'pagination' => (string) $medicines->links(),
             ]);
         }
-        return view('medicine::admin.medicineSupplier', [
-            'medicines' => $medicines,
-        ]); // Corrected line
+
+        return view('medicine::admin.medicineSupplier', ['medicines' => $medicines]);
     }
-    /**
-     * Show the form for creating a new resource.
-     */
+
+    // Show create form
     public function create()
     {
         $categories = $this->categoryService->getAllcategories();
@@ -92,9 +96,7 @@ class MedicineController extends Controller
         return view('medicine::admin.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store new medicine
     public function store(medicineRequest $request)
     {
         try {
@@ -108,37 +110,33 @@ class MedicineController extends Controller
         }
     }
 
+    // Import medicines from Excel
     public function import(MedicineImportRequest $request)
     {
         $validatedData = $request->validated();
-
         Excel::queueImport(new MedicineImport($validatedData), $validatedData['file']);
 
         return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
     }
 
+    // Assign medicines to supplier
     public function storeCheckedMedicine(Request $request)
     {
-        $request->validate([
-            'medicines' => 'required|array',
-        ]);
+        $request->validate(['medicines' => 'required|array']);
+
         $supplier_id = Auth::user()->id;
         $this->medicineService->assignMedicinesToSupplier($request->medicines, $supplier_id);
 
         return redirect()->back()->with('success', 'تم ربط الأدوية بالمورد بنجاح');
     }
 
-    /**
-     * Show the specified resource.
-     */
+    // Show single medicine
     public function show($id)
     {
         return view('medicine::show');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Show edit form
     public function edit($id)
     {
         $medicine = $this->medicineService->getMedicineById($id);
@@ -150,9 +148,7 @@ class MedicineController extends Controller
         return view('medicine::admin.edit', compact('medicine'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Update medicine data
     public function update(Request $request, $id)
     {
         $medicine = $this->medicineService->getMedicineById($id);
@@ -161,7 +157,6 @@ class MedicineController extends Controller
             abort(404, 'الدواء غير موجود.');
         }
 
-        // هنا يمكنك استخدام Form Request لـ validation
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'manufacturer' => 'nullable|string|max:255',
@@ -174,29 +169,67 @@ class MedicineController extends Controller
         return redirect()->route('medicines.index')->with('success', 'تم تحديث الدواء بنجاح.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Delete medicine (not implemented)
     public function destroy($id) {}
 
-    /**
-     * Toggle medicine availability for the current supplier.
-     *
-     * @param  int  $medicineId
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    // Toggle availability for current supplier
     public function toggleAvailability($medicineId)
     {
         try {
-            // Get current supplier ID
             $supplierId = Auth::id();
-
-            // Toggle availability via MedicineService
             $this->medicineService->toggleAvailability($medicineId, $supplierId);
 
             return back()->with('success', 'تم تغيير حالة التوفر بنجاح.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    // Update pivot note for supplier-medicine
+    public function updateNote(Request $request, $pivotId)
+    {
+        $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $notes = $request->input('notes') ?? '';
+        $updated = $this->medicineService->updateNoteOnPivot($pivotId, $notes);
+
+        if ($updated) {
+            return response()->json(['status' => 'success']);
+        }
+
+        return response()->json(['status' => 'error'], 500);
+    }
+
+    /**
+     * Toggle the 'new' status with start and end dates.
+     */
+    public function toggleNewStatus(Request $request, Medicine $medicine)
+    {
+        $validated = $request->validate([
+            'is_new' => 'required|boolean',
+            'new_start_date' => 'required|date',
+            'new_end_date' => 'required|date|after_or_equal:new_start_date',
+        ], [
+            'new_end_date.after_or_equal' => 'The new end date must be after or equal to the start date.',
+        ]);
+
+        $updatedMedicine = $this->medicineService->updateNewStatus(
+            $medicine,
+            $validated['is_new'],
+            $validated['new_start_date'],
+            $validated['new_end_date']
+        );
+
+        return response()->json(['success' => true, 'medicine' => $updatedMedicine]);
+    }
+
+    // Show all "new" medicines
+    public function newMedicines()
+    {
+        $medicines = $this->medicineService->getNewMedicines();
+
+        return view('medicine::admin.newMedicines', compact('medicines'));
     }
 }

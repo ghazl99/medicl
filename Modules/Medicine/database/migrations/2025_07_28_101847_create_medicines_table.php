@@ -25,8 +25,11 @@ return new class extends Migration
             $table->decimal('public_dollar_new', 10, 2)->nullable(); // العموم دولار الجديد
             $table->decimal('net_syp', 10, 2)->nullable(); // نت سوري
             $table->decimal('public_syp', 10, 2)->nullable(); // عموم سوري
-            $table->text('note_2')->nullable(); // ملاحظات (الثانية)
             $table->string('price_change_percentage')->nullable();
+
+            $table->boolean('is_new')->default(false);
+            $table->date('new_start_date')->nullable();
+            $table->date('new_end_date')->nullable();
             $table->timestamps();
         });
     }

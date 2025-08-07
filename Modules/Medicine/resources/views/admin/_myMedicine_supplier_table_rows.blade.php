@@ -18,7 +18,14 @@
          <td>{{ $medicine->composition }}</td>
          <td>{{ $medicine->form }}</td>
          <td>{{ $medicine->company }}</td>
-         <td>{{ $medicine->note }}</td>
+         <td class="note-cell" data-id="{{ $medicine->pivot->id ?? 'pivot id not set' }}">
+             <span class="note-text" style="min-height:1.5em; display:inline-block; cursor:pointer;">
+                 {{ $medicine->pivot->notes ?? '' }}
+             </span>
+             <textarea class="form-control note-input d-none" rows="2" placeholder="أدخل ملاحظة هنا">{{ $medicine->pivot->notes ?? '' }}</textarea>
+         </td>
+
+
          <!--<td>{{ $medicine->net_dollar_old !== null ? number_format($medicine->net_dollar_old, 2) : '-' }}-->
          <!--</td>-->
          <!--<td>{{ $medicine->public_dollar_old !== null ? number_format($medicine->public_dollar_old, 2) : '-' }}-->

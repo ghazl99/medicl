@@ -92,7 +92,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Medicine::class, 'medicine_user')
             ->withPivot([
+                'id',
                 'is_available',
+                'notes',
             ])
             ->withTimestamps();
     }

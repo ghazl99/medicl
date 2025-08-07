@@ -10,9 +10,9 @@
             <h3 class="text-right">إدارة الموردين</h3>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-end mb-4">
+            {{-- <div class="d-flex justify-content-end mb-4">
                 <a href="{{ route('register.suppliers') }}" class="btn btn-primary">إضافة مورد</a>
-            </div>
+            </div> --}}
             <div class="mb-3 text-right">
                 {{-- Removed action and method from form, as AJAX handles submission --}}
                 <form id="supplier-search-form" class="mb-3">

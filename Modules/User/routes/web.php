@@ -1,78 +1,112 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\User\Http\Controllers\Auth\AuthenticatedSessionController;
+use Modules\User\Http\Controllers\Auth\ConfirmablePasswordController;
+use Modules\User\Http\Controllers\Auth\EmailVerificationNotificationController;
+use Modules\User\Http\Controllers\Auth\EmailVerificationPromptController;
+use Modules\User\Http\Controllers\Auth\NewPasswordController;
+use Modules\User\Http\Controllers\Auth\PasswordController;
+use Modules\User\Http\Controllers\Auth\PasswordResetLinkController;
+use Modules\User\Http\Controllers\Auth\VerifyEmailController;
 use Modules\User\Http\Controllers\UserController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('users', UserController::class)->names('user');
-});
+/*
+|--------------------------------------------------------------------------
+| Guest Routes
+|--------------------------------------------------------------------------
+| Routes accessible to guests (unauthenticated users)
+*/
 
-Route::get('/dashboard', function () {
-    return view('user::admin.dashboard');
-})->middleware(['auth', 'verified', 'approved'])->name('dashboard');
-
-Route::middleware(['auth', 'approved'])->group(function () {
-    Route::resource('users', Modules\User\Http\Controllers\UserController::class)->names('users');
-
-    // create user "pharmacits and suppliers"
-    Route::get('register-pharmacists', [Modules\User\Http\Controllers\UserController::class, 'create_pharmacists'])
-        ->name('register.pharmacists');
-    Route::get('register-suppliers', [Modules\User\Http\Controllers\UserController::class, 'create_suppliers'])
-        ->name('register.suppliers');
-
-    // store user "pharmacits and suppliers"
-    Route::post('register', [Modules\User\Http\Controllers\UserController::class, 'store'])->name('register');
-
-    // get all pharmacists and suppliers
-    Route::get('/pharmacists', [Modules\User\Http\Controllers\UserController::class, 'pharmacistsList'])
-        ->name('pharmacists.index');
-    Route::get('/suppliers', [Modules\User\Http\Controllers\UserController::class, 'suppliersList'])
-        ->name('suppliers.index');
-    // update profile
-    Route::get('/profile/edit', [Modules\User\Http\Controllers\UserController::class, 'edit_profile'])->name('profile.edit');
-    Route::patch('/profile/update', [Modules\User\Http\Controllers\UserController::class, 'update_profile'])->name('profile.update');
-
-    Route::delete('/profile', [Modules\User\Http\Controllers\UserController::class, 'destroy'])->name('profile.destroy');
-});
 Route::middleware('guest')->group(function () {
+    // Supplier registration form
+    Route::get('register-suppliers', [UserController::class, 'create_suppliers'])->name('register.suppliers');
 
-    Route::get('login', [Modules\User\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    // Store new pharmacist or supplier
+    Route::post('register', [UserController::class, 'store'])->name('register');
 
-    Route::post('login', [Modules\User\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
+    // Login form
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    // Handle login
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [Modules\User\Http\Controllers\Auth\PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
+    // Forgot password
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
 
-    Route::post('forgot-password', [Modules\User\Http\Controllers\Auth\PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
-
-    Route::get('reset-password/{token}', [Modules\User\Http\Controllers\Auth\NewPasswordController::class, 'create'])
-        ->name('password.reset');
-
-    Route::post('reset-password', [Modules\User\Http\Controllers\Auth\NewPasswordController::class, 'store'])
-        ->name('password.store');
+    // Reset password
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+| Routes accessible only to authenticated users
+*/
 
 Route::middleware('auth')->group(function () {
-    Route::get('verify-email', Modules\User\Http\Controllers\Auth\EmailVerificationPromptController::class)
-        ->name('verification.notice');
+    // Email verification notice
+    Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', Modules\User\Http\Controllers\Auth\VerifyEmailController::class)
+    // Verify email link
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Route::post('email/verification-notification', [Modules\User\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store'])
+    // Resend email verification
+    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    Route::get('confirm-password', [Modules\User\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
+    // Confirm password
+    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
+    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::post('confirm-password', [Modules\User\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store']);
+    // Update password
+    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::put('password', [Modules\User\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
+    // Logout
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
 
-    Route::post('logout', [Modules\User\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+/*
+|--------------------------------------------------------------------------
+| Verified and Approved User Routes
+|--------------------------------------------------------------------------
+| Routes for users who are both verified and approved
+*/
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Dashboard page
+    Route::get('/dashboard', function () {
+        return view('user::admin.dashboard');
+    })->middleware(['approved'])->name('dashboard');
+
+    // User resource routes (protected)
+    Route::resource('users', UserController::class)->names('user');
+});
+
+Route::middleware(['auth', 'approved'])->group(function () {
+    // User management
+    Route::resource('users', UserController::class)->names('users');
+
+    // Create pharmacist form
+    Route::get('register-pharmacists', [UserController::class, 'create_pharmacists'])->name('register.pharmacists');
+
+    // List all pharmacists
+    Route::get('/pharmacists', [UserController::class, 'pharmacistsList'])->name('pharmacists.index');
+
+    // List all suppliers
+    Route::get('/suppliers', [UserController::class, 'suppliersList'])->name('suppliers.index');
+
+    // Edit profile
+    Route::get('/profile/edit', [UserController::class, 'edit_profile'])->name('profile.edit');
+
+    // Update profile
+    Route::patch('/profile/update', [UserController::class, 'update_profile'])->name('profile.update');
+
+    // Delete profile
+    Route::delete('/profile', [UserController::class, 'destroy'])->name('profile.destroy');
 });

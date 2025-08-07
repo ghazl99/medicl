@@ -143,6 +143,7 @@
             <button type="submit" class="btn btn-primary w-100 mt-4">إنشاء الحساب</button>
         </form>
     </div>
+   
 </body>
 
 </html>

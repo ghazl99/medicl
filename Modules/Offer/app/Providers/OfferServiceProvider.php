@@ -38,7 +38,7 @@ class OfferServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
-        $this->app->bind(OfferRepository::class,OfferModelRepository::class);
+        $this->app->bind(OfferRepository::class, OfferModelRepository::class);
     }
 
     /**

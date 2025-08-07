@@ -22,7 +22,15 @@
         <td>{{ $medicine->note }}</td>
         <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}</td>
         <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}</td>
-       
+        <td class="toggle-new-status" data-medicine-id="{{ $medicine->id }}" style="cursor:pointer;">
+            @if ($medicine->is_new)
+                <span class="badge bg-success">جديد</span>
+            @else
+                <span class="badge bg-danger">غير جديد</span>
+            @endif
+        </td>
+
+
     </tr>
 @empty
     <tr>

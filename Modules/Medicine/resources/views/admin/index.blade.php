@@ -137,8 +137,8 @@
                                     <th>الشكل</th>
                                     <th>الشركة</th>
                                     <th>ملاحظات</th>
-                                    <th>النت دولار </th>
-                                    <th>العموم دولار </th>
+                                    <th>النت </th>
+                                    <th>العموم </th>
                                 </tr>
                             </thead>
                             <tbody id="medicines-table-body">
@@ -200,9 +200,9 @@
                                 <th>الشكل</th>
                                 <th>الشركة</th>
                                 <th>ملاحظات</th>
-                                <th>النت دولار </th>
-                                <th>العموم دولار </th>
-                                
+                                <th>النت </th>
+                                <th>العموم </th>
+                                <th>الحالة</th>
                             </tr>
                         </thead>
                         <tbody id="medicines-table-body">
@@ -254,6 +254,36 @@
         <img class="modal-content-img" id="modalImageContent"> {{-- Changed ID and class --}}
         <div id="caption"></div>
     </div>
+    <!-- Modal لتأكيد تفعيل حالة جديد مع تواريخ -->
+    <div class="modal fade" id="newStatusModal" tabindex="-1" aria-labelledby="newStatusModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="new-status-form">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newStatusModalLabel">تحديد فترة الحالة الجديدة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="new_start_date" class="form-label">تاريخ بداية الحالة الجديدة</label>
+                            <input type="date" class="form-control" id="new_start_date" name="new_start_date"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_end_date" class="form-label">تاريخ نهاية الحالة الجديدة</label>
+                            <input type="date" class="form-control" id="new_end_date" name="new_end_date" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">تأكيد</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')
@@ -360,6 +390,62 @@
                     imageModal.style.display = "none";
                 }
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            let selectedMedicineId = null;
+            const modal = new bootstrap.Modal(document.getElementById('newStatusModal'));
+
+            // عند الضغط على td الحالة
+            $('.toggle-new-status').on('click', function() {
+                const td = $(this);
+                selectedMedicineId = td.data('medicine-id');
+                const currentStatus = td.text().trim() === 'جديد';
+
+                if (currentStatus) {
+                    Swal.fire('الدواء بالفعل جديد.');
+                    return;
+                }
+
+                // فتح المودال لادخال التواريخ
+                modal.show();
+            });
+
+            // عند إرسال الفورم في المودال
+            $('#new-status-form').on('submit', function(e) {
+                e.preventDefault();
+
+                const startDate = $('#new_start_date').val();
+                const endDate = $('#new_end_date').val();
+
+                if (!startDate || !endDate) {
+                    Swal.fire('يرجى تعبئة التواريخ بشكل صحيح.', '', 'warning');
+                    return;
+                }
+
+                // إرسال طلب AJAX للسيرفر
+                $.ajax({
+                    url: '/medicines/' + selectedMedicineId + '/toggle-new',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        is_new: 1,
+                        new_start_date: startDate,
+                        new_end_date: endDate
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload(); // إعادة تحميل الصفحة لتحديث الحالة
+                        } else {
+                            Swal.fire('حدث خطأ أثناء التحديث.', '', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('حدث خطأ أثناء الاتصال بالسيرفر.', '', 'error');
+                    }
+                });
+            });
         });
     </script>
 @endsection

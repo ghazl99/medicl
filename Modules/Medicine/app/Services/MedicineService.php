@@ -2,7 +2,7 @@
 
 namespace Modules\Medicine\Services;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
 use Modules\Medicine\Repositories\MedicineRepositoryInterface;
@@ -17,28 +17,23 @@ class MedicineService
     }
 
     /**
-     * Get all medicines.
-     *
-     * @return Collection<int, Medicine>
+     * Get all medicines (optionally filtered by keyword).
      */
-    public function getAllMedicines(?string $keyword = null)
+    public function getAllMedicines(?string $keyword = null): LengthAwarePaginator
     {
         return $this->medicineRepository->index($keyword);
     }
 
-    public function getAllMedicinesSupplier(?string $keyword = null, $user)
-    {
-        return $this->medicineRepository->getMedicinesBySupplier($keyword,$user);
-    }
     /**
-     * Get medicines filtered by 'name' or 'manufacturer' using a single search term.
-     *
-     * @param  array  $filters  Array containing 'search_term'
-     * @return \Illuminate\Database\Eloquent\Collection
+     * Get medicines for a specific supplier (optionally filtered).
      */
+    public function getAllMedicinesSupplier(?string $keyword, $user): LengthAwarePaginator
+    {
+        return $this->medicineRepository->getMedicinesBySupplier($keyword, $user);
+    }
 
     /**
-     * Find a medicine by its ID.
+     * Find a medicine by ID.
      */
     public function getMedicineById(int $id): ?Medicine
     {
@@ -46,7 +41,7 @@ class MedicineService
     }
 
     /**
-     * Create a new medicine.
+     * Create a new medicine and assign it to supplier if applicable.
      */
     public function createMedicine(array $data, $user): Medicine
     {
@@ -74,6 +69,9 @@ class MedicineService
         });
     }
 
+    /**
+     * Assign a list of medicines to a supplier.
+     */
     public function assignMedicinesToSupplier(array $medicineIds, int $supplierId): void
     {
         $this->medicineRepository->syncMedicinesToSupplier($medicineIds, $supplierId);
@@ -88,7 +86,7 @@ class MedicineService
     }
 
     /**
-     * Delete a medicine by its ID.
+     * Delete a medicine by ID.
      */
     public function deleteMedicine(int $id): ?bool
     {
@@ -96,21 +94,40 @@ class MedicineService
     }
 
     /**
-     * Toggle availability for a medicine-supplier relationship.
+     * Toggle availability of a medicine for a specific supplier.
      */
     public function toggleAvailability(int $medicineId, int $supplierId): bool
     {
-        // Find the pivot record
         $pivot = $this->medicineRepository->findPivotByMedicineAndSupplier($medicineId, $supplierId);
 
         if (! $pivot) {
             throw new \Exception('Medicine is not linked with the supplier.');
         }
 
-        // Flip availability
         $currentStatus = (bool) $pivot->pivot->is_available;
         $this->medicineRepository->updatePivotAvailability($medicineId, $supplierId, ! $currentStatus);
 
         return ! $currentStatus;
+    }
+
+    /**
+     * Update notes on the pivot table between medicine and supplier.
+     */
+    public function updateNoteOnPivot(int $pivotId, ?string $notes): bool
+    {
+        return $this->medicineRepository->updateNoteOnPivot($pivotId, $notes);
+    }
+
+    /**
+     * Update the new status and the start/end dates of a medicine.
+     */
+    public function updateNewStatus(Medicine $medicine, bool $isNew, string $startDate, string $endDate): Medicine
+    {
+        return $this->medicineRepository->updateNewStatus($medicine, $isNew, $startDate, $endDate);
+    }
+
+     public function getNewMedicines()
+    {
+        return $this->medicineRepository->getNewMedicines();
     }
 }

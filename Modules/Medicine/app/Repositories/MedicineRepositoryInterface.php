@@ -7,28 +7,32 @@ use Modules\Medicine\Models\Medicine;
 interface MedicineRepositoryInterface
 {
     /**
-     * Get all medicines.
-     *
-     * @return Collection<int, Medicine>
+     * Retrieve all medicines, optionally filtered by a keyword.
      */
     public function index(?string $keyword = null);
 
-    public function getMedicinesBySupplier(?string $keyword = null, $user);
+    /**
+     * Get medicines related to a specific supplier with optional keyword filter.
+     */
+    public function getMedicinesBySupplier(?string $keyword, $user);
 
     /**
-     * Find a medicine by its ID.
+     * Find a single medicine by its ID.
      */
     public function findById(int $id): ?Medicine;
 
     /**
-     * Create a new medicine.
+     * Store a new medicine in the database.
      */
     public function store(array $data): Medicine;
 
+    /**
+     * Link medicines to a specific supplier.
+     */
     public function syncMedicinesToSupplier(array $medicineIds, int $supplierId): void;
 
     /**
-     * Update an existing medicine.
+     * Update an existing medicine's data.
      */
     public function update(Medicine $medicine, array $data): Medicine;
 
@@ -38,27 +42,24 @@ interface MedicineRepositoryInterface
     public function delete(int $id): ?bool;
 
     /**
-     * Find the pivot record between a medicine and a supplier.
-     *
-     * This method retrieves the pivot row from the 'medicine_user' table
-     * that links the given medicine with the specified supplier.
-     *
-     * @param  int  $medicineId  The ID of the medicine.
-     * @param  int  $supplierId  The ID of the supplier (user).
-     * @return mixed Returns the pivot model instance or null if not found.
+     * Get pivot record between a medicine and a supplier.
      */
     public function findPivotByMedicineAndSupplier(int $medicineId, int $supplierId);
 
     /**
-     * Update the 'is_available' status in the pivot table for a specific medicine and supplier.
-     *
-     * This method updates the availability status (true/false) for the
-     * medicine-supplier relationship in the 'medicine_user' pivot table.
-     *
-     * @param  int  $medicineId  The ID of the medicine.
-     * @param  int  $supplierId  The ID of the supplier (user).
-     * @param  bool  $status  The new availability status (true = available, false = not available).
-     * @return bool Returns true if the update was successful, otherwise false.
+     * Update availability status for a medicine-supplier relation.
      */
     public function updatePivotAvailability(int $medicineId, int $supplierId, bool $status);
+
+    /**
+     * Update notes in the pivot table by pivot ID.
+     */
+    public function updateNoteOnPivot(int $id, ?string $notes): bool;
+
+    /**
+     * Update the 'is_new' status and its start/end dates for a medicine.
+     */
+    public function updateNewStatus(Medicine $medicine, bool $isNew, string $startDate, string $endDate): Medicine;
+
+    public function getNewMedicines();
 }

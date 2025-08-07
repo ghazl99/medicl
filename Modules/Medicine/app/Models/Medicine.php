@@ -41,8 +41,10 @@ class Medicine extends Model implements HasMedia
         'public_dollar_new',
         'net_syp',
         'public_syp',
-        'note_2',
         'price_change_percentage',
+        'is_new',
+        'new_start_date',
+        'new_end_date',
     ];
 
     protected $casts = [
@@ -70,7 +72,9 @@ class Medicine extends Model implements HasMedia
     {
         return $this->belongsToMany(\Modules\User\Models\User::class, 'medicine_user', 'medicine_id', 'user_id')
             ->withPivot(
-                'is_available'
+                'id',
+                'is_available',
+                'notes'
             )
             ->withTimestamps();
     }
