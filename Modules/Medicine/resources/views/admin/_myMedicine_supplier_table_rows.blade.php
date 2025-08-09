@@ -58,5 +58,11 @@
             <span class="offer-text">{{ $medicine->pivot->offer ?? '' }}</span>
             <input type="text" class="form-control offer-input d-none" value="{{ $medicine->pivot->offer ?? '' }}">
         </td>
+
+        <td>
+            <a href="{{ route('offers.create', $medicine->id) }}" class="btn btn-sm btn-success ">
+                <i class="fas fa-plus"></i>
+            </a>
+        </td>
     </tr>
 @endforeach

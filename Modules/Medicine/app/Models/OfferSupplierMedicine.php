@@ -4,12 +4,14 @@ namespace Modules\Medicine\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 // use Modules\Medicine\Database\Factories\OfferSupplierMedicineFactory;
 
-class OfferSupplierMedicine extends Model
+class OfferSupplierMedicine extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory,InteractsWithMedia;
 
     protected $table = 'offer_supplier_medicine';
 
@@ -17,11 +19,10 @@ class OfferSupplierMedicine extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = ['medicine_user_id',
-        'offer_buy_quantity',
-        'offer_free_quantity',
+        'title',
+        'details',
         'offer_start_date',
-        'offer_end_date',
-        'notes', ];
+        'offer_end_date' ];
 
     protected $casts = [
         'offer_start_date' => 'date',

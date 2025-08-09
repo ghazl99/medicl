@@ -21,6 +21,12 @@ class OfferModelRepository implements OfferRepository
 
     public function store(array $data)
     {
+        // dd($data);
         return OfferSupplierMedicine::create($data);
+    }
+
+    public function offerWithRelation(OfferSupplierMedicine $offer):mixed
+    {
+        return $offer->load('medicineUser.medicine');
     }
 }

@@ -15,19 +15,30 @@ class MedicineRepository implements MedicineRepositoryInterface
      */
     public function index(?string $keyword = null)
     {
+        $query = Medicine::with(['suppliers', 'category']);
+
         if ($keyword) {
-            return Medicine::search($keyword)
+            $query = Medicine::search($keyword)
                 ->query(function ($query) use ($keyword) {
                     $query->with(['category', 'suppliers']);
                     $query->orWhereHas('category', function ($q) use ($keyword) {
                         $q->where('name', 'like', '%' . $keyword . '%');
                     });
-                })
-                ->paginate(10);
+                });
         }
 
-        return Medicine::with(['suppliers', 'category'])->paginate(10);
+        $medicines = $query->paginate(10);
+
+        // This runs on every site visit and updates medicines to not new if their new_end_date has passed.
+        foreach ($medicines as $medicine) {
+            if ($medicine->is_new && $medicine->new_end_date < now()) {
+                $medicine->update(['is_new' => false]);
+            }
+        }
+
+        return $medicines;
     }
+
 
     /**
      * Get medicines for a supplier with optional search.

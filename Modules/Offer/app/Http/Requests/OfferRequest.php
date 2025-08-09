@@ -13,11 +13,13 @@ class OfferRequest extends FormRequest
     {
         return [
             'medicine_user_id' => 'required|exists:medicine_user,id',
-            'offer_buy_quantity' => 'required|integer|min:1',
-            'offer_free_quantity' => 'required|integer|min:0',
+            'title' => 'required|string|max:255',
+            'details' => 'required|string',
             'offer_start_date' => 'required|date',
             'offer_end_date' => 'required|date|after_or_equal:offer_start_date',
-            'notes' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
+
         ];
     }
 

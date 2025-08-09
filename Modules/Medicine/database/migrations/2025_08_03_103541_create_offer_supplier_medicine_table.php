@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('medicine_user_id')->constrained('medicine_user')->onDelete('cascade');
 
-            $table->integer('offer_buy_quantity');
-            $table->integer('offer_free_quantity');
+            $table->string('title',100);
+            $table->text('details');
 
             $table->date('offer_start_date');
             $table->date('offer_end_date');

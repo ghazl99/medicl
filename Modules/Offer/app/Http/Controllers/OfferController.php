@@ -2,14 +2,17 @@
 
 namespace Modules\Offer\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Medicine\Models\Medicine;
-use Modules\Medicine\Models\MedicineUser;
-use Modules\Medicine\Services\MedicineService;
-use Modules\Offer\Http\Requests\OfferRequest;
 use Modules\Offer\Services\OfferService;
+use Modules\Medicine\Models\MedicineUser;
+use Modules\Offer\Http\Requests\OfferRequest;
+use Modules\Medicine\Services\MedicineService;
+use Modules\Medicine\Models\OfferSupplierMedicine;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class OfferController extends Controller
 {
@@ -48,23 +51,41 @@ class OfferController extends Controller
     public function store(OfferRequest $request)
     {
         try {
+            Log::info('OfferController@store reached');
+            // dd($request->validated());
+
             $this->offerService->store($request->validated());
 
             return redirect()->route('offers.index')->with('success', 'تم إنشاء العرض بنجاح');
         } catch (\Exception $e) {
             // Return to the previous page with an error message
-            return redirect()->back()->withInput()->withErrors($e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
     /**
      * Show the specified resource.
      */
-    public function show($id)
+    public function show(OfferSupplierMedicine $offer)
     {
-        return view('offer::show');
+        $offer = $this->offerService->details($offer);
+
+        if (!$offer) {
+            abort(404, 'العرض غير موجود');
+        }
+        return view('offer::admin.show', compact('offer'));
     }
 
+    public function showImage(Media $media)
+    {
+        $path = $media->getPath();
+
+        if (! file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
+    }
     /**
      * Show the form for editing the specified resource.
      */
