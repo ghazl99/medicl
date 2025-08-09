@@ -16,7 +16,7 @@ class MedicineUser extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['medicine_id', 'user_id', 'is_available', 'notes'];
+    protected $fillable = ['medicine_id', 'user_id', 'is_available', 'notes', 'offer'];
 
     public function medicine()
     {

@@ -138,7 +138,7 @@
                             <!--<th>ملاحظات 2</th>-->
                             <!--<th>نسبة تغير السعر</th>-->
                             <th>التوفر</th>
-                            <th>عرض</th>
+                            <th>العرض</th>
                         </tr>
                     </thead>
                     <tbody id="medicines-table-body">
@@ -310,6 +310,67 @@
                             icon: 'error',
                             title: 'فشل الحفظ',
                             text: 'حدث خطأ أثناء تحديث الملاحظة',
+                            confirmButtonText: 'موافق'
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).ready(function() {
+            // عند النقر على خلية العرض
+            $(document).on('click', '.offer-cell', function() {
+                $(this).find('.offer-text').addClass('d-none');
+                $(this).find('.offer-input').removeClass('d-none').focus();
+            });
+
+            // عند الخروج من حقل الإدخال
+            $(document).on('blur', '.offer-input', function() {
+                saveOffer($(this));
+            });
+
+            // عند الضغط على Enter
+            $(document).on('keypress', '.offer-input', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $(this).blur();
+                }
+            });
+
+            function saveOffer($input) {
+                const $td = $input.closest('.offer-cell');
+                const medicineUserId = $td.data('id');
+                const newOffer = $input.val();
+                const $span = $td.find('.offer-text');
+
+                $.ajax({
+                    url: `/medicine-user/${medicineUserId}/update-offer`,
+                    method: 'POST',
+                    data: {
+                        offer: newOffer,
+                        _token: '{{ csrf_token() }}'
+                    },
+
+                    success: function(response) {
+                        $span.text(newOffer).removeClass('d-none');
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم الحفظ',
+                            text: 'تم تحديث العرض بنجاح',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function() {
+                        $span.removeClass('d-none');
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل الحفظ',
+                            text: 'حدث خطأ أثناء تحديث العرض',
                             confirmButtonText: 'موافق'
                         });
                     }

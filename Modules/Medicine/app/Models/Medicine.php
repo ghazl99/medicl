@@ -74,7 +74,8 @@ class Medicine extends Model implements HasMedia
             ->withPivot(
                 'id',
                 'is_available',
-                'notes'
+                'notes',
+                'offer'
             )
             ->withTimestamps();
     }

@@ -3,19 +3,22 @@
 namespace Modules\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Scout\Searchable;
+use Modules\Core\Models\City;
+use Modules\Order\Models\Order;
+use Modules\Medicine\Models\Medicine;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Scout\Searchable;
-use Modules\Medicine\Models\Medicine;
-use Modules\Order\Models\Order;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable, Searchable;
+    use HasFactory, HasRoles, Notifiable, Searchable, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -27,9 +30,8 @@ class User extends Authenticatable
         'email',
         'phone',
         'workplace_name',
-        'city',
         'password',
-        'profile_photo', 'is_approved',
+        'is_approved',
     ];
 
     /**
@@ -57,16 +59,17 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute()
     {
-        if ($this->profile_photo && Storage::disk('public')->exists('profile_photos/'.$this->profile_photo)) {
-            return url('storage/profile_photos/'.$this->profile_photo);
+        $media = $this->getFirstMedia('profile_photo');
+        if ($media) {
+            return route('user.profile_photo', $media);
         }
 
         $firstLetter = strtoupper(mb_substr($this->name, 0, 1));
-
         $name = urlencode($firstLetter);
 
         return "https://ui-avatars.com/api/?name={$name}&background=0D8ABC&color=fff&size=256";
     }
+
 
     /**
      * Get the orders placed by this user (as a pharmacist).
@@ -95,6 +98,7 @@ class User extends Authenticatable
                 'id',
                 'is_available',
                 'notes',
+                'offer',
             ])
             ->withTimestamps();
     }
@@ -107,5 +111,9 @@ class User extends Authenticatable
             'workplace_name' => $this->workplace_name,
             'city' => $this->city,
         ];
+    }
+    public function cities()
+    {
+        return $this->belongsToMany(\Modules\Core\Models\City::class, 'city_user');
     }
 }

@@ -7,60 +7,70 @@ use Modules\Category\Models\Category;
 class CategoryRepository implements CategoryRepositoryInterface
 {
     /**
-     * Get all categories.
+     * Get all parent categories with their children.
      *
      * @return Collection<int, Category>
      */
     public function index()
     {
-        return Category::whereNull('parent_id')->with('children')->paginate(20);
+        // Fetch only parent categories with children, paginate results
+        return Category::whereNull('parent_id')
+            ->with('children')
+            ->paginate(20);
     }
 
+    /**
+     * Store a new category with optional subcategories.
+     */
     public function store(array $data)
     {
+        // Create main category
         $category = Category::create([
             'name' => $data['name'],
         ]);
 
+        // Create subcategories if provided
         if (! empty($data['subcategories'])) {
             foreach ($data['subcategories'] as $subcategoryName) {
                 if (! empty($subcategoryName)) {
                     Category::create([
                         'name' => $subcategoryName,
-                        'parent_id' => $category->id, // ربط القسم الفرعي بالقسم الرئيسي
+                        'parent_id' => $category->id, // Link child to parent
                     ]);
                 }
             }
-        }
-        if (isset($data['image'])) {
-            $category
-                ->addMedia($data['image'])
-                ->toMediaCollection('category_images', 'private_media'); // استخدم قرص خاص
         }
 
         return $category;
     }
 
+    /**
+     * Find category by ID.
+     */
     public function find(int $id): mixed
     {
+        // Return category or null
         return Category::find($id);
     }
 
+    /**
+     * Update category and replace subcategories.
+     */
     public function update(Category $category, array $data): mixed
     {
         if (! $category) {
             return false;
         }
 
-        // تحديث اسم القسم
+        // Update main category
         $category->update([
             'name' => $data['name'],
         ]);
 
-        // حذف الأقسام الفرعية القديمة
+        // Remove old subcategories
         $category->children()->delete();
 
-        // إعادة إدخال الأقسام الفرعية الجديدة
+        // Create new subcategories
         if (! empty($data['subcategories'])) {
             foreach ($data['subcategories'] as $subcategoryName) {
                 if (! empty($subcategoryName)) {

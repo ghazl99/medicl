@@ -2,14 +2,16 @@
 
 namespace Modules\User\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Modules\User\Http\Requests\RegisterRequest;
-use Modules\User\Http\Requests\UpdateUserRequest;
+use Modules\Core\Services\CityService;
 use Modules\User\Services\UserService;
+use Illuminate\Routing\Controllers\Middleware;
+use Modules\User\Http\Requests\RegisterRequest;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Modules\User\Http\Requests\UpdateUserRequest;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -24,14 +26,13 @@ class UserController extends Controller implements HasMiddleware
                 'edit',
                 'update',
                 'destroy',
-                'edit_profile',
-                'update_profile',
             ]),
         ];
     }
 
     public function __construct(
-        protected UserService $userService
+        protected UserService $userService,
+        protected CityService $cityService
     ) {}
 
     /**
@@ -39,7 +40,8 @@ class UserController extends Controller implements HasMiddleware
      */
     public function create_pharmacists()
     {
-        return view('user::admin.pharmacists.create');
+        $cities = $this->cityService->getAllCitiesWithSubCities();
+        return view('user::admin.pharmacists.create', compact('cities'));
     }
 
     public function pharmacistsList(Request $request)
@@ -82,7 +84,8 @@ class UserController extends Controller implements HasMiddleware
 
     public function create_suppliers()
     {
-        return view('user::auth.register');
+        $cities = $this->cityService->getAllCitiesWithSubCities();
+        return view('user::auth.register', compact('cities'));
     }
 
     /**
@@ -95,6 +98,7 @@ class UserController extends Controller implements HasMiddleware
         try {
             // Validate the incoming request data using the RegisterRequest
             $validatedData = $request->validated();
+
             // Create a new user using the UserService
             $user = $this->userService->registerUser($validatedData);
             if ($user->hasRole('صيدلي')) {
@@ -126,14 +130,17 @@ class UserController extends Controller implements HasMiddleware
      */
     public function edit($id)
     {
+        $cities = $this->cityService->getAllCitiesWithSubCities();
         $user = $this->userService->getUserById($id);
         if ($user->hasRole('صيدلي')) {
             return view('user::admin.pharmacists.edit', [
                 'pharmacist' => $user,
+                'cities' => $cities,
             ]);
         } elseif ($user->hasRole('مورد')) {
             return view('user::admin.suppliers.edit', [
                 'supplier' => $user,
+                'cities' => $cities,
             ]);
         }
     }
@@ -160,8 +167,8 @@ class UserController extends Controller implements HasMiddleware
     public function edit_profile()
     {
         $user = Auth::user();
-
-        return view('user::admin.edit-profile', compact('user'));
+        $cities = $this->cityService->getAllCitiesWithSubCities();
+        return view('user::admin.edit-profile', compact('user', 'cities'));
     }
 
     public function update_profile(UpdateUserRequest $request)
@@ -172,7 +179,16 @@ class UserController extends Controller implements HasMiddleware
 
         return redirect()->route('profile.edit')->with('success', 'تم تحديث بياناتك بنجاح');
     }
+    public function showImage(Media $media)
+    {
+        $path = $media->getPath();
 
+        if (! file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
+    }
     /**
      * Delete the user's account.
      */

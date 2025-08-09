@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Modules\Category\Http\Requests\CategoryRequest;
+use Modules\Category\Http\Requests\UpdateCategoryRequest;
 use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepository;
 use Modules\Category\Services\CategoryService;
@@ -18,7 +20,7 @@ class CategoryController extends Controller implements HasMiddleware
         return [
             new Middleware('role:المشرف', only: ['create', 'store', 'show', 'edit', 'update', 'destroy']),
 
-            new Middleware('role:مورد|المشرف', only: ['index', 'showImage']),
+            new Middleware('role:مورد|المشرف|صيدلي', only: ['index', 'showImage']),
         ];
     }
 
@@ -48,16 +50,11 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048|mimes:png,jpg',
-            'subcategories' => 'nullable|array',
-            'subcategories.*' => 'nullable|string|max:255',
-        ]);
+        $validatedData = $request->validated();
 
-        $this->categoryService->store($validated + ['image' => $request->file('image')]);
+        $this->categoryService->store($validatedData + ['image' => $request->file('image')]);
 
         return redirect()->route('category.index')->with('success', 'تمت إضافة الصنف بنجاح');
     }
@@ -92,18 +89,11 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048|mimes:png,jpg',
-            'subcategories' => 'nullable|array',
-            'subcategories.*' => 'nullable|string|max:255',
-        ]);
+       $validatedData = $request->validated();
 
-        $image = $request->file('image');
-
-        $success = $this->categoryService->updateCategory($category, $validated, $image);
+        $success = $this->categoryService->updateCategory($category, $validatedData);
 
         if ($success) {
             return redirect()->route('category.index')->with('success', 'تم تحديث الصنف بنجاح.');

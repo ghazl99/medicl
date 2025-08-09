@@ -2,29 +2,38 @@
 
 namespace Modules\Medicine\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Imports\MedicineImport;
 use App\Http\Controllers\Controller;
+use App\Imports\MedicineImport;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use Modules\Medicine\Models\Medicine;
-use Illuminate\Routing\Controllers\Middleware;
 use Modules\Category\Services\CategoryService;
-use Modules\Medicine\Services\MedicineService;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Modules\Medicine\Http\Requests\medicineRequest;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Modules\Medicine\Http\Requests\MedicineImportRequest;
+use Modules\Medicine\Http\Requests\MedicineRequest;
+use Modules\Medicine\Models\Medicine;
+use Modules\Medicine\Services\MedicineService;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MedicineController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('role:المشرف|مورد|صيدلي', only: ['index', 'showImage','newMedicines']),
-            new Middleware('role:المشرف|مورد', only: ['create', 'store', 'edit', 'update', 'destroy',
-            'import','storeCheckedMedicine','toggleAvailability','updateNote']),
-            new Middleware('role:المشرف', only: ['toggleNewStatus'])
+            new Middleware('role:المشرف|مورد|صيدلي', only: ['index', 'showImage', 'newMedicines']),
+            new Middleware('role:المشرف|مورد', only: [
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+                'import',
+                'storeCheckedMedicine',
+                'toggleAvailability',
+                'updateNote'
+            ]),
+            new Middleware('role:المشرف', only: ['toggleNewStatus']),
         ];
     }
 
@@ -40,13 +49,13 @@ class MedicineController extends Controller implements HasMiddleware
         $medicines = $this->medicineService->getAllMedicines($keyword);
 
         $supplierMedicineIds = [];
-        if (Auth::user()->hasRole('\u0645\u0648\u0631\u062f')) {
+        if (Auth::user()->hasRole('مورد')) {
             $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
         }
 
         // Handle AJAX request
         if ($request->ajax()) {
-            $viewName = Auth::user()->hasRole('\u0645\u0648\u0631\u062f')
+            $viewName = Auth::user()->hasRole('مورد')
                 ? 'medicine::admin._medicines_supplier_table_rows'
                 : 'medicine::admin._medicines_admin_table_rows';
 
@@ -77,13 +86,20 @@ class MedicineController extends Controller implements HasMiddleware
         $keyword = $request->input('search', null);
         $user = Auth::user();
         $medicines = $this->medicineService->getAllMedicinesSupplier($keyword, $user);
-
         if ($request->ajax()) {
-            return response()->json([
-                'html' => view('medicine::admin._myMedicine_supplier_table_rows', ['medicines' => $medicines])->render(),
-                'pagination' => (string) $medicines->links(),
-            ]);
+            try {
+                return response()->json([
+                    'html' => view('medicine::admin._myMedicine_supplier_table_rows', ['medicines' => $medicines])->render(),
+                    'pagination' => (string) $medicines->links(),
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => true,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
         }
+
 
         return view('medicine::admin.medicineSupplier', ['medicines' => $medicines]);
     }
@@ -97,7 +113,7 @@ class MedicineController extends Controller implements HasMiddleware
     }
 
     // Store new medicine
-    public function store(medicineRequest $request)
+    public function store(MedicineRequest $request)
     {
         try {
             $validatedData = $request->validated();
@@ -231,5 +247,17 @@ class MedicineController extends Controller implements HasMiddleware
         $medicines = $this->medicineService->getNewMedicines();
 
         return view('medicine::admin.newMedicines', compact('medicines'));
+    }
+
+    // Update the offer via service
+    public function updateOffer(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'offer' => 'nullable|string', // Validate offer as percentage
+        ]);
+
+        $this->medicineService->updateOffer($id, $validated['offer']);
+
+        return response()->json(['success' => true]);
     }
 }

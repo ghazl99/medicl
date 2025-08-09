@@ -1,6 +1,6 @@
 @forelse ($suppliers as $supplier)
     <tr>
-        <td>{{ $supplier->name }}</td>
+        {{-- <td>{{ $supplier->name }}</td> --}}
         <td>{{ $supplier->phone }}</td>
         <td>{{ $supplier->workplace_name }}</td>
         <td>{{ $supplier->city }}</td>
@@ -27,6 +27,6 @@
 @empty
     <tr>
         {{-- Adjust colspan based on the number of columns in your table (6 in this case) --}}
-        <td colspan="6" class="text-center">لا توجد موردين متاحين.</td>
+        <td  class="text-center">لا توجد موردين متاحين.</td>
     </tr>
 @endforelse

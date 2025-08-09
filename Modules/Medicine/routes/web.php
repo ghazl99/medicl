@@ -37,8 +37,10 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::post('/medicine-user/{id}/update-note', [MedicineController::class, 'updateNote']);
 
     Route::post('/medicines/{medicine}/toggle-new', [MedicineController::class, 'toggleNewStatus'])
-    ->name('medicines.toggle-new');
+        ->name('medicines.toggle-new');
 
     Route::get('/medicines-new', [MedicineController::class, 'newMedicines'])->name('medicines.new');
+
+    Route::post('/medicine-user/{id}/update-offer', [MedicineController::class, 'updateOffer']);
 
 });

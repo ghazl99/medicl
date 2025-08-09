@@ -13,11 +13,13 @@ class registerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|max:20|regex:/^\+?[0-9]{7,20}$/|unique:users,phone',
             'workplace_name' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
+            'cities' => 'required|array|min:1',
+            'cities.*' => 'exists:cities,id',
+
             'password' => [
                 'required',
                 'string',

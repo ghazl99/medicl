@@ -2,13 +2,13 @@
 
 namespace App\Imports;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
+// use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
+// use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Modules\Category\Models\Category;
 
-class MedicineImport implements ShouldQueue, ToModel, WithChunkReading, WithHeadingRow
+class MedicineImport implements ToModel, WithHeadingRow //,ShouldQueue, WithChunkReading
 {
     /**
      * @return \Illuminate\Database\Eloquent\Model|null
@@ -33,13 +33,12 @@ class MedicineImport implements ShouldQueue, ToModel, WithChunkReading, WithHead
             'public_dollar_new' => $row['العموم دولار الجديد'],
             'net_syp' => $row['نت سوري'],
             'public_syp' => $row['عموم سوري'],
-            'note_2' => $row['ملاحظات_2'] ?? $row['ملاحظات'], // إذا نفس العمود
             'price_change_percentage' => $row['نسبة الغلاء او الرخص'] ?? null,
         ]);
     }
 
-    public function chunkSize(): int
-    {
-        return 1000;
-    }
+    // public function chunkSize(): int
+    // {
+    //     return 1000;
+    // }
 }

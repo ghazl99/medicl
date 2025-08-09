@@ -2,13 +2,15 @@
 
 namespace Modules\Medicine\Services;
 
-use Illuminate\Pagination\LengthAwarePaginator;
+use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Medicine\Repositories\MedicineRepositoryInterface;
 
 class MedicineService
 {
+    use \Modules\Core\Traits\ImageTrait;
     protected MedicineRepositoryInterface $medicineRepository;
 
     public function __construct(MedicineRepositoryInterface $medicineRepository)
@@ -45,28 +47,31 @@ class MedicineService
      */
     public function createMedicine(array $data, $user): Medicine
     {
-        return DB::transaction(function () use ($data, $user) {
-            $image = $data['image'] ?? null;
-            unset($data['image']);
+        DB::beginTransaction();
+        $image = $data['image'] ?? null;
+        unset($data['image']);
 
-            $medicine = $this->medicineRepository->store($data);
+        $medicine = $this->medicineRepository->store($data);
 
-            if (! $user) {
-                throw new \Exception('المستخدم غير موجود أو غير مسجل الدخول.');
-            }
+        if (! $user) {
+            throw new \Exception('المستخدم غير موجود أو غير مسجل الدخول.');
+        }
 
-            if ($user->hasRole('مورد')) {
-                $user->medicines()->attach($medicine->id);
-            }
-
-            if ($image) {
-                $medicine
-                    ->addMedia($image)
-                    ->toMediaCollection('medicine_images', 'private_media');
-            }
-
-            return $medicine;
-        });
+        if ($user->hasRole('مورد')) {
+            $user->medicines()->attach($medicine->id);
+        }
+        if ($image) {
+            // Upload with resize if size > 2048KB
+            $this->uploadOrUpdateImageWithResize(
+                $medicine,
+                $image,
+                'medicine_images',
+                'private_media',
+                false
+            );
+        }
+        DB::commit();
+        return $medicine;
     }
 
     /**
@@ -126,8 +131,14 @@ class MedicineService
         return $this->medicineRepository->updateNewStatus($medicine, $isNew, $startDate, $endDate);
     }
 
-     public function getNewMedicines()
+    public function getNewMedicines()
     {
         return $this->medicineRepository->getNewMedicines();
+    }
+
+    // Call repository to update offer
+    public function updateOffer(int $id, ?string $offer): bool
+    {
+        return $this->medicineRepository->updateOffer($id, $offer);
     }
 }

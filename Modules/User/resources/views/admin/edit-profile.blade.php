@@ -1,5 +1,7 @@
-@extends('core::components.layouts.master')
-
+@extends('core::layouts.master')
+@section('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endsection
 @section('content')
     <br>
     <div class="card">
@@ -10,18 +12,20 @@
                 @csrf
                 @method('patch')
 
-                <div class="row g-3">
-                    {{-- اسم المستخدم --}}
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">اسم المستخدم</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                            name="name" value="{{ old('name', $user->name) }}" placeholder="ادخل اسم المستخدم" required
-                            autocomplete="name" autofocus />
-                        @error('name')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
 
+                <div class="row g-3">
+                    @hasanyrole('المشرف|صيدلي')
+                        {{-- اسم المستخدم --}}
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">اسم المستخدم</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                name="name" value="{{ old('name', $user->name) }}" placeholder="ادخل اسم المستخدم" required
+                                autocomplete="name" autofocus />
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    @endhasanyrole
                     {{-- البريد الإلكتروني --}}
                     <div class="col-md-6">
                         <label for="email" class="form-label">البريد الإلكتروني</label>
@@ -56,20 +60,35 @@
                         @enderror
                     </div>
 
-                    {{-- المدينة --}}
+                    {{-- المدن --}}
                     <div class="col-md-6">
-                        <label for="city" class="form-label">المدينة</label>
-                        <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
-                            name="city" value="{{ old('city', $user->city) }}" placeholder="اسم المدينة" required />
-                        @error('city')
+                        <label for="cities" class="form-label">المدن</label>
+                        <select name="cities[]" id="cities" class="form-control @error('cities') is-invalid @enderror"
+                            multiple>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}"
+                                    {{ in_array($city->id, old('cities', $user->cities->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                    {{ $city->name }}
+                                </option>
+                                @foreach ($city->children as $subCity)
+                                    <option value="{{ $subCity->id }}"
+                                        {{ in_array($subCity->id, old('cities', $user->cities->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        -- {{ $subCity->name }}
+                                    </option>
+                                @endforeach
+                            @endforeach
+                        </select>
+                        @error('cities')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+
                     {{-- حقل رفع الصورة --}}
                     <div class="col-md-6">
                         <label for="profile_photo" class="form-label">تغيير صورة الملف الشخصي</label>
-                        <input type="file" class="form-control @error('profile_photo') is-invalid @enderror"
-                            id="profile_photo" name="profile_photo" accept="image/*" />
+                        <input type="file" class="form-control" id="profile_photo" name="profile_photo"
+                            accept="image/*" />
+
                         @error('profile_photo')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -80,4 +99,17 @@
             </form>
         </div>
     </div>
+@endsection
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#cities').select2({
+                tags: true,
+                tokenSeparators: [',', '،'],
+                width: '100%' 
+            });
+        });
+    </script>
 @endsection

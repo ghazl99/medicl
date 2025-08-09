@@ -13,7 +13,7 @@ class MedicineRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png',
             'type' => 'nullable|string|max:255',
             'composition' => 'nullable|string|max:255',
             'form' => 'nullable|string|max:255',
@@ -25,7 +25,6 @@ class MedicineRequest extends FormRequest
             'public_dollar_new' => 'nullable|numeric|min:0',
             'net_syp' => 'nullable|numeric|min:0',
             'public_syp' => 'nullable|numeric|min:0',
-            'note_2' => 'nullable|string|max:500',
             'price_change_percentage' => 'nullable|numeric',
         ];
     }

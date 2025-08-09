@@ -12,7 +12,7 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -20,9 +20,11 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
 
             ],
+            'profile_photo' => ['nullable','image','mimes:png,jpg,jpeg'],
             'phone' => ['required', 'string', 'max:20'],
             'workplace_name' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
+            'cities' => ['required', 'array'],
+            'cities.*' => ['integer', 'exists:cities,id'],
             'profile_photo' => ['nullable', 'image', 'max:2048', 'mimes:png,jpg,jpeg'],
             'is_approved' => ['nullable', 'boolean'],
 

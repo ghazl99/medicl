@@ -62,4 +62,7 @@ interface MedicineRepositoryInterface
     public function updateNewStatus(Medicine $medicine, bool $isNew, string $startDate, string $endDate): Medicine;
 
     public function getNewMedicines();
+
+    // Update offer for the specific medicine-user pivot record
+    public function updateOffer(int $id, ?string $offer): bool;
 }

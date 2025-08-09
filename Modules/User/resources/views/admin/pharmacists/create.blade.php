@@ -1,12 +1,14 @@
-@extends('core::components.layouts.master')
+@extends('core::layouts.master')
+@section('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endsection
 @section('content')
     <br>
     <div class="card">
         <div class="card-body">
             <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">إضافة صيدلي جديد</h2>
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-
+            <form method="POST" action="{{ route('register.pharmacists') }}">
+            @csrf
                 <div class="row g-3">
                     {{-- اسم المستخدم --}}
                     <div class="col-md-6">
@@ -74,10 +76,21 @@
 
                     {{-- المدينة --}}
                     <div class="col-md-6">
-                        <label for="city" class="form-label">المدينة</label>
-                        <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
-                            name="city" value="{{ old('city') }}" placeholder="اسم المدينة" required />
-                        @error('city')
+                        <label for="cities" class="form-label">المدن</label>
+                        <select name="cities[]" id="cities" class="form-control @error('cities') is-invalid @enderror"
+                            multiple>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}">
+                                    {{ $city->name }}
+                                </option>
+                                @foreach ($city->children as $subCity)
+                                    <option value="{{ $subCity->id }}">
+                                        -- {{ $subCity->name }}
+                                    </option>
+                                @endforeach
+                            @endforeach
+                        </select>
+                        @error('cities')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
@@ -88,9 +101,20 @@
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
-
                 <button type="submit" class="btn btn-primary btn-sm mt-4">إنشاء الحساب</button>
             </form>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#cities').select2({
+                tags: true,
+                tokenSeparators: [',', '،']
+            });
+        });
+    </script>
 @endsection

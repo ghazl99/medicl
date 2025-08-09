@@ -29,7 +29,7 @@
                 <table class="table table-striped table-bordered text-right" id="suppliers-datatable" dir="rtl">
                     <thead class="text-right">
                         <tr>
-                            <th>اسم المورد</th>
+                            {{-- <th>اسم المورد</th> --}}
                             <th>رقم الهاتف</th>
                             <th>اسم الشركة</th>
                             <th>المدينة</th>

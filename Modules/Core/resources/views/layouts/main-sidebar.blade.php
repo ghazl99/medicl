@@ -179,19 +179,10 @@
 
         @hasanyrole('المشرف|مورد')
             {{-- dashboard --}}
-            <li class="slide">
+            <li class="slide mt-1">
                 <a class="side-menu_item" href="{{ route('dashboard') }}">
                     <i class="side-menu__icon bi bi-house-door p-2"></i>
                     <span class="side-menu__label">الرئيسية</span>
-                </a>
-            </li>
-
-            {{-- categories --}}
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('category.index') }}">
-                    <i class="side-menu__icon bi bi-grid p-2" viewBox="0 0 24 24"></i>
-
-                    <span class="side-menu__label">الأصناف</span>
                 </a>
             </li>
 
@@ -204,6 +195,15 @@
             </li> --}}
         @endhasanyrole
         @role('المشرف')
+            {{-- categories --}}
+            <li class="slide">
+                <a class="side-menu_item" href="{{ route('category.index') }}">
+                    <i class="side-menu__icon bi bi-grid p-2" viewBox="0 0 24 24"></i>
+
+                    <span class="side-menu__label">الأصناف</span>
+                </a>
+            </li>
+
             {{-- users --}}
             <li class="slide">
                 <a class="side-menu_item" href="{{ route('pharmacists.index') }}">

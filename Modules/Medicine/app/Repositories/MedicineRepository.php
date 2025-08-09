@@ -5,6 +5,7 @@ namespace Modules\Medicine\Repositories;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
+use Modules\Medicine\Models\MedicineUser;
 use Modules\User\Models\User;
 
 class MedicineRepository implements MedicineRepositoryInterface
@@ -33,36 +34,32 @@ class MedicineRepository implements MedicineRepositoryInterface
      */
     public function getMedicinesBySupplier(?string $keyword, $user)
     {
-        if (! $user->hasRole('مورد')) {
-            return collect(); // return empty collection for non-suppliers
+        if ($user->hasRole('مورد')) {
+            if ($keyword) {
+                $userMedicineIds = $user->medicines()->pluck('medicines.id');
+
+                $searchResults = Medicine::search($keyword)->get();
+
+                $filtered = $searchResults->whereIn('id', $userMedicineIds);
+
+                $perPage = 10;
+                $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+                $currentItems = $filtered->slice(($currentPage - 1) * $perPage, $perPage)->values();
+                $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $currentItems,
+                    $filtered->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+                );
+
+                return $paginated;
+            }
+
+            return $user->medicines()->with(['category', 'suppliers'])->paginate(10);
         }
 
-        if ($keyword) {
-            // Get medicine IDs for the supplier
-            $userMedicineIds = $user->medicines()->pluck('medicines.id');
-
-            // Search results using Laravel Scout
-            $searchResults = Medicine::search($keyword)->get();
-
-            // Filter results to only include supplier's medicines
-            $filtered = $searchResults->whereIn('id', $userMedicineIds);
-
-            // Manual pagination
-            $perPage = 10;
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-            $currentItems = $filtered->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-            return new LengthAwarePaginator(
-                $currentItems,
-                $filtered->count(),
-                $perPage,
-                $currentPage,
-                ['path' => LengthAwarePaginator::resolveCurrentPath()]
-            );
-        }
-
-        // Return all supplier medicines with relations
-        return $user->medicines()->with(['category', 'suppliers'])->paginate(10);
+        return collect();
     }
 
     /**
@@ -161,6 +158,7 @@ class MedicineRepository implements MedicineRepositoryInterface
         return $medicine;
     }
 
+    //get all new medicines
     public function getNewMedicines()
     {
         // Fetch medicines where is_new is true and dates are valid
@@ -170,5 +168,16 @@ class MedicineRepository implements MedicineRepositoryInterface
             ->with('category') // optional: load related data
             ->latest()
             ->paginate(10);
+    }
+
+    /**
+     * Update offer by quantity.
+     **/
+    public function updateOffer(int $id, ?string $offer): bool
+    {
+        $medicineUser = MedicineUser::findOrFail($id); // Find pivot model
+        $medicineUser->offer = $offer;
+
+        return $medicineUser->save(); // Save updated offer
     }
 }

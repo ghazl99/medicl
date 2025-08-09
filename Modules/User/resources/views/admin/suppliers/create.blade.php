@@ -1,4 +1,7 @@
 @extends('core::components.layouts.master')
+@section('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endsection
 @section('content')
     <br>
     <div class="card">
@@ -73,12 +76,23 @@
                         @enderror
                     </div>
 
-                    {{-- المدينة --}}
+                    {{-- المدن --}}
                     <div class="col-md-6">
-                        <label for="city" class="form-label">المدينة</label>
-                        <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
-                            name="city" value="{{ old('city') }}" placeholder="اسم المدينة" required />
-                        @error('city')
+                        <label for="cities" class="form-label">المدن</label>
+                        <select name="cities[]" id="cities" class="form-control @error('cities') is-invalid @enderror"
+                            multiple>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}">
+                                    {{ $city->name }}
+                                </option>
+                                @foreach ($city->children as $subCity)
+                                    <option value="{{ $subCity->id }}">
+                                        -- {{ $subCity->name }}
+                                    </option>
+                                @endforeach
+                            @endforeach
+                        </select>
+                        @error('cities')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
@@ -94,4 +108,16 @@
             </form>
         </div>
     </div>
-    @endsection
+@endsection
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#cities').select2({
+                tags: true,
+                tokenSeparators: [',', '،']
+            });
+        });
+    </script>
+@endsection

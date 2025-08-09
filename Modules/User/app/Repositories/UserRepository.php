@@ -16,7 +16,7 @@ class UserRepository implements UserRepositoryInterface
             $query->whereIn('id', $searchedUserIds);
         }
 
-        return $query->paginate(5);
+        return $query->paginate(10);
     }
 
     public function getSuppliers(?string $keyword = null)
@@ -28,7 +28,7 @@ class UserRepository implements UserRepositoryInterface
             $query->whereIn('id', $searchedUserIds);
         }
 
-        return $query->paginate(5);
+        return $query->paginate(10);
     }
 
     public function create(array $data): User

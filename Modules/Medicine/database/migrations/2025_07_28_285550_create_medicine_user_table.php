@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('medicine_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('is_available')->default(true);
-            $table->string('notes')->nullable(); // Add a note column for additional information
+            $table->string('notes')->nullable();
+            $table->string('offer')->nullable();
             $table->timestamps();
             $table->unique(['medicine_id', 'user_id']);
         });

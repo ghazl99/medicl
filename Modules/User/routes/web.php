@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
     // Supplier registration form
     Route::get('register-suppliers', [UserController::class, 'create_suppliers'])->name('register.suppliers');
 
-    // Store new pharmacist or supplier
+    // Store new  supplier
     Route::post('register', [UserController::class, 'store'])->name('register');
 
     // Login form
@@ -83,17 +83,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('user::admin.dashboard');
     })->middleware(['approved'])->name('dashboard');
-
-    // User resource routes (protected)
-    Route::resource('users', UserController::class)->names('user');
 });
 
 Route::middleware(['auth', 'approved'])->group(function () {
+    Route::get('/user/profile_photo/{media}', [UserController::class, 'showImage'])->name('user.profile_photo');
+
     // User management
     Route::resource('users', UserController::class)->names('users');
 
     // Create pharmacist form
     Route::get('register-pharmacists', [UserController::class, 'create_pharmacists'])->name('register.pharmacists');
+    Route::post('register-pharmacists', [UserController::class, 'store'])->name('register.pharmacists');
 
     // List all pharmacists
     Route::get('/pharmacists', [UserController::class, 'pharmacistsList'])->name('pharmacists.index');

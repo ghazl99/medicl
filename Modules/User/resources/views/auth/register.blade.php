@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>إنشاء حساب - نظام إدارة الصيدليات</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         body {
             background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
@@ -59,7 +61,7 @@
 
             <div class="row g-3">
                 {{-- اسم المستخدم --}}
-                <div class="col-6">
+                {{-- <div class="col-6">
                     <label for="name" class="form-label">اسم المستخدم</label>
                     <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
                         name="name" value="{{ old('name') }}" placeholder="ادخل اسم المستخدم" required
@@ -67,7 +69,7 @@
                     @error('name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
-                </div>
+                </div> --}}
 
                 {{-- البريد الإلكتروني --}}
                 <div class="col-6">
@@ -79,7 +81,15 @@
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
-
+                {{-- رقم الهاتف --}}
+                <div class="col-6">
+                    <label for="phone" class="form-label">رقم الهاتف</label>
+                    <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
+                        name="phone" value="{{ old('phone') }}" placeholder="09xxxxxxxx" required />
+                    @error('phone')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
                 {{-- كلمة المرور --}}
                 <div class="col-6">
                     <label for="password" class="form-label">كلمة المرور</label>
@@ -101,15 +111,6 @@
                     @enderror
                 </div>
 
-                {{-- رقم الهاتف --}}
-                <div class="col-6">
-                    <label for="phone" class="form-label">رقم الهاتف</label>
-                    <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
-                        name="phone" value="{{ old('phone') }}" placeholder="09xxxxxxxx" required />
-                    @error('phone')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
 
                 {{-- اسم مكان العمل --}}
                 <div class="col-6">
@@ -122,12 +123,23 @@
                     @enderror
                 </div>
 
-                {{-- المنطقة --}}
-                <div class="col-6">
-                    <label for="city" class="form-label">المنطقة</label>
-                    <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
-                        name="city" value="{{ old('city') }}" placeholder="اسم المنطقة" required />
-                    @error('city')
+                {{-- المدن --}}
+                <div class="col-md-6">
+                    <label for="cities" class="form-label">المدن</label>
+                    <select name="cities[]" id="cities" class="form-control @error('cities') is-invalid @enderror"
+                        multiple>
+                        @foreach ($cities as $city)
+                            <option value="{{ $city->id }}">
+                                {{ $city->name }}
+                            </option>
+                            @foreach ($city->children as $subCity)
+                                <option value="{{ $subCity->id }}">
+                                    -- {{ $subCity->name }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    </select>
+                    @error('cities')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
@@ -143,7 +155,19 @@
             <button type="submit" class="btn btn-primary w-100 mt-4">إنشاء الحساب</button>
         </form>
     </div>
-   
+
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(function() {
+        $('#cities').select2({
+            tags: true,
+            dir: "rtl",
+            tokenSeparators: [',', '،']
+        });
+    });
+</script>
 
 </html>
