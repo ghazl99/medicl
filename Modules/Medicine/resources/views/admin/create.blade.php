@@ -49,7 +49,7 @@
                     <div class="col-md-6">
                         <label for="composition" class="form-label">التركيب</label>
                         <input type="text" class="form-control" id="composition" name="composition"
-                            value="{{ old('composition') }}" placeholder="ادخل تركيب الدواء" />
+                            value="{{ old('composition') }}" placeholder="ادخل اسم الدواء" />
                         @error('composition')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -85,6 +85,15 @@
                         @enderror
                     </div>
 
+                     <!--  الوصف -->
+                    <div class="col-md-6">
+                        <label for="description" class="form-label">وصف الدواء</label>
+                        <input type="text" class="form-control" id="description"
+                            name="description" value="{{ old('description') }}" placeholder="وصف الدواء" />
+                        @error('description')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
                     <!-- نت دولار حالي -->
                     {{-- <div class="col-md-6">
                         <label for="net_dollar_old" class="form-label">نت دولار حالي</label>
@@ -150,15 +159,7 @@
                         @enderror
                     </div> --}}
 
-                    <!-- ملاحظات 2 -->
-                    {{-- <div class="col-md-6">
-                        <label for="note_2" class="form-label">ملاحظات إضافية</label>
-                        <input type="text" class="form-control" id="note_2"
-                            name="note_2" value="{{ old('note_2') }}" placeholder="ملاحظات إضافية" />
-                        @error('note_2')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
+
 
                     <!-- نسبة تغير السعر -->
                     {{-- <div class="col-md-6">

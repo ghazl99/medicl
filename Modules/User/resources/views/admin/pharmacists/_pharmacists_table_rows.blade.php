@@ -3,7 +3,7 @@
          <td>{{ $pharmacist->name }}</td>
          <td>{{ $pharmacist->phone }}</td>
          <td>{{ $pharmacist->workplace_name }}</td>
-         <td>{{ $pharmacist->city }}</td>
+         <td>{{ $pharmacist->cities->pluck('name')->implode(', ') }}</td>
          <td>
              @if ($pharmacist->is_approved)
                  <span class="badge bg-success">معتمد</span>

@@ -44,7 +44,7 @@ class Medicine extends Model implements HasMedia
         'price_change_percentage',
         'is_new',
         'new_start_date',
-        'new_end_date',
+        'new_end_date','description'
     ];
 
     protected $casts = [

@@ -26,6 +26,7 @@ class MedicineRequest extends FormRequest
             'net_syp' => 'nullable|numeric|min:0',
             'public_syp' => 'nullable|numeric|min:0',
             'price_change_percentage' => 'nullable|numeric',
+            'description' => 'nullable|string',
         ];
     }
 

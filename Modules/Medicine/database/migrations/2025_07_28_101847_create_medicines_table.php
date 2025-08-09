@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('net_syp', 10, 2)->nullable(); // نت سوري
             $table->decimal('public_syp', 10, 2)->nullable(); // عموم سوري
             $table->string('price_change_percentage')->nullable();
-
+            $table->string('description')->nullable();
             $table->boolean('is_new')->default(false);
             $table->date('new_start_date')->nullable();
             $table->date('new_end_date')->nullable();

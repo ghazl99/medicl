@@ -109,7 +109,6 @@ class User extends Authenticatable implements HasMedia
             'name' => $this->name,
             'phone' => $this->phone,
             'workplace_name' => $this->workplace_name,
-            'city' => $this->city,
         ];
     }
     public function cities()
