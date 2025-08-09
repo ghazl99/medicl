@@ -94,7 +94,7 @@ class Medicine extends Model implements HasMedia
             'form' => $this->form,
             'company' => $this->company,
             'note' => $this->note,
-
+            'description'=> $this->description,
         ];
     }
 }

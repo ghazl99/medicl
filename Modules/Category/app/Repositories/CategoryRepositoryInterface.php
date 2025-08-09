@@ -4,14 +4,15 @@ namespace Modules\Category\Repositories;
 
 use Modules\Category\Models\Category;
 
+
 interface CategoryRepositoryInterface
 {
-    /**
-     * Get all categories.
-     *
-     * @return Collection<int, Medicine>
-     */
+
     public function index();
+
+    public function getAllSubcategories(): mixed;
+
+    public function getSubcategoryWithMedicines(int $subcategoryId);
 
     public function store(array $data);
 

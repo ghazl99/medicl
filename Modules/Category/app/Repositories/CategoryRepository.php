@@ -19,6 +19,15 @@ class CategoryRepository implements CategoryRepositoryInterface
             ->paginate(20);
     }
 
+    public function getAllSubcategories(): mixed
+    {
+        return Category::whereNotNull('parent_id')->get();
+    }
+
+    public function getSubcategoryWithMedicines(int $subcategoryId)
+    {
+        return Category::with('medicines')->findOrFail($subcategoryId);
+    }
     /**
      * Store a new category with optional subcategories.
      */

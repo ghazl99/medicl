@@ -7,7 +7,9 @@
         padding: 2rem 1rem;
         min-height: 100vh;
         transition: background 0.3s ease;
+
     }
+
 
     /* Sidebar Title */
     .sidebar-title {
@@ -186,6 +188,7 @@
                 </a>
             </li>
 
+
             {{-- offers --}}
             {{-- <li class="slide">
                 <a class="side-menu_item" href="{{ route('offers.index') }}">
@@ -226,7 +229,22 @@
                     ->whereDate('new_end_date', '>=', now())
                     ->count();
             @endphp
-
+            {{-- show all subCategories with medicine it --}}
+            @isset($subcategories)
+                @if ($subcategories->isNotEmpty())
+                    <li class="slide">
+                        <a class="side-menu_item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i
+                                class="side-menu__icon bi bi-diagram-3 " viewBox="0 0 24 24"></i><span
+                                class="side-menu__label">تصنيفات</span><i class="angle fe fe-chevron-down"></i></a>
+                        <ul class="slide-menu">
+                            @foreach ($subcategories as $subcategory)
+                                <li><a class="slide-item"
+                                        href="{{ route('category.show', $subcategory->id) }}">{{ $subcategory->name }}</a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
+            @endisset
             {{-- medicines --}}
             <li class="slide">
                 <a class="side-menu_item" data-toggle="slide" href="{{ url('/' . ($page = '#')) }}"><i

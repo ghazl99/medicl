@@ -35,6 +35,6 @@
     </tr>
 @empty
     <tr>
-        <td colspan="11" class="text-center">لا توجد أدوية مطابقة لبحثك.</td>
+        <td  class="text-center">لا توجد أدوية مطابقة لبحثك.</td>
     </tr>
 @endforelse

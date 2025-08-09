@@ -15,7 +15,7 @@ class CategoryService
 
     public function __construct(CategoryRepositoryInterface $categoryRepository)
     {
-        // Inject the category repository
+        // Inject repository dependency
         $this->categoryRepository = $categoryRepository;
     }
 
@@ -26,43 +26,56 @@ class CategoryService
      */
     public function getAllcategories()
     {
-        // Fetch all categories from repository
+        // Retrieve categories from repository
         return $this->categoryRepository->index();
     }
 
+    // Get all subcategories
+    public function getAllSubcategories(): mixed
+    {
+        return $this->categoryRepository->getAllSubcategories();
+    }
+
+    // Get subcategory with related medicines
+    public function getSubcategoryWithMedicines(int $subcategoryId)
+    {
+        return $this->categoryRepository->getSubcategoryWithMedicines($subcategoryId);
+    }
+
+    // Store new category with optional image
     public function store(array $data)
     {
         DB::beginTransaction();
 
         try {
-            // Create category
+            // Create category record
             $category = $this->categoryRepository->store($data);
 
-            // If image is provided, upload with resize
+            // Upload image if provided
             if (isset($data['image'])) {
                 $this->uploadOrUpdateImageWithResize(
                     $category,
                     $data['image'],
-                    'category_images', // Media collection name
-                    'private_media',   // Disk name
-                    false              // Don't replace old image
+                    'category_images', // Media collection
+                    'private_media',   // Disk
+                    false              // Don't replace existing image
                 );
             }
 
             DB::commit();
             return $category;
         } catch (\Throwable $e) {
-            // Rollback on error
+            // Rollback on failure
             DB::rollBack();
             throw $e;
         }
     }
 
+    // Update existing category and optionally update image
     public function updateCategory(Category $category, array $data): bool
     {
         DB::beginTransaction();
 
-        // Ensure category exists
         if (! $category) {
             return false;
         }
@@ -70,14 +83,14 @@ class CategoryService
         // Update category data
         $this->categoryRepository->update($category, $data);
 
-        // If new image is provided, upload with resize and replace old
+        // Upload new image and replace old one if provided
         if (isset($data['image'])) {
             $this->uploadOrUpdateImageWithResize(
                 $category,
                 $data['image'],
-                'category_images', // Media collection name
-                'private_media',   // Disk name
-                true              // Don't replace old image
+                'category_images', // Media collection
+                'private_media',   // Disk
+                true               // Replace old image
             );
         }
 

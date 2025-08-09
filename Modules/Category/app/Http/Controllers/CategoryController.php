@@ -18,9 +18,9 @@ class CategoryController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('role:المشرف', only: ['create', 'store', 'show', 'edit', 'update', 'destroy']),
+            new Middleware('role:المشرف', only: ['create', 'store', 'edit', 'update', 'destroy']),
 
-            new Middleware('role:مورد|المشرف|صيدلي', only: ['index', 'showImage']),
+            new Middleware('role:مورد|المشرف|صيدلي', only: ['index', 'showImage','show','sidebar']),
         ];
     }
 
@@ -38,6 +38,13 @@ class CategoryController extends Controller implements HasMiddleware
 
         return view('category::admin.index', compact('categories'));
     }
+
+    public function sidebar()
+    {
+        $subcategories = $this->categoryService->getAllSubcategories();
+        return view('core::layouts.main-sidebar', compact('subcategories'));
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -75,7 +82,9 @@ class CategoryController extends Controller implements HasMiddleware
      */
     public function show($id)
     {
-        return view('category::show');
+        $subcategory = $this->categoryService->getSubcategoryWithMedicines($id);
+
+        return view('category::admin.show', compact('subcategory'));
     }
 
     /**
