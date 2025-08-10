@@ -2,11 +2,9 @@
 
 namespace Modules\User\Services;
 
-use Modules\User\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Modules\User\Models\User;
 use Modules\User\Repositories\UserRepositoryInterface;
 
 class UserService
@@ -48,14 +46,13 @@ class UserService
             }
             $user = $this->userRepository->create($data);
 
-            if (!empty($cities)) {
+            if (! empty($cities)) {
                 $user->cities()->sync($cities);
             }
 
             return $user;
         });
     }
-
 
     public function getUserById(int $id): ?User
     {
@@ -73,12 +70,12 @@ class UserService
 
         if (isset($data['profile_photo'])) {
             $this->uploadOrUpdateImageWithResize(
-                    $user,
-                    $data['profile_photo'],
-                    'profile_photo', // Media collection name
-                    'private_media',   // Disk name
-                    true              // Don't replace old image
-                );
+                $user,
+                $data['profile_photo'],
+                'profile_photo', // Media collection name
+                'private_media',   // Disk name
+                true              // Don't replace old image
+            );
             unset($data['profile_photo']);
         }
 
@@ -89,6 +86,7 @@ class UserService
             $user->cities()->sync($data['cities']);
         }
         DB::commit();
+
         return $user;
     }
 }

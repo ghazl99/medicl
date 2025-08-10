@@ -22,9 +22,4 @@ class MedicineUser extends Model
     {
         return $this->belongsTo(Medicine::class, 'medicine_id');
     }
-
-    public function offers()
-    {
-        return $this->hasMany(OfferSupplierMedicine::class, 'medicine_user_id');
-    }
 }

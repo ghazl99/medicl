@@ -2,9 +2,9 @@
 
 namespace Modules\Core\Traits;
 
-use Intervention\Image\Laravel\Facades\Image;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Log;
+use Intervention\Image\Laravel\Facades\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait ImageTrait
@@ -16,11 +16,11 @@ trait ImageTrait
         string $disk = 'private_media',
         bool $replaceOld = false
     ) {
-        if (!$images) {
+        if (! $images) {
             return;
         }
 
-        if (!is_array($images)) {
+        if (! is_array($images)) {
             $images = [$images];
         }
 
@@ -30,8 +30,9 @@ trait ImageTrait
 
         foreach ($images as $image) {
             try {
-                if (!$image instanceof UploadedFile || !$image->isValid()) {
-                    Log::warning('Skipping invalid file: ' . ($image ? $image->getClientOriginalName() : 'N/A'));
+                if (! $image instanceof UploadedFile || ! $image->isValid()) {
+                    Log::warning('Skipping invalid file: '.($image ? $image->getClientOriginalName() : 'N/A'));
+
                     continue;
                 }
 
@@ -43,12 +44,12 @@ trait ImageTrait
 
                 if ($image->getSize() > 2048 * 1024) {
                     $processedImage = Image::read($image)
-                        ->resize(1200, null, function ($constraint) {
+                        ->resize(1200, 1200, function ($constraint) {
                             $constraint->aspectRatio();
                             $constraint->upsize();
                         });
 
-                    $tempPath = sys_get_temp_dir() . '/' . uniqid('resized_') . '.' . $safeExtension;
+                    $tempPath = sys_get_temp_dir().'/'.uniqid('resized_').'.'.$safeExtension;
                     $processedImage->save($tempPath);
 
                     $model->addMedia($tempPath)
@@ -64,7 +65,7 @@ trait ImageTrait
                         ->toMediaCollection($collection, $disk);
                 }
             } catch (Exception $e) {
-                Log::error('Image upload failed for ' . ($image->getClientOriginalName() ?? 'unknown file') . ': ' . $e->getMessage(), ['exception' => $e]);
+                Log::error('Image upload failed for '.($image->getClientOriginalName() ?? 'unknown file').': '.$e->getMessage(), ['exception' => $e]);
             }
         }
     }

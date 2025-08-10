@@ -187,15 +187,6 @@
                     <span class="side-menu__label">الرئيسية</span>
                 </a>
             </li>
-
-
-            {{-- offers --}}
-            <li class="slide">
-                <a class="side-menu_item" href="{{ route('offers.index') }}">
-                    <i class="side-menu__icon bi bi-tags p-2"></i>
-                    <span class="side-menu__label">العروض</span>
-                </a>
-            </li>
         @endhasanyrole
         @role('المشرف')
             {{-- categories --}}
@@ -257,11 +248,16 @@
                     @endif
                     @role('مورد')
                         <li><a class="slide-item" href="{{ route('my-medicines') }}">أدوية مستودعي</a></li>
-                        <li><a class="slide-item" href="{{ route('offers.index') }}">عروض الأدوية</a></li>
                     @endrole
                 </ul>
             </li>
-
+            {{-- offers --}}
+            <li class="slide">
+                <a class="side-menu_item" href="{{ route('offers.index') }}">
+                    <i class="side-menu__icon bi bi-tags p-2"></i>
+                    <span class="side-menu__label">العروض</span>
+                </a>
+            </li>
             {{-- orders --}}
             <li class="slide">
                 <a class="side-menu_item" href="{{ route('orders.index') }}">

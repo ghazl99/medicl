@@ -4,10 +4,8 @@ namespace Modules\Category\Repositories;
 
 use Modules\Category\Models\Category;
 
-
 interface CategoryRepositoryInterface
 {
-
     public function index();
 
     public function getAllSubcategories(): mixed;

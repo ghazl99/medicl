@@ -13,6 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([\Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,CategoryDatabaseSeeder::class]);
+        $this->call([\Modules\Core\Database\Seeders\CoreDatabaseSeeder::class, CategoryDatabaseSeeder::class]);
     }
 }

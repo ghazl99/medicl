@@ -139,7 +139,6 @@
                             <!--<th>نسبة تغير السعر</th>-->
                             <th>التوفر</th>
                             <th>عرض(الكمية)</th>
-                            <th>عرض(القيمة)</th>
                         </tr>
                     </thead>
                     <tbody id="medicines-table-body">

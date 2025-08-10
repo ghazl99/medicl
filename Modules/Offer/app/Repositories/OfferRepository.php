@@ -2,14 +2,13 @@
 
 namespace Modules\Offer\Repositories;
 
-use Modules\Medicine\Models\OfferSupplierMedicine;
+use Modules\Offer\Models\Offer;
 
 interface OfferRepository
 {
-    public function allWithMedicines();
+    public function allOffers($user);
 
     public function store(array $data);
-    public function offerWithRelation(OfferSupplierMedicine $offer): mixed;
 
-
+    public function offerShow(Offer $offer): mixed;
 }

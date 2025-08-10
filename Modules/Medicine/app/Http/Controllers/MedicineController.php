@@ -31,7 +31,7 @@ class MedicineController extends Controller implements HasMiddleware
                 'import',
                 'storeCheckedMedicine',
                 'toggleAvailability',
-                'updateNote'
+                'updateNote',
             ]),
             new Middleware('role:المشرف', only: ['toggleNewStatus']),
         ];
@@ -99,7 +99,6 @@ class MedicineController extends Controller implements HasMiddleware
                 ], 500);
             }
         }
-
 
         return view('medicine::admin.medicineSupplier', ['medicines' => $medicines]);
     }

@@ -8,29 +8,26 @@
 @section('content')
     <br>
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="text-right">العروض الحالية</h3>
-
+            @role('مورد')
+                <a href="{{ route('offers.create') }}" class="btn btn-primary">إضافة عرض</a>
+            @endrole
         </div>
         <div class="card-body">
-
-
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-right" id="offers-datatable" dir="rtl">
                     <thead class="text-right">
                         <tr>
                             <th>العرض</th>
-                            <th>تاريخ البداية</th>
-                            <th>تاريخ الانتهاء</th>
+
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="suppliers-table-body">
                         @forelse($offers as $offer)
                             <tr>
-                                <td>{{ $offer->title }}</td> 
-                                <td>{{ $offer->offer_start_date->format('Y-m-d') }}</td>
-                                <td>{{ $offer->offer_end_date->format('Y-m-d') }}</td>
+                                <td>{{ $offer->title }}</td>
                                 <td>
                                     <a href="{{ route('offers.show', $offer->id) }}" class="btn btn-info btn-sm">تفاصيل</a>
                                 </td>
@@ -40,9 +37,6 @@
                                 <td colspan="7" class="text-center">لا توجد عروض حالياً</td>
                             </tr>
                         @endforelse
-
-
-
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-center mt-4">

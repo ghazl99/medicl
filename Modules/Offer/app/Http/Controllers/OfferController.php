@@ -2,20 +2,28 @@
 
 namespace Modules\Offer\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Modules\Medicine\Models\Medicine;
-use Modules\Offer\Services\OfferService;
-use Modules\Medicine\Models\MedicineUser;
-use Modules\Offer\Http\Requests\OfferRequest;
 use Modules\Medicine\Services\MedicineService;
-use Modules\Medicine\Models\OfferSupplierMedicine;
+use Modules\Offer\Http\Requests\OfferRequest;
+use Modules\Offer\Models\Offer;
+use Modules\Offer\Services\OfferService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class OfferController extends Controller
+class OfferController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:المشرف|مورد|صيدلي', only: ['index', 'showImage', 'show']),
+
+            new Middleware('role:مورد', only: ['create', 'store']),
+        ];
+    }
+
     public function __construct(
         protected OfferService $offerService,
         protected MedicineService $medicineService,
@@ -26,7 +34,8 @@ class OfferController extends Controller
      */
     public function index()
     {
-        $offers = $this->offerService->getAll();
+        $user = Auth::user();
+        $offers = $this->offerService->getAll($user);
 
         return view('offer::admin.index', compact('offers'));
     }
@@ -34,15 +43,9 @@ class OfferController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function createOffer(Medicine $medicine)
+    public function create()
     {
-        $user = Auth::user();
-        $medicineUser = MedicineUser::firstWhere([
-            'medicine_id' => $medicine->id,
-            'user_id' => $user->id,
-        ]);
-
-        return view('offer::admin.create', compact('medicineUser'));
+        return view('offer::admin.create');
     }
 
     /**
@@ -51,10 +54,10 @@ class OfferController extends Controller
     public function store(OfferRequest $request)
     {
         try {
-            Log::info('OfferController@store reached');
-            // dd($request->validated());
+            $data = $request->validated();
+            $data['user_id'] = Auth::id();
 
-            $this->offerService->store($request->validated());
+            $this->offerService->store($data);
 
             return redirect()->route('offers.index')->with('success', 'تم إنشاء العرض بنجاح');
         } catch (\Exception $e) {
@@ -66,13 +69,14 @@ class OfferController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show(OfferSupplierMedicine $offer)
+    public function show(Offer $offer)
     {
         $offer = $this->offerService->details($offer);
 
-        if (!$offer) {
+        if (! $offer) {
             abort(404, 'العرض غير موجود');
         }
+
         return view('offer::admin.show', compact('offer'));
     }
 
@@ -86,6 +90,7 @@ class OfferController extends Controller
 
         return response()->file($path);
     }
+
     /**
      * Show the form for editing the specified resource.
      */

@@ -3,7 +3,6 @@
 namespace Modules\Core\Repositories;
 
 use Modules\Core\Models\City;
-use Modules\Core\Repositories\CityRepositoryInterface;
 
 class CityRepository implements CityRepositoryInterface
 {

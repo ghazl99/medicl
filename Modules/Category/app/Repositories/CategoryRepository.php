@@ -28,6 +28,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         return Category::with('medicines')->findOrFail($subcategoryId);
     }
+
     /**
      * Store a new category with optional subcategories.
      */

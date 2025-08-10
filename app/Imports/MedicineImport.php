@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Modules\Category\Models\Category;
 
-class MedicineImport implements ToModel, WithHeadingRow //,ShouldQueue, WithChunkReading
+class MedicineImport implements ToModel, WithHeadingRow // ,ShouldQueue, WithChunkReading
 {
     /**
      * @return \Illuminate\Database\Eloquent\Model|null

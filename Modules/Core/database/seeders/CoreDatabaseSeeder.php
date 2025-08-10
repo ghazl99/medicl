@@ -11,6 +11,6 @@ class CoreDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([RoleSeeder::class,CitySeeder::class, AdminSeeder::class]);
+        $this->call([RoleSeeder::class, CitySeeder::class, AdminSeeder::class]);
     }
 }

@@ -2,15 +2,15 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Modules\Core\Services\CityService;
-use Modules\User\Services\UserService;
-use Illuminate\Routing\Controllers\Middleware;
 use Modules\User\Http\Requests\RegisterRequest;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Modules\User\Http\Requests\UpdateUserRequest;
+use Modules\User\Services\UserService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class UserController extends Controller implements HasMiddleware
@@ -41,6 +41,7 @@ class UserController extends Controller implements HasMiddleware
     public function create_pharmacists()
     {
         $cities = $this->cityService->getAllCitiesWithSubCities();
+
         return view('user::admin.pharmacists.create', compact('cities'));
     }
 
@@ -85,6 +86,7 @@ class UserController extends Controller implements HasMiddleware
     public function create_suppliers()
     {
         $cities = $this->cityService->getAllCitiesWithSubCities();
+
         return view('user::auth.register', compact('cities'));
     }
 
@@ -168,6 +170,7 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = Auth::user();
         $cities = $this->cityService->getAllCitiesWithSubCities();
+
         return view('user::admin.edit-profile', compact('user', 'cities'));
     }
 
@@ -179,6 +182,7 @@ class UserController extends Controller implements HasMiddleware
 
         return redirect()->route('profile.edit')->with('success', 'تم تحديث بياناتك بنجاح');
     }
+
     public function showImage(Media $media)
     {
         $path = $media->getPath();
@@ -189,6 +193,7 @@ class UserController extends Controller implements HasMiddleware
 
         return response()->file($path);
     }
+
     /**
      * Delete the user's account.
      */

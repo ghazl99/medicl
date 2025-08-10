@@ -17,13 +17,13 @@ class AdminSeeder extends Seeder
         $firstProvince = City::whereNull('parent_id')->first();
 
         $user = User::create([
-            'name'             => 'أحمد',
-            'email'            => 'admin@gmail.com',
+            'name' => 'أحمد',
+            'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
-            'password'         => Hash::make('12345678'),
-            'phone'            => '+90000000000',
-            'workplace_name'   => 'إدارة النظام',
-            'is_approved'      => 1,
+            'password' => Hash::make('12345678'),
+            'phone' => '+90000000000',
+            'workplace_name' => 'إدارة النظام',
+            'is_approved' => 1,
         ])->assignRole('المشرف');
 
         if ($firstProvince) {

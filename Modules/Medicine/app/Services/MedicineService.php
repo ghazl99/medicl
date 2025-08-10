@@ -2,15 +2,15 @@
 
 namespace Modules\Medicine\Services;
 
-use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Medicine\Repositories\MedicineRepositoryInterface;
 
 class MedicineService
 {
     use \Modules\Core\Traits\ImageTrait;
+
     protected MedicineRepositoryInterface $medicineRepository;
 
     public function __construct(MedicineRepositoryInterface $medicineRepository)
@@ -71,6 +71,7 @@ class MedicineService
             );
         }
         DB::commit();
+
         return $medicine;
     }
 

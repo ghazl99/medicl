@@ -6,7 +6,6 @@
             <h3>تفاصيل العرض: {{ $offer->title }}</h3>
         </div>
         <div class="card-body text-right">
-            <p><strong>العنوان:</strong> {{ $offer->title }}</p>
             <p><strong>التفاصيل:</strong> {{ $offer->details }}</p>
             <p><strong>تاريخ البداية:</strong> {{ $offer->offer_start_date->format('Y-m-d') }}</p>
             <p><strong>تاريخ الانتهاء:</strong> {{ $offer->offer_end_date->format('Y-m-d') }}</p>

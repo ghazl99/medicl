@@ -2,31 +2,26 @@
 
 namespace Modules\Offer\Repositories;
 
-use Illuminate\Support\Facades\Auth;
-use Modules\Medicine\Models\OfferSupplierMedicine;
+use Modules\Offer\Models\Offer;
 
 class OfferModelRepository implements OfferRepository
 {
-    public function allWithMedicines()
+    public function allOffers($user)
     {
-        $supplierId = Auth::id();
-
-        return OfferSupplierMedicine::whereHas('medicineUser', function ($query) use ($supplierId) {
-            $query->where('user_id', $supplierId);
-        })
-            ->with(['medicineUser.medicine'])
+        return $user->offers()
             ->latest()
             ->paginate(10);
+
     }
 
     public function store(array $data)
     {
         // dd($data);
-        return OfferSupplierMedicine::create($data);
+        return Offer::create($data);
     }
 
-    public function offerWithRelation(OfferSupplierMedicine $offer):mixed
+    public function offerShow(Offer $offer): mixed
     {
-        return $offer->load('medicineUser.medicine');
+        return $offer;
     }
 }

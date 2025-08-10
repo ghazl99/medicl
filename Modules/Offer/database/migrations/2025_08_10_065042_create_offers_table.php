@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('offer_supplier_medicine', function (Blueprint $table) {
+        Schema::create('offers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('medicine_user_id')->constrained('medicine_user')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // المورّد
 
-            $table->string('title',100);
+            $table->string('title', 100);
             $table->text('details');
 
             $table->date('offer_start_date');
             $table->date('offer_end_date');
-
-            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('offer_supplier_medicine_offers');
+        Schema::dropIfExists('offers');
     }
 };

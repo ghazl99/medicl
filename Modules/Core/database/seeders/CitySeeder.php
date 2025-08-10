@@ -30,17 +30,16 @@ class CitySeeder extends Seeder
         foreach ($provinces as $province) {
             // إدخال المحافظة الأصلية
             $provinceId = City::create([
-                'name'       => $province,
-                'parent_id'  => null,
+                'name' => $province,
+                'parent_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ])->id;
 
-
             // إدخال الريف التابع لها
             City::create([
-                'name'       => 'ريف ' . $province,
-                'parent_id'  => $provinceId,
+                'name' => 'ريف '.$province,
+                'parent_id' => $provinceId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

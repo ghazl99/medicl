@@ -2,7 +2,6 @@
 
 namespace Modules\Category\Services;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Modules\Category\Models\Category;
 use Modules\Category\Repositories\CategoryRepositoryInterface;
@@ -63,6 +62,7 @@ class CategoryService
             }
 
             DB::commit();
+
             return $category;
         } catch (\Throwable $e) {
             // Rollback on failure
@@ -95,6 +95,7 @@ class CategoryService
         }
 
         DB::commit();
+
         return true;
     }
 }

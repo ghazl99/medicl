@@ -3,7 +3,6 @@
 namespace Modules\Category\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Validation\Rules\Can;
 
 class CategoryDatabaseSeeder extends Seeder
 {
@@ -12,6 +11,6 @@ class CategoryDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-         $this->call([CategorySeeder::class]);
+        $this->call([CategorySeeder::class]);
     }
 }

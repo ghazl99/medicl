@@ -2,7 +2,7 @@
 
 namespace Modules\Core\Repositories;
 
-interface  CityRepositoryInterface
+interface CityRepositoryInterface
 {
     public function getAllWithSubCities();
 }

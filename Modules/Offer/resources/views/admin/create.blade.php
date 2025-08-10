@@ -7,7 +7,6 @@
             <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">إضافة عرض جديد</h2>
             <form action="{{ route('offers.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="medicine_user_id" value="{{ $medicineUser->id }}">
 
                 <div class="form-group">
                     <label>عنوان العرض</label>
@@ -39,7 +38,7 @@
                 {{-- مكان عرض الصور المختارة --}}
                 <div id="previewImages" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
 
-                <button type="submit" class="btn btn-success mt-3">حفظ العرض</button>
+                <button type="submit" class="btn btn-success mt-3">حفظ</button>
             </form>
 
         </div>

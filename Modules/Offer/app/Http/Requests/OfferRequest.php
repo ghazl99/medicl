@@ -12,7 +12,6 @@ class OfferRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'medicine_user_id' => 'required|exists:medicine_user,id',
             'title' => 'required|string|max:255',
             'details' => 'required|string',
             'offer_start_date' => 'required|date',

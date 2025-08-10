@@ -3,7 +3,6 @@
 namespace Modules\Category\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Modules\Category\Http\Requests\CategoryRequest;
@@ -20,7 +19,7 @@ class CategoryController extends Controller implements HasMiddleware
         return [
             new Middleware('role:المشرف', only: ['create', 'store', 'edit', 'update', 'destroy']),
 
-            new Middleware('role:مورد|المشرف|صيدلي', only: ['index', 'showImage','show','sidebar']),
+            new Middleware('role:مورد|المشرف|صيدلي', only: ['index', 'showImage', 'show', 'sidebar']),
         ];
     }
 
@@ -42,9 +41,9 @@ class CategoryController extends Controller implements HasMiddleware
     public function sidebar()
     {
         $subcategories = $this->categoryService->getAllSubcategories();
+
         return view('core::layouts.main-sidebar', compact('subcategories'));
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -100,7 +99,7 @@ class CategoryController extends Controller implements HasMiddleware
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-       $validatedData = $request->validated();
+        $validatedData = $request->validated();
 
         $success = $this->categoryService->updateCategory($category, $validatedData);
 

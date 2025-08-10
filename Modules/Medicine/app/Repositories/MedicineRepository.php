@@ -2,7 +2,6 @@
 
 namespace Modules\Medicine\Repositories;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
 use Modules\Medicine\Models\MedicineUser;
@@ -22,7 +21,7 @@ class MedicineRepository implements MedicineRepositoryInterface
                 ->query(function ($query) use ($keyword) {
                     $query->with(['category', 'suppliers']);
                     $query->orWhereHas('category', function ($q) use ($keyword) {
-                        $q->where('name', 'like', '%' . $keyword . '%');
+                        $q->where('name', 'like', '%'.$keyword.'%');
                     });
                 });
         }
@@ -38,7 +37,6 @@ class MedicineRepository implements MedicineRepositoryInterface
 
         return $medicines;
     }
-
 
     /**
      * Get medicines for a supplier with optional search.
@@ -169,7 +167,7 @@ class MedicineRepository implements MedicineRepositoryInterface
         return $medicine;
     }
 
-    //get all new medicines
+    // get all new medicines
     public function getNewMedicines()
     {
         // Fetch medicines where is_new is true and dates are valid
