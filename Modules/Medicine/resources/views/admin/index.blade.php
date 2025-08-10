@@ -126,6 +126,8 @@
                 <div class="table-responsive">
                     <form id="medicines-selection-form" method="POST" action="{{ route('checked-medicine') }}">
                         @csrf
+                        <input type="hidden" name="all_selected_medicines" id="all_selected_medicines" value="">
+
                         <table class="table table-striped table-bordered text-right" id="medicines-datatable" dir="rtl">
                             <thead class="text-right">
                                 <tr>
@@ -394,6 +396,7 @@
             }
         });
     </script>
+
     <script>
         $(document).ready(function() {
             let selectedMedicineId = null;
@@ -448,6 +451,135 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            const STORAGE_KEY = 'selectedMedicineIds';
+
+            // قراءة من localStorage أو من السيرفر (لو localStorage فاضية)
+            let selectedMedicineIds = new Set();
+
+            // حاول تحميل من localStorage
+            let stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    selectedMedicineIds = new Set(JSON.parse(stored));
+                } catch (e) {
+                    selectedMedicineIds = new Set(@json($supplierMedicineIds ?? []).map(id => id.toString()));
+                }
+            } else {
+                // fallback: من السيرفر (عند تحميل الصفحة لأول مرة)
+                selectedMedicineIds = new Set(@json($supplierMedicineIds ?? []).map(id => id.toString()));
+            }
+
+            function saveSelectedToStorage() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selectedMedicineIds)));
+            }
+
+            function updateCheckboxStates() {
+                $('input[name="medicines[]"]').each(function() {
+                    const val = $(this).val().toString();
+                    $(this).prop('checked', selectedMedicineIds.has(val));
+                });
+            }
+
+            function updateSelectAllCheckbox() {
+                const allCheckboxes = $('input[name="medicines[]"]');
+                const checkedCheckboxes = $('input[name="medicines[]"]:checked');
+                $('#select-all').prop('checked', allCheckboxes.length > 0 && allCheckboxes.length ===
+                    checkedCheckboxes.length);
+            }
+
+            function afterTableUpdate() {
+                updateCheckboxStates();
+                updateSelectAllCheckbox();
+            }
+
+            // عند تغير checkbox فردي
+            $(document).on('change', 'input[name="medicines[]"]', function() {
+                const val = $(this).val().toString();
+                if ($(this).is(':checked')) {
+                    selectedMedicineIds.add(val);
+                } else {
+                    selectedMedicineIds.delete(val);
+                    $('#select-all').prop('checked', false);
+                }
+                saveSelectedToStorage();
+            });
+
+            // عند تغير checkbox تحديد الكل
+            $('#select-all').on('change', function() {
+                const isChecked = $(this).is(':checked');
+                $('input[name="medicines[]"]').each(function() {
+                    $(this).prop('checked', isChecked);
+                    const val = $(this).val().toString();
+                    if (isChecked) {
+                        selectedMedicineIds.add(val);
+                    } else {
+                        selectedMedicineIds.delete(val);
+                    }
+                });
+                saveSelectedToStorage();
+            });
+
+            // AJAX جلب البيانات (بحث وباجنيشن)
+            let searchTimeout = null;
+
+            $('#supplier-medicines-search-input, #admin-medicines-search-input').on('keyup', function() {
+                clearTimeout(searchTimeout);
+                let keyword = $(this).val();
+                searchTimeout = setTimeout(function() {
+                    fetchMedicines(keyword);
+                }, 300);
+            });
+
+            $(document).on('click', '#medicines-pagination-links .pagination a', function(e) {
+                e.preventDefault();
+                let pageUrl = $(this).attr('href');
+                let currentSearchKeyword = $('#supplier-medicines-search-input').length ?
+                    $('#supplier-medicines-search-input').val() :
+                    $('#admin-medicines-search-input').val();
+                fetchMedicines(currentSearchKeyword, pageUrl);
+            });
+
+            function fetchMedicines(keyword, url = "{{ route('medicines.index') }}") {
+                let finalUrl = new URL(url);
+                finalUrl.searchParams.set('search', keyword);
+
+                $.ajax({
+                    url: finalUrl.toString(),
+                    type: "GET",
+                    success: function(response) {
+                        $('#medicines-table-body').html(response.html);
+                        $('#medicines-pagination-links').html(response.pagination);
+
+                        // **لا تعيد تعيين selectedMedicineIds من السيرفر هنا!**
+                        // لأن localStorage هو المصدر الحقيقي لحالة التحديدات
+
+                        afterTableUpdate();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: ", status, error, xhr.responseText);
+                        $('#medicines-table-body').html(
+                            `<tr><td colspan="11" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`
+                        );
+                        $('#medicines-pagination-links').empty();
+                    }
+                });
+            }
+
+            // عند إرسال الفورم
+            $('#medicines-selection-form').on('submit', function(e) {
+                $('#all_selected_medicines').val(Array.from(selectedMedicineIds).join(','));
+                if (selectedMedicineIds.size === 0) {
+                    e.preventDefault();
+                    alert('يرجى اختيار دواء واحد على الأقل.');
+                }
+            });
+
+            afterTableUpdate();
         });
     </script>
 @endsection

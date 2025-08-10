@@ -50,10 +50,9 @@ class MedicineController extends Controller implements HasMiddleware
 
         $supplierMedicineIds = [];
         if (Auth::user()->hasRole('مورد')) {
-            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->toArray();
+            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn($id) => (string)$id)->toArray();
         }
 
-        // Handle AJAX request
         if ($request->ajax()) {
             $viewName = Auth::user()->hasRole('مورد')
                 ? 'medicine::admin._medicines_supplier_table_rows'
@@ -62,11 +61,13 @@ class MedicineController extends Controller implements HasMiddleware
             return response()->json([
                 'html' => view($viewName, compact('medicines', 'supplierMedicineIds'))->render(),
                 'pagination' => (string) $medicines->links(),
+                'supplierMedicineIds' => $supplierMedicineIds,
             ]);
         }
 
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
+
 
     // Display medicine image
     public function showImage(Media $media)
@@ -137,13 +138,17 @@ class MedicineController extends Controller implements HasMiddleware
     // Assign medicines to supplier
     public function storeCheckedMedicine(Request $request)
     {
-        $request->validate(['medicines' => 'required|array']);
+        $request->validate(['all_selected_medicines' => 'required|string']);
 
         $supplier_id = Auth::user()->id;
-        $this->medicineService->assignMedicinesToSupplier($request->medicines, $supplier_id);
+
+        $medicineIds = explode(',', $request->input('all_selected_medicines'));
+
+        $this->medicineService->assignMedicinesToSupplier($medicineIds, $supplier_id);
 
         return redirect()->back()->with('success', 'تم ربط الأدوية بالمورد بنجاح');
     }
+
 
     // Show single medicine
     public function show($id)
