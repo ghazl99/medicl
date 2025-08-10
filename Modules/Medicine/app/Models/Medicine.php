@@ -64,7 +64,7 @@ class Medicine extends Model implements HasMedia
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'order_items', 'medicine_id', 'order_id')
-            ->withPivot(['quantity', 'status'])
+            ->withPivot(['quantity', 'status', 'note'])
             ->withTimestamps();
     }
 

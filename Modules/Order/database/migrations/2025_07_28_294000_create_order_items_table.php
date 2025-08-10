@@ -21,6 +21,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->unsignedInteger('quantity');
             $table->enum('status', ['مقبول', 'مرفوض'])->default('مقبول');
+            $table->string('note')->nullable();
 
             $table->timestamps();
         });

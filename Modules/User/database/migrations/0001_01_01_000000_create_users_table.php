@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_approved')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('profile_photo')->nullable();
+            $table->string('fcm_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

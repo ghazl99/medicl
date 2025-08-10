@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
 
-            $table->enum('status', ['قيد المعالجة', 'قيد التنفيذ', 'تم التسليم'])->default('قيد المعالجة');
+            $table->enum('status', ['قيد الانتظار', 'مرفوض جزئياً', 'تم التأكيد', 'تم التسليم', 'ملغي'])->default('قيد الانتظار');
             $table->timestamps();
         });
     }

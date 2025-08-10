@@ -50,7 +50,7 @@ class MedicineController extends Controller implements HasMiddleware
 
         $supplierMedicineIds = [];
         if (Auth::user()->hasRole('مورد')) {
-            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         }
 
         if ($request->ajax()) {
@@ -67,7 +67,6 @@ class MedicineController extends Controller implements HasMiddleware
 
         return view('medicine::admin.index', compact('medicines', 'supplierMedicineIds'));
     }
-
 
     // Display medicine image
     public function showImage(Media $media)
@@ -148,7 +147,6 @@ class MedicineController extends Controller implements HasMiddleware
 
         return redirect()->back()->with('success', 'تم ربط الأدوية بالمورد بنجاح');
     }
-
 
     // Show single medicine
     public function show($id)

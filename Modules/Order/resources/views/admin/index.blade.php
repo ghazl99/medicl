@@ -39,20 +39,20 @@
                                     <td>{{ $order->supplier->name }}</td>
                                 @endhasanyrole
                                 <td style="color: white">
-                                    @if ($order->status == 'قيد المعالجة')
-                                        <span class="badge bg-primary">قيد المعالجة</span>
-                                    @elseif ($order->status == 'قيد التنفيذ')
-                                        <span class="badge bg-warning text-dark">قيد التنفيذ</span>
+                                    @if ($order->status == 'قيد الانتظار')
+                                        <span class="badge bg-primary">قيد الانتظار</span>
+                                    @elseif ($order->status == 'مرفوض جزئياً')
+                                        <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
                                     @elseif ($order->status == 'تم التسليم')
                                         <span class="badge bg-success">تم التسليم</span>
                                     @elseif ($order->status == 'ملغي')
                                         <span class="badge bg-danger">ملغي</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ $order->status }}</span>
+                                        <span class="badge bg-info">تم التأكيد</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-info">
+                                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-secondary">
                                         عرض التفاصيل
                                     </a>
                                 </td>

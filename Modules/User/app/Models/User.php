@@ -30,7 +30,7 @@ class User extends Authenticatable implements HasMedia
         'phone',
         'workplace_name',
         'password',
-        'is_approved',
+        'is_approved', 'fcm_token',
     ];
 
     /**
