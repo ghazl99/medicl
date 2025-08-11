@@ -2,6 +2,9 @@
 
 @section('content')
     <br>
+    @php
+        $userRole = auth()->user()->getRoleNames()->first();
+    @endphp
     <div class="card">
         <div class="card-body">
             <h2>تفاصيل الطلب رقم #{{ $order->id }}</h2>
@@ -82,8 +85,7 @@
                                     <td>
                                         @if ($medicine->pivot->status != 'مرفوض')
                                             <button class="btn btn-sm btn-outline-danger btn-reject-medicine"
-                                                data-medicine-id="{{ $medicine->id }}"
-                                                data-order-id="{{ $order->id }}">
+                                                data-medicine-id="{{ $medicine->id }}" data-order-id="{{ $order->id }}">
                                                 رفض مع سبب
                                             </button>
                                         @else
@@ -115,33 +117,31 @@
                 {{-- Total price styled with dark red and bold --}}
                 <h3 style="color: #8B0000; font-weight: 700;">{{ number_format($totalPrice, 2) }} ل.س</h3>
             </div>
-               {{-- Status change buttons depending on role and order status --}}
-                <div >
-                    @php
-                        $userRole = auth()->user()->getRoleNames()->first();
-                    @endphp
+            {{-- Status change buttons depending on role and order status --}}
+            <div>
 
-                    @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
-                        <button class="btn btn-warning change-status-btn" data-order-id="{{ $order->id }}"
-                            data-status="تم التأكيد">
+
+                @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
+                    <button class="btn btn-warning change-status-btn" data-order-id="{{ $order->id }}"
+                        data-status="تم التأكيد">
                         تأكيد الطلب
-                        </button>
-                    @elseif ($order->status == 'تم التأكيد' && $userRole == 'مورد')
-                        <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
-                            data-status="تم التسليم">
-                            تسليم الطلب
-                        </button>
-                    @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
-                        <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
-                            data-status="تم التأكيد">
-                            موافق
-                        </button>
-                        <button class="btn btn-danger change-status-btn" data-order-id="{{ $order->id }}"
-                            data-status="ملغي">
-                            إلغاء الطلب
-                        </button>
-                    @endif
-                </div>
+                    </button>
+                @elseif ($order->status == 'تم التأكيد' && $userRole == 'مورد')
+                    <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
+                        data-status="تم التسليم">
+                        تسليم الطلب
+                    </button>
+                @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
+                    <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
+                        data-status="تم التأكيد">
+                        موافق
+                    </button>
+                    <button class="btn btn-danger change-status-btn" data-order-id="{{ $order->id }}"
+                        data-status="ملغي">
+                        إلغاء الطلب
+                    </button>
+                @endif
+            </div>
         </div>
     </div>
     <!-- Reject reason modal -->
@@ -167,7 +167,6 @@
             </form>
         </div>
     </div>
-
 @endsection
 
 @section('scripts')
