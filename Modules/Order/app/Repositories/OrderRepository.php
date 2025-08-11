@@ -2,12 +2,18 @@
 
 namespace Modules\Order\Repositories;
 
-use Modules\Medicine\Models\Medicine;
 use Modules\Order\Models\Order;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Modules\Medicine\Models\Medicine;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    // Get orders list based on user role with pagination
+    use \Modules\Core\Traits\FirebaseNotificationTrait;
+
+    /**
+     * Get orders list based on user role with pagination.
+     */
     public function index($user)
     {
         if ($user->hasRole('المشرف')) {
@@ -25,45 +31,122 @@ class OrderRepository implements OrderRepositoryInterface
         return collect();
     }
 
-    // Create a new order
+    /**
+     * Create a new order.
+     */
     public function create(array $data): Order
     {
         return Order::create($data);
     }
 
-    // Find order by id or fail
+    /**
+     * Find order by ID or fail.
+     */
     public function find($id): Order
     {
         return Order::findOrFail($id);
     }
 
-    // Update order status
+    /**
+     * Update order status and send notification accordingly.
+     */
     public function updateStatus($orderId, $status)
     {
-        $order = Order::findOrFail($orderId);
-        $order->status = $status;
-        $order->save();
+        return DB::transaction(function () use ($orderId, $status) {
+            $order = Order::findOrFail($orderId);
+            $order->status = $status;
+            $order->save();
 
-        return $order;
+            $user = Auth::user();
+
+            $notificationData = null;
+            $recipient = null;
+
+            if ($user->hasRole('مورد') && $status == 'تم التأكيد') {
+                $recipient = $order->pharmacist;
+                if ($recipient && $recipient->fcm_token) {
+                    $notificationData = [
+                        'title' => "تم تأكيد طلبك رقم #" . $order->id,
+                        'body' => "المورد أكد طلبك.",
+                    ];
+                }
+            } elseif ($user->hasRole('صيدلي')) {
+                $recipient = $order->supplier;
+
+                if ($recipient && $recipient->fcm_token) {
+                    if ($status == 'تم التأكيد') {
+                        $notificationData = [
+                            'title' => "تم تأكيد الطلب رقم #" . $order->id,
+                            'body' => "الصيدلاني أكد الطلب.",
+                        ];
+                    } elseif ($status == 'ملغي') {
+                        $notificationData = [
+                            'title' => "تم إلغاء الطلب رقم #" . $order->id,
+                            'body' => "الصيدلاني ألغى الطلب.",
+                        ];
+                    }
+                }
+            }
+
+            if ($notificationData && $recipient) {
+                $url = route('orders.show', ['order' => $order->id]);
+
+                $this->sendFirebaseNotification(
+                    $notificationData['title'],
+                    $notificationData['body'],
+                    $recipient->fcm_token,
+                    ['order_id' => $order->id, 'click_action' => $url],
+                    $recipient->id,
+                    $url
+                );
+            }
+
+            return $order;
+        });
     }
 
-    // Reject specific medicine in an order with a note
-    // Also change order status to partial reject if currently waiting
+
+    /**
+     * Reject specific medicine in an order with a note.
+     * Change order status to partial reject if currently waiting.
+     */
     public function rejectMedicine(Order $order, Medicine $medicine, $note)
     {
-        $order->medicines()->updateExistingPivot($medicine->id, ['status' => 'مرفوض', 'note' => $note]);
+        return DB::transaction(function () use ($order, $medicine, $note) {
+            // Update medicine pivot with rejection status and note
+            $order->medicines()->updateExistingPivot($medicine->id, ['status' => 'مرفوض', 'note' => $note]);
 
-        if ($order->status == 'قيد الانتظار') {
-            $order->status = 'مرفوض جزئياً';
-            $order->save();
-        }
+            // Change order status if still pending
+            if ($order->status == 'قيد الانتظار') {
+                $order->status = 'مرفوض جزئياً';
+                $order->save();
 
-        return $order;
+                // Send notification to pharmacist
+                $pharmacist = $order->pharmacist;
+                $title = "تم رفض طلبك جزئياً رقم #" . $order->id;
+                $body = "تم رفض أحد الأدوية في طلبك. يرجى مراجعة الطلب لمزيد من التفاصيل.";
+                $url = route('orders.show', ['order' => $order->id]);
+
+                $this->sendFirebaseNotification(
+                    $title,
+                    $body,
+                    $pharmacist->fcm_token,
+                    ['order_id' => $order->id, 'click_action' => $url, 'icon'  => asset('assets/img/capsule.png')],
+                    $pharmacist->id,
+                    $url
+                );
+            }
+
+            return $order;
+        });
     }
 
-    // Update quantity and set medicine status to accepted
+    /**
+     * Update quantity and set medicine status to accepted.
+     */
     public function updateMedicineQuantity(Order $order, Medicine $medicine, int $quantity)
     {
+        // Single DB operation, no transaction needed here
         $order->medicines()->updateExistingPivot($medicine->id, [
             'quantity' => $quantity,
             'status' => 'مقبول',

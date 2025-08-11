@@ -1,8 +1,6 @@
-// هذه روابط النسخة الـ compat المتوافقة مع importScripts
-importScripts('https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging-compat.js');
 
-// إعدادات Firebase
 firebase.initializeApp({
     apiKey: "AIzaSyC9Bsp_V1BLRFtX5z985ebrdwuPVoygYO8",
     authDomain: "medical-3dbfb.firebaseapp.com",
@@ -13,18 +11,45 @@ firebase.initializeApp({
     measurementId: "G-4Z61EGYPRK"
 });
 
-// الحصول على messaging instance
 const messaging = firebase.messaging();
 
-// استقبال الرسائل في الخلفية
 messaging.onBackgroundMessage(function (payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-
-    const notificationTitle = payload.notification.title;
+    // استخدم بيانات الإشعار من payload.data
+    const notificationTitle = payload.data.title;
     const notificationOptions = {
-        body: payload.notification.body,
-        icon: '/firebase-logo.png'
+        body: payload.data.body,
+        data: {
+            url: payload.data.url // نحتفظ بالرابط في data داخل الإشعار
+        },
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    self.registration.showNotification(notificationTitle,
+        notificationOptions);
 });
+
+// عند الضغط على الإشعار
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+
+  let targetUrl = event.notification.data?.url;
+  if (!targetUrl) {
+    targetUrl = self.location.origin + '/dashboard';
+  }
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (let client of windowClients) {
+        if (client.url === targetUrl && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
+
+

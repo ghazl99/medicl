@@ -3,21 +3,22 @@
 namespace Modules\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Scout\Searchable;
-use Modules\Medicine\Models\Medicine;
 use Modules\Offer\Models\Offer;
 use Modules\Order\Models\Order;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use Modules\Core\Models\Notification;
+use Modules\Medicine\Models\Medicine;
 use Spatie\Permission\Traits\HasRoles;
+// use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, InteractsWithMedia, Notifiable, Searchable;
+    use HasFactory, HasRoles, InteractsWithMedia, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +31,8 @@ class User extends Authenticatable implements HasMedia
         'phone',
         'workplace_name',
         'password',
-        'is_approved', 'fcm_token',
+        'is_approved',
+        'fcm_token',
     ];
 
     /**
@@ -118,5 +120,10 @@ class User extends Authenticatable implements HasMedia
     public function offers()
     {
         return $this->hasMany(Offer::class, 'user_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id')->latest();
     }
 }

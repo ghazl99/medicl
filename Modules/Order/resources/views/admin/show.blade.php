@@ -2,170 +2,172 @@
 
 @section('content')
     <br>
-    <div class="container">
-        <h2>تفاصيل الطلب رقم #{{ $order->id }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <h2>تفاصيل الطلب رقم #{{ $order->id }}</h2>
 
-        <div class="mb-3">
-            <strong>الصيدلي:</strong> {{ $order->pharmacist->name }}
-        </div>
+            <div class="mb-3">
+                <strong>الصيدلي:</strong> {{ $order->pharmacist->name }}
+            </div>
 
-        <div class="mb-3">
-            <strong>المورد:</strong> {{ $order->supplier->name }}
-        </div>
+            <div class="mb-3">
+                <strong>المورد:</strong> {{ $order->supplier->name }}
+            </div>
 
-        <div class="mb-3">
-            <strong>حالة الطلب:</strong>
-            {{-- Display order status with badges --}}
-            @if ($order->status == 'قيد الانتظار')
-                <span class="badge bg-primary">قيد الانتظار</span>
-            @elseif ($order->status == 'مرفوض جزئياً')
-                <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
-            @elseif ($order->status == 'تم التسليم')
-                <span class="badge bg-success">تم التسليم</span>
-            @elseif ($order->status == 'ملغي')
-                <span class="badge bg-danger">ملغي</span>
-            @else
-                <span class="badge bg-info">تم التأكيد</span>
-            @endif
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3>الأدوية المطلوبة:</h3>
-
-            {{-- Status change buttons depending on role and order status --}}
-            <div>
-                @php
-                    $userRole = auth()->user()->getRoleNames()->first();
-                @endphp
-
-                @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
-                    <button class="btn btn-warning change-status-btn" data-order-id="{{ $order->id }}"
-                        data-status="تم التأكيد">
-                        تم التأكيد
-                    </button>
-                @elseif ($order->status == 'تم التأكيد' && $userRole == 'مورد')
-                    <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
-                        data-status="تم التسليم">
-                        تم التسليم
-                    </button>
-                @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
-                    <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
-                        data-status="تم التأكيد">
-                        موافق
-                    </button>
-                    <button class="btn btn-danger change-status-btn" data-order-id="{{ $order->id }}" data-status="ملغي">
-                        إلغاء الطلب
-                    </button>
+            <div class="mb-3">
+                <strong>حالة الطلب:</strong>
+                {{-- Display order status with badges --}}
+                @if ($order->status == 'قيد الانتظار')
+                    <span class="badge bg-primary">قيد الانتظار</span>
+                @elseif ($order->status == 'مرفوض جزئياً')
+                    <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
+                @elseif ($order->status == 'تم التسليم')
+                    <span class="badge bg-success">تم التسليم</span>
+                @elseif ($order->status == 'ملغي')
+                    <span class="badge bg-danger">ملغي</span>
+                @else
+                    <span class="badge bg-info">تم التأكيد</span>
                 @endif
             </div>
-        </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered text-right" id="orders-datatable" dir="rtl">
-                <thead>
-                    <tr>
-                        <th>اسم الدواء</th>
-                        <th>الكمية</th>
-                        <th>سعر الوحدة (ل.س)</th>
-                        <th>السعر الكلي (ل.س)</th>
-                        {{-- Show status column only if conditions match --}}
-                        @if (
-                            ($order->status == 'قيد الانتظار' && $userRole == 'مورد') ||
-                                ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي'))
-                            <th>الحالة</th>
-                        @endif
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $totalPrice = 0; @endphp
-                    @foreach ($order->medicines as $medicine)
-                        @php
-                            $unitPrice = $medicine->net_syp ?? 0;
-                            $quantity = $medicine->pivot->quantity;
-                            $subtotal = $unitPrice * $quantity;
-                            // Sum total price only if medicine is accepted
-                            if ($medicine->pivot->status == 'مقبول') {
-                                $totalPrice += $subtotal;
-                            }
-                        @endphp
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>الأدوية المطلوبة:</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered text-right" id="orders-datatable" dir="rtl">
+                    <thead>
                         <tr>
-                            <td>{{ $medicine->type }}</td>
-                            <td>
-                                {{-- Editable quantity input if partially rejected and pharmacist role --}}
-                                @if ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي' && $medicine->pivot->status == 'مرفوض')
-                                    <input type="number" min="0" class="form-control quantity-input"
-                                        data-medicine-id="{{ $medicine->id }}" value="{{ $medicine->pivot->quantity }}">
-                                @else
-                                    {{ $quantity }}
-                                @endif
-                            </td>
-
-                            <td>{{ number_format($unitPrice, 2) }}</td>
-                            <td>{{ number_format($subtotal, 2) }}</td>
-
-                            {{-- Status column for supplier when order waiting --}}
-                            @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
-                                <td>
-                                    @if ($medicine->pivot->status != 'مرفوض')
-                                        <button class="btn btn-sm btn-outline-danger btn-reject-medicine"
-                                            data-medicine-id="{{ $medicine->id }}" data-order-id="{{ $order->id }}">
-                                            رفض مع سبب
-                                        </button>
-                                    @else
-                                        <span class="badge bg-danger">مرفوض</span><br>
-                                        <small>السبب: {{ $medicine->pivot->note }}</small>
-                                    @endif
-                                </td>
-                                {{-- Status display for pharmacist in partially rejected order --}}
-                            @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
-                                <td class="medicine-status" data-medicine-id="{{ $medicine->id }}">
-                                    @if ($medicine->pivot->status == 'مرفوض')
-                                        <span class="badge bg-danger">مرفوض</span><br>
-                                        <small>السبب: {{ $medicine->pivot->note }}</small>
-                                    @else
-                                        <span class="badge bg-success">مقبول</span><br>
-                                        <small>{{ $medicine->pivot->note }}</small>
-                                    @endif
-                                </td>
-                            @else
-                                <td></td>
+                            <th>اسم الدواء</th>
+                            <th>الكمية</th>
+                            <th>سعر الوحدة (ل.س)</th>
+                            <th>السعر الكلي (ل.س)</th>
+                            {{-- Show status column only if conditions match --}}
+                            @if (
+                                ($order->status == 'قيد الانتظار' && $userRole == 'مورد') ||
+                                    ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي'))
+                                <th>الحالة</th>
                             @endif
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="text-end mt-3">
-            <strong>السعر النهائي للطلبية: </strong>
-            {{-- Total price styled with dark red and bold --}}
-            <h3 style="color: #8B0000; font-weight: 700;">{{ number_format($totalPrice, 2) }} ل.س</h3>
-        </div>
+                    </thead>
+                    <tbody>
+                        @php $totalPrice = 0; @endphp
+                        @foreach ($order->medicines as $medicine)
+                            @php
+                                $unitPrice = $medicine->net_syp ?? 0;
+                                $quantity = $medicine->pivot->quantity;
+                                $subtotal = $unitPrice * $quantity;
+                                // Sum total price only if medicine is accepted
+                                if ($medicine->pivot->status == 'مقبول') {
+                                    $totalPrice += $subtotal;
+                                }
+                            @endphp
+                            <tr>
+                                <td>{{ $medicine->type }}</td>
+                                <td>
+                                    {{-- Editable quantity input if partially rejected and pharmacist role --}}
+                                    @if ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي' && $medicine->pivot->status == 'مرفوض')
+                                        <input type="number" min="0" class="form-control quantity-input"
+                                            data-medicine-id="{{ $medicine->id }}" value="{{ $medicine->pivot->quantity }}">
+                                    @else
+                                        {{ $quantity }}
+                                    @endif
+                                </td>
 
-        <!-- Reject reason modal -->
-        <div class="modal fade" id="rejectMedicineModal" tabindex="-1" aria-labelledby="rejectMedicineModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="rejectMedicineForm" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="rejectMedicineModalLabel">سبب رفض الدواء</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
-                        </div>
-                        <div class="modal-body">
-                            <textarea name="note" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-danger">إرسال</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                        </div>
-                    </div>
-                </form>
+                                <td>{{ number_format($unitPrice, 2) }}</td>
+                                <td>{{ number_format($subtotal, 2) }}</td>
+
+                                {{-- Status column for supplier when order waiting --}}
+                                @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
+                                    <td>
+                                        @if ($medicine->pivot->status != 'مرفوض')
+                                            <button class="btn btn-sm btn-outline-danger btn-reject-medicine"
+                                                data-medicine-id="{{ $medicine->id }}"
+                                                data-order-id="{{ $order->id }}">
+                                                رفض مع سبب
+                                            </button>
+                                        @else
+                                            <span class="badge bg-danger">مرفوض</span><br>
+                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                        @endif
+                                    </td>
+                                    {{-- Status display for pharmacist in partially rejected order --}}
+                                @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
+                                    <td class="medicine-status" data-medicine-id="{{ $medicine->id }}">
+                                        @if ($medicine->pivot->status == 'مرفوض')
+                                            <span class="badge bg-danger">مرفوض</span><br>
+                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                        @else
+                                            <span class="badge bg-success">مقبول</span><br>
+                                            <small>{{ $medicine->pivot->note }}</small>
+                                        @endif
+                                    </td>
+                                @else
+                                    <td></td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
+            <div class="text-end mt-3">
+                <strong>السعر النهائي للطلبية: </strong>
+                {{-- Total price styled with dark red and bold --}}
+                <h3 style="color: #8B0000; font-weight: 700;">{{ number_format($totalPrice, 2) }} ل.س</h3>
+            </div>
+               {{-- Status change buttons depending on role and order status --}}
+                <div >
+                    @php
+                        $userRole = auth()->user()->getRoleNames()->first();
+                    @endphp
 
+                    @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
+                        <button class="btn btn-warning change-status-btn" data-order-id="{{ $order->id }}"
+                            data-status="تم التأكيد">
+                        تأكيد الطلب
+                        </button>
+                    @elseif ($order->status == 'تم التأكيد' && $userRole == 'مورد')
+                        <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
+                            data-status="تم التسليم">
+                            تسليم الطلب
+                        </button>
+                    @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
+                        <button class="btn btn-success change-status-btn" data-order-id="{{ $order->id }}"
+                            data-status="تم التأكيد">
+                            موافق
+                        </button>
+                        <button class="btn btn-danger change-status-btn" data-order-id="{{ $order->id }}"
+                            data-status="ملغي">
+                            إلغاء الطلب
+                        </button>
+                    @endif
+                </div>
+        </div>
     </div>
+    <!-- Reject reason modal -->
+    <div class="modal fade" id="rejectMedicineModal" tabindex="-1" aria-labelledby="rejectMedicineModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="rejectMedicineForm" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectMedicineModalLabel">سبب رفض الدواء</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="note" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">إرسال</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')

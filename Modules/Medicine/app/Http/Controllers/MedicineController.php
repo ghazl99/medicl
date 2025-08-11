@@ -50,7 +50,7 @@ class MedicineController extends Controller implements HasMiddleware
 
         $supplierMedicineIds = [];
         if (Auth::user()->hasRole('مورد')) {
-            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn($id) => (string) $id)->toArray();
         }
 
         if ($request->ajax()) {
@@ -116,6 +116,8 @@ class MedicineController extends Controller implements HasMiddleware
     {
         try {
             $validatedData = $request->validated();
+            $validatedData['net_syp'] = $validatedData['net_dollar_new'] ?? null;
+            $validatedData['public_syp'] = $validatedData['public_dollar_new'] ?? null;
             $user = Auth::user();
             $this->medicineService->createMedicine($validatedData, $user);
 

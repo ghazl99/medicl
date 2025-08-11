@@ -194,11 +194,7 @@
             }
         });
 
-        // استقبال الإشعارات أثناء كون الصفحة مفتوحة (foreground)
-        onMessage(messaging, (payload) => {
-            console.log('Message received. ', payload);
-            // تقدر تعرض إشعار هنا مباشرة أو تعمل شيء عند استقبال الإشعار
-        });
+
     </script>
 </body>
 

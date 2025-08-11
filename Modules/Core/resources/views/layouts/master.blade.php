@@ -130,41 +130,7 @@
             });
         });
     </script>
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import {
-            getAnalytics
-        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9Bsp_V1BLRFtX5z985ebrdwuPVoygYO8",
-            authDomain: "medical-3dbfb.firebaseapp.com",
-            projectId: "medical-3dbfb",
-            storageBucket: "medical-3dbfb.firebasestorage.app",
-            messagingSenderId: "3861161428",
-            appId: "1:3861161428:web:37c9514c82c5214ede2241",
-            measurementId: "G-4Z61EGYPRK"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(function(registration) {
-    console.log('Service Worker registration successful with scope:', registration.scope);
-    }).catch(function(err) {
-    console.log('Service Worker registration failed:', err);
-    });
-    }
+   
 
     @yield('scripts')
 </body>
