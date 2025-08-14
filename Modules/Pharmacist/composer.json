@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/pharmacist",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Pharmacist\\": "app/",
+            "Modules\\Pharmacist\\Database\\Factories\\": "database/factories/",
+            "Modules\\Pharmacist\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Pharmacist\\Tests\\": "tests/"
+        }
+    }
+}

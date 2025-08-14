@@ -15,18 +15,19 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function (payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    // استخدم بيانات الإشعار من payload.data
-    const notificationTitle = payload.data.title;
+
+    const notificationTitle = payload.data.title || 'بدون عنوان';
     const notificationOptions = {
-        body: payload.data.body,
+        body: payload.data.body || '',
+        icon: payload.data.icon || asset('assets/img/capsule.png'),
         data: {
-            url: payload.data.url // نحتفظ بالرابط في data داخل الإشعار
-        },
+            url: payload.data.url || (self.location.origin + '/dashboard')
+        }
     };
 
-    self.registration.showNotification(notificationTitle,
-        notificationOptions);
+    self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 
 // عند الضغط على الإشعار
 self.addEventListener('notificationclick', function(event) {

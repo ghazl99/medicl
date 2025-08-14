@@ -142,4 +142,9 @@ class MedicineService
     {
         return $this->medicineRepository->updateOffer($id, $offer);
     }
+
+    public function getMedicineWithAvailableSuppliers(int $id)
+    {
+        return $this->medicineRepository->findWithAvailableSuppliers($id);
+    }
 }

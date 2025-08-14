@@ -456,13 +456,15 @@
 
     <script>
         $(document).ready(function() {
-            const STORAGE_KEY = 'selectedMedicineIds';
+            const STORAGE_KEY = 'selectedMedicineIds' + '{{ Auth::user()->id }}';
+
 
             // قراءة من localStorage أو من السيرفر (لو localStorage فاضية)
             let selectedMedicineIds = new Set();
 
             // حاول تحميل من localStorage
             let stored = localStorage.getItem(STORAGE_KEY);
+            console.log(stored);
             if (stored) {
                 try {
                     selectedMedicineIds = new Set(JSON.parse(stored));

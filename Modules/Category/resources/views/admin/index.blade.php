@@ -145,7 +145,6 @@
                                         <span class="text-muted">لا توجد أصناف فرعية</span>
                                     @endif
                                 </td>
-
                                 <td>
                                     @php
                                         $media = $category->getFirstMedia('category_images');

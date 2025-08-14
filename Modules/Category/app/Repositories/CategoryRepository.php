@@ -26,7 +26,12 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function getSubcategoryWithMedicines(int $subcategoryId)
     {
-        return Category::with('medicines')->findOrFail($subcategoryId);
+        $subcategory = Category::findOrFail($subcategoryId);
+        $medicines = $subcategory->medicines()->paginate(20);
+        return [
+            'subcategory' => $subcategory,
+            'medicines' => $medicines
+        ];
     }
 
     /**

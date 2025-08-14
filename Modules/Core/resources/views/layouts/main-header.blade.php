@@ -68,17 +68,22 @@
                                 <a class="d-flex p-3 border-bottom"
                                     href="{{ route('notifications.read', $notification->id) }}"
                                     style="background-color: {{ $notification->is_read ? 'transparent' : '#ecf0fa' }};">
-                                    <div class="notifyimg bg-primary">
-                                        <i class="la la-bell text-white"></i> {{-- أيقونة الإشعار --}}
+                                    <div class="notifyimg bg-primary d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;">
+                                        <i class="la la-bell text-white" style="font-size: 18px;"></i>
                                     </div>
                                     <div class="mr-3">
                                         <h5 class="notification-label mb-1">
                                             {{ $notification->title ?? 'إشعار جديد' }}
                                         </h5>
+                                        <small class="text-muted d-block">
+                                            {{ $notification->body ?? '' }}
+                                        </small>
                                         <div class="notification-subtext">
                                             {{ $notification->created_at->diffForHumans() }}
                                         </div>
                                     </div>
+
                                 </a>
                             @empty
                                 <p class="p-3 text-center">لا توجد إشعارات جديدة</p>

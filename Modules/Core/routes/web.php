@@ -2,9 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Modules\Core\Models\Notification;
 use Modules\Core\Http\Controllers\CoreController;
-use Modules\Core\Http\Controllers\Admin\NotificationController;
+use Modules\Core\Models\Notification;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('cores', CoreController::class)->names('core');

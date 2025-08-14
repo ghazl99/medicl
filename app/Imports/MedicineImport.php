@@ -17,8 +17,14 @@ class MedicineImport implements ToModel, WithHeadingRow // ,ShouldQueue, WithChu
     {
         $categoryName = $row['الصنف'];
 
-        // نبحث عن الصنف أو ننشئه إذا غير موجود
-        $category = Category::firstOrCreate(['name' => $categoryName]);
+        $parentCategory = Category::firstOrCreate(
+            ['name' => 'عام'], 
+            ['parent_id' => null]
+        );
+
+        $category = Category::firstOrCreate(
+            ['name' => $categoryName, 'parent_id' => $parentCategory->id]
+        );
 
         return new \Modules\Medicine\Models\Medicine([
             'category_id' => $category->id,

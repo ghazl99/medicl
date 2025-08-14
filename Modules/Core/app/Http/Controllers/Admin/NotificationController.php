@@ -2,8 +2,8 @@
 
 namespace Modules\Core\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Core\Models\Notification;
 
@@ -14,11 +14,10 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = Notification::where('user_id',Auth::user()->id)->latest()->take(10)->get();
+        $notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(10)->get();
 
         return view('core::layouts.main-header', compact('notifications'));
     }
-
 
     public function markAllRead(Request $request)
     {
@@ -28,6 +27,7 @@ class NotificationController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
     /**
      * Show the form for creating a new resource.
      */

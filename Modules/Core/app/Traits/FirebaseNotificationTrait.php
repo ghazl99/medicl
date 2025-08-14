@@ -2,12 +2,12 @@
 
 namespace Modules\Core\Traits;
 
-use Kreait\Firebase\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Modules\Core\Models\Notification;
+use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
+use Modules\Core\Models\Notification;
 
 trait FirebaseNotificationTrait
 {
@@ -20,7 +20,7 @@ trait FirebaseNotificationTrait
      */
     public function bootFirebaseNotificationTrait()
     {
-        if (!$this->messaging) {
+        if (! $this->messaging) {
             $factory = (new Factory)
                 ->withServiceAccount(base_path('firebase_credentials.json'));
             $this->messaging = $factory->createMessaging();
@@ -30,13 +30,13 @@ trait FirebaseNotificationTrait
     /**
      * Send an FCM notification and save it in the database.
      *
-     * @param string $title    Notification title
-     * @param string $body     Notification body
-     * @param string|null $fcmToken Target device's FCM token
-     * @param array|null $data  Additional custom payload data (optional)
-     * @param int|null $userId  Related user ID for storing in DB (optional)
-     * @param string|null $url  Optional URL related to the notification
-     * @return bool             True on success, false on failure
+     * @param  string  $title  Notification title
+     * @param  string  $body  Notification body
+     * @param  string|null  $fcmToken  Target device's FCM token
+     * @param  array|null  $data  Additional custom payload data (optional)
+     * @param  int|null  $userId  Related user ID for storing in DB (optional)
+     * @param  string|null  $url  Optional URL related to the notification
+     * @return bool True on success, false on failure
      */
     public function sendFirebaseNotification(
         string $title,
@@ -46,8 +46,9 @@ trait FirebaseNotificationTrait
         ?int $userId = null,
         ?string $url = null
     ): bool {
-        if (!$fcmToken) {
-            Log::warning("Firebase Token not provided.");
+        if (! $fcmToken) {
+            Log::warning('Firebase Token not provided.');
+
             return false;
         }
 
@@ -55,11 +56,10 @@ trait FirebaseNotificationTrait
 
         try {
 
-            $notification = FirebaseNotification::create($title, $body,asset('assets/img/capsule.png'));
+            $notification = FirebaseNotification::create($title, $body, asset('assets/img/capsule.png'));
 
             $message = CloudMessage::new()
-                ->toToken($fcmToken)
-                ->withNotification($notification);
+                ->toToken($fcmToken);
 
             if ($data) {
                 $message = $message->withData($data);
@@ -68,21 +68,23 @@ trait FirebaseNotificationTrait
             try {
                 $this->messaging->send($message);
             } catch (\Throwable $e) {
-                Log::error("Firebase Send Error: " . $e->getMessage());
+                Log::error('Firebase Send Error: '.$e->getMessage());
+
                 return false;
             }
 
             Notification::create([
-                'user_id'    => $userId,
-                'title'      => $title,
-                'body'       => $body,
-                'data'       => $data,
-                'url'        => $url,
+                'user_id' => $userId,
+                'title' => $title,
+                'body' => $body,
+                'data' => $data,
+                'url' => $url,
             ]);
 
             return true;
         } catch (\Throwable $e) {
-            Log::error("Firebase Notification Error: " . $e->getMessage());
+            Log::error('Firebase Notification Error: '.$e->getMessage());
+
             return false;
         }
     }

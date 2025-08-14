@@ -2,13 +2,14 @@
 
 namespace Modules\Medicine\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use Modules\Category\Models\Category;
 use Modules\Order\Models\Order;
+use Modules\Cart\Models\CartItem;
 use Spatie\MediaLibrary\HasMedia;
+use Modules\Category\Models\Category;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 // use Modules\Medicine\Database\Factories\MedicineFactory;
 
@@ -44,7 +45,8 @@ class Medicine extends Model implements HasMedia
         'price_change_percentage',
         'is_new',
         'new_start_date',
-        'new_end_date', 'description',
+        'new_end_date',
+        'description',
     ];
 
     protected $casts = [
@@ -78,6 +80,16 @@ class Medicine extends Model implements HasMedia
                 'offer'
             )
             ->withTimestamps();
+    }
+    public function scopeAvailableSuppliers($query)
+    {
+        return $query->with(['suppliers' => function ($q) {
+            $q->where('is_approved', true);
+        }]);
+    }
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
     }
 
     public function category()

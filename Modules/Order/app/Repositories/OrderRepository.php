@@ -2,10 +2,10 @@
 
 namespace Modules\Order\Repositories;
 
-use Modules\Order\Models\Order;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Medicine\Models\Medicine;
+use Modules\Order\Models\Order;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -36,7 +36,29 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function create(array $data): Order
     {
-        return Order::create($data);
+        $order = Order::create($data);
+        $recipient = $order->supplier;
+        if ($recipient && $recipient->fcm_token) {
+            $title = 'طلب جديد';
+            $body = 'تم إنشاء طلب جديد برقم #'.$order->id;
+            $url = route('orders.show', ['order' => $order->id]);
+            $this->sendFirebaseNotification(
+                $title,
+                $body,
+                $recipient->fcm_token,
+                [
+                    'order_id' => $order->id,
+                    'title' => $title,
+                    'body' => $body,
+                    'url' => $url,
+                    'icon' => asset('assets/img/capsule.png'),
+                ],
+                $recipient->id,
+                $url
+            );
+        }
+
+        return $order;
     }
 
     /**
@@ -66,8 +88,8 @@ class OrderRepository implements OrderRepositoryInterface
                 $recipient = $order->pharmacist;
                 if ($recipient && $recipient->fcm_token) {
                     $notificationData = [
-                        'title' => "تم تأكيد طلبك رقم #" . $order->id,
-                        'body' => "المورد أكد طلبك.",
+                        'title' => 'تم تأكيد طلبك رقم #'.$order->id,
+                        'body' => 'المورد أكد طلبك.',
                     ];
                 }
             } elseif ($user->hasRole('صيدلي')) {
@@ -76,13 +98,13 @@ class OrderRepository implements OrderRepositoryInterface
                 if ($recipient && $recipient->fcm_token) {
                     if ($status == 'تم التأكيد') {
                         $notificationData = [
-                            'title' => "تم تأكيد الطلب رقم #" . $order->id,
-                            'body' => "الصيدلاني أكد الطلب.",
+                            'title' => 'تم تأكيد الطلب رقم #'.$order->id,
+                            'body' => 'الصيدلاني أكد الطلب.',
                         ];
                     } elseif ($status == 'ملغي') {
                         $notificationData = [
-                            'title' => "تم إلغاء الطلب رقم #" . $order->id,
-                            'body' => "الصيدلاني ألغى الطلب.",
+                            'title' => 'تم إلغاء الطلب رقم #'.$order->id,
+                            'body' => 'الصيدلاني ألغى الطلب.',
                         ];
                     }
                 }
@@ -95,7 +117,13 @@ class OrderRepository implements OrderRepositoryInterface
                     $notificationData['title'],
                     $notificationData['body'],
                     $recipient->fcm_token,
-                    ['order_id' => $order->id, 'click_action' => $url],
+                    [
+                        'order_id' => $order->id,
+                        'title' => $notificationData['title'],
+                        'body' => $notificationData['body'],
+                        'url' => $url,
+                        'icon' => asset('assets/img/capsule.png'),
+                    ],
                     $recipient->id,
                     $url
                 );
@@ -104,7 +132,6 @@ class OrderRepository implements OrderRepositoryInterface
             return $order;
         });
     }
-
 
     /**
      * Reject specific medicine in an order with a note.
@@ -123,15 +150,21 @@ class OrderRepository implements OrderRepositoryInterface
 
                 // Send notification to pharmacist
                 $pharmacist = $order->pharmacist;
-                $title = "تم رفض طلبك جزئياً رقم #" . $order->id;
-                $body = "تم رفض أحد الأدوية في طلبك. يرجى مراجعة الطلب لمزيد من التفاصيل.";
+                $title = 'تم رفض طلبك جزئياً رقم #'.$order->id;
+                $body = 'تم رفض أحد الأدوية في طلبك. يرجى مراجعة الطلب لمزيد من التفاصيل.';
                 $url = route('orders.show', ['order' => $order->id]);
 
                 $this->sendFirebaseNotification(
                     $title,
                     $body,
                     $pharmacist->fcm_token,
-                    ['order_id' => $order->id, 'click_action' => $url, 'icon'  => asset('assets/img/capsule.png')],
+                    [
+                        'order_id' => $order->id,
+                        'title' => $title,
+                        'body' => $body,
+                        'url' => $url,
+                        'icon' => asset('assets/img/capsule.png'),
+                    ],
                     $pharmacist->id,
                     $url
                 );

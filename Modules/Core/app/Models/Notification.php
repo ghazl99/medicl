@@ -2,15 +2,17 @@
 
 namespace Modules\Core\Models;
 
-use Modules\User\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\User\Models\User;
+
 // use Modules\Core\Database\Factories\NotificationFactory;
 
 class Notification extends Model
 {
     use HasFactory;
-protected $table = 'notifications';
+
+    protected $table = 'notifications';
 
     /**
      * The attributes that are mass assignable.
@@ -20,8 +22,9 @@ protected $table = 'notifications';
         'title',
         'body',
         'data',
-        'is_read','url'
+        'is_read', 'url',
     ];
+
     protected $casts = [
         'data' => 'array',
         'is_read' => 'boolean',

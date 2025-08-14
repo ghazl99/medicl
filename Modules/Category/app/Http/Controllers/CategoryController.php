@@ -81,9 +81,12 @@ class CategoryController extends Controller implements HasMiddleware
      */
     public function show($id)
     {
-        $subcategory = $this->categoryService->getSubcategoryWithMedicines($id);
+        $data = $this->categoryService->getSubcategoryWithMedicines($id);
 
-        return view('category::admin.show', compact('subcategory'));
+        return view('category::admin.show', [
+            'subcategory' => $data['subcategory'],
+            'medicines' => $data['medicines']
+        ]);
     }
 
     /**

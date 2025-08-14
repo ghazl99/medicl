@@ -24,7 +24,7 @@
                         </tr>
                     </thead>
                     <tbody id="orders-table-body">
-                        @forelse ($subcategory->medicines as $k => $medicine)
+                        @forelse ($medicines as $k => $medicine)
                             <tr>
                                 <td>{{ $medicine->type }}</td>
                                 <td>
@@ -55,6 +55,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center">
+                    {{ $medicines->links() }}
+                </div>
             </div>
         </div>
     </div>

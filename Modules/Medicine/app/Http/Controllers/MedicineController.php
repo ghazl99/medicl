@@ -52,7 +52,6 @@ class MedicineController extends Controller implements HasMiddleware
         if (Auth::user()->hasRole('مورد')) {
             $supplierMedicineIds = Auth::user()->medicines->pluck('id')->map(fn($id) => (string) $id)->toArray();
         }
-
         if ($request->ajax()) {
             $viewName = Auth::user()->hasRole('مورد')
                 ? 'medicine::admin._medicines_supplier_table_rows'
@@ -131,7 +130,8 @@ class MedicineController extends Controller implements HasMiddleware
     public function import(MedicineImportRequest $request)
     {
         $validatedData = $request->validated();
-        Excel::queueImport(new MedicineImport($validatedData), $validatedData['file']);
+        // Excel::queueImport(new MedicineImport($validatedData), $validatedData['file']);//with queue
+        Excel::Import(new MedicineImport($validatedData), $validatedData['file']);
 
         return redirect()->route('medicines.index')->with('success', 'تم إضافة الدواء بنجاح.');
     }
@@ -153,7 +153,13 @@ class MedicineController extends Controller implements HasMiddleware
     // Show single medicine
     public function show($id)
     {
-        return view('medicine::show');
+        $medicine = $this->medicineService->getMedicineWithAvailableSuppliers($id);
+
+        if (!$medicine) {
+            abort(404, 'الدواء غير موجود أو لا يوجد موردين متاحين.');
+        }
+
+        return view('medicine::admin.show', compact('medicine'));
     }
 
     // Show edit form

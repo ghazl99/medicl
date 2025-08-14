@@ -65,4 +65,9 @@ interface MedicineRepositoryInterface
 
     // Update offer for the specific medicine-user pivot record
     public function updateOffer(int $id, ?string $offer): bool;
+
+    /**
+     * get medicine with approved supplier and category
+     */
+    public function findWithAvailableSuppliers(int $id): ?Medicine;
 }

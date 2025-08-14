@@ -26,7 +26,7 @@ class MedicineRepository implements MedicineRepositoryInterface
                 });
         }
 
-        $medicines = $query->paginate(10);
+        $medicines = $query->paginate(10)->appends(['search' => $keyword]);
 
         // This runs on every site visit and updates medicines to not new if their new_end_date has passed.
         foreach ($medicines as $medicine) {
@@ -188,5 +188,10 @@ class MedicineRepository implements MedicineRepositoryInterface
         $medicineUser->offer = $offer;
 
         return $medicineUser->save(); // Save updated offer
+    }
+
+    public function findWithAvailableSuppliers(int $id): ?Medicine
+    {
+        return Medicine::with('category')->availableSuppliers()->find($id);
     }
 }

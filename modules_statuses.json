@@ -7,5 +7,6 @@
     "Warehouse": true,
     "Category": true,
     "SubCategory": true,
-    "Offer": true
+    "Offer": true,
+    "Pharmacist": true
 }

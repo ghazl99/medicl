@@ -2,16 +2,16 @@
 
 namespace Modules\Core\Providers;
 
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
-use Modules\Core\Models\Notification;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Traits\PathNamespace;
+use Modules\Core\Models\Notification;
 use Modules\Core\Repositories\CityRepository;
 use Modules\Core\Repositories\CityRepositoryInterface;
+use Nwidart\Modules\Traits\PathNamespace;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -32,13 +32,13 @@ class CoreServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-         View::composer('core::layouts.main-header', function ($view) {
-        if (Auth::check()) {
-            $notifications = Notification::where('user_id',Auth::user()->id)->latest()->take(10)->get();
-            
-            $view->with('notifications', $notifications);
-        }
-    });
+        View::composer('core::layouts.main-header', function ($view) {
+            if (Auth::check()) {
+                $notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(10)->get();
+
+                $view->with('notifications', $notifications);
+            }
+        });
     }
 
     /**
