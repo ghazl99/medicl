@@ -45,8 +45,9 @@
                     <input type="number" name="quantity" id="quantity" class="form-control" min="1" value="1"
                         required>
                 </div>
-
-                <button type="submit" class="btn btn-success">إضافة للسلة</button>
+                @role('صيدلي')
+                    <button type="submit" class="btn btn-success">إضافة للسلة</button>
+                @endrole
             </form>
         @endif
     </div>

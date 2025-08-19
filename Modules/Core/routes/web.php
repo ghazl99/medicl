@@ -14,7 +14,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // تحديث وقت القراءة إلى الوقت الحالي
         $notification->is_read = 1;
         $notification->save();
+        $data = $notification->data;
 
+        if (Auth::user()->hasRole('صيدلي')) {
+            return redirect()->route('details.order', ['id' => $data['order_id']]);
+        }
         // إعادة التوجيه إلى رابط الإشعار الأصلي أو الصفحة الرئيسية إذا غير موجود
         return redirect($notification->url ?? url('/'));
     })->name('notifications.read');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('type')->nullable(); // الصنف
+            $table->json('type')->nullable(); // الصنف
             $table->text('composition')->nullable(); // التركيب
             $table->string('form')->nullable(); // الشكل
             $table->string('company')->nullable(); // الشركة

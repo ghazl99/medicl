@@ -59,6 +59,7 @@ trait FirebaseNotificationTrait
             $notification = FirebaseNotification::create($title, $body, asset('assets/img/capsule.png'));
 
             $message = CloudMessage::new()
+                // ->withNotification($notification)
                 ->toToken($fcmToken);
 
             if ($data) {
@@ -68,7 +69,7 @@ trait FirebaseNotificationTrait
             try {
                 $this->messaging->send($message);
             } catch (\Throwable $e) {
-                Log::error('Firebase Send Error: '.$e->getMessage());
+                Log::error('Firebase Send Error: ' . $e->getMessage());
 
                 return false;
             }
@@ -83,7 +84,7 @@ trait FirebaseNotificationTrait
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Firebase Notification Error: '.$e->getMessage());
+            Log::error('Firebase Notification Error: ' . $e->getMessage());
 
             return false;
         }

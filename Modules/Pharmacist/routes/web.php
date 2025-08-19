@@ -12,6 +12,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('sub.categories');
     Route::get('/sub-categories-medicines/{id}', [PharmacistController::class, 'medicinesBySubCategory'])
         ->name('sub.categories.medicines');
-         Route::get('/new-medicines', [PharmacistController::class, 'NewMedicines'])
+    Route::get('/new-medicines', [PharmacistController::class, 'NewMedicines'])
         ->name('new.medicines');
+    Route::get('/my-orders', [PharmacistController::class, 'myOrders'])
+        ->name('my.orders');
+    Route::get('/details-order/{id}', [PharmacistController::class, 'detailsOrders'])
+        ->name('details.order');
+    Route::get('/notifications', [PharmacistController::class, 'notifications'])
+        ->name('notifications');
 });

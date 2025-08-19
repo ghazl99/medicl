@@ -2,14 +2,16 @@
 
 namespace Modules\Order\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Order\Models\Order;
+use Modules\Cart\Models\CartItem;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Medicine\Models\Medicine;
-use Modules\Order\Http\Requests\OrderRequest;
-use Modules\Order\Models\Order;
-use Modules\Order\Services\OrderService;
 use Modules\User\Services\UserService;
+use Modules\Order\Services\OrderService;
+use Modules\Order\Http\Requests\OrderRequest;
 
 class OrderController extends Controller
 {
@@ -57,17 +59,38 @@ class OrderController extends Controller
     /**
      * Store a new order with validated data.
      */
-    public function store(OrderRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
+        $user = $request->user();
 
-        $orderData = [
-            'pharmacist_id' => $request->user()->id,
-            'supplier_id' => $validated['supplier_id'],
-            'status' => 'قيد الانتظار',
-        ];
+        $cartItems = CartItem::with(['medicine', 'supplier'])
+            ->whereHas('cart', fn($q) => $q->where('user_id', $user->id))
+            ->get();
 
-        $order = $this->orderService->storeOrder($orderData, $validated);
+        if ($cartItems->isEmpty()) {
+            return redirect()->back()->with('error', 'السلة فارغة.');
+        }
+
+        $itemsBySupplier = $cartItems->groupBy('supplier_id');
+
+        DB::transaction(function () use ($itemsBySupplier, $user) {
+            foreach ($itemsBySupplier as $supplierId => $items) {
+                $orderData = [
+                    'pharmacist_id' => $user->id,
+                    'supplier_id' => $supplierId,
+                    'status' => 'قيد الانتظار',
+                ];
+
+                $rawData = [
+                    'medicines' => $items->pluck('medicine_id')->toArray(),
+                    'quantities' => $items->pluck('quantity')->toArray(),
+                ];
+
+                $this->orderService->storeOrder($orderData, $rawData);
+
+                CartItem::whereIn('id', $items->pluck('id'))->delete();
+            }
+        });
 
         return redirect()->route('orders.index')->with('success', 'تم إضافة الطلب بنجاح.');
     }
@@ -86,7 +109,7 @@ class OrderController extends Controller
 
             return redirect()->back()->with('success', 'تم تحديث الحالة بنجاح');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ: '.$e->getMessage());
+            return redirect()->back()->with('error', 'حدث خطأ: ' . $e->getMessage());
         }
     }
 

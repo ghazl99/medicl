@@ -1,32 +1,50 @@
 @extends('pharmacist::components.layouts.master')
 @section('css')
+
 @endsection
 @section('content')
-    <div class="container">
-        <br>
-        <div class="row">
-            @foreach ($categories as $category)
-                @php
-                    $media = $category->getFirstMedia('category_images');
-                    $image = $media ? route('category.image', $media->id) : asset('assets/img/medicine.avif');
-                @endphp
-                <div class="col-md-3 mb-3">
-                    <a href="{{ route('sub.categories', $category->id) }}" class="text-decoration-none text-dark">
+    <br>
+    <section id="portfolio" class="portfolio" dir="rtl">
+        <!-- Section Title -->
+        <div class="container  mt-5">
+            <h1>الأصناف الرئيسية</h2>
+                 <div class="isotope-layout" data-default-filter="*" data-layout="fitRows" data-sort="original-order">
 
-                        <div class="card h-100">
-                            <img src="{{ $image }}" class="card-img-top" alt="{{ $category->name }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $category->name }}</h5>
+            <div class="row gy-4 portfolio-grid isotope-container">
+                @foreach ($categories as $category)
+                    @php
+                        $media = $category->getFirstMedia('category_images');
+                        $image = $media ? route('category.image', $media->id) : asset('assets/img/medicine.avif');
+                    @endphp
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
+                        <div class="portfolio-card">
+                            <div class="image-container">
+                                <img src="{{ $image }}" class="img-fluid" alt="{{ $category->name }}" loading="lazy">
+                                <div class="overlay">
+                                    <div class="overlay-content">
+                                        <a href="{{ route('sub.categories', $category->id) }}" class="details-link"
+                                            title="عرض الاصناف الفرعية">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content">
+                                <h3>{{ $category->name }}</h3>
                             </div>
                         </div>
-                    </a>
-                </div>
-            @endforeach
-        </div>
 
-        <!-- أزرار التصفح -->
-        <div class="d-flex justify-content-center">
-            {{ $categories->links() }}
+                    </div><!-- End Portfolio Grid -->
+                @endforeach
+
+            </div>
+
         </div>
+        </div><!-- End Section Title -->
+    </section><!-- /Portfolio Section -->
+
+    <!-- أزرار التصفح -->
+    <div class="d-flex justify-content-center mt-2 mb-4">
+        {{ $categories->links() }}
     </div>
 @endsection

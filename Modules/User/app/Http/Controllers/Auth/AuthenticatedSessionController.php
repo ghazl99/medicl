@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
 
         DB::commit();
 
-        return redirect()->intended(route('pharmacist.home', absolute: false));
+        return redirect()->route('pharmacist.home');
     }
 
     /**

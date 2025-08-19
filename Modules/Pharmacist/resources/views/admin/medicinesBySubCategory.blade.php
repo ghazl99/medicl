@@ -2,7 +2,7 @@
 @section('css')
 @endsection
 @section('content')
-    <div class="container mt-4">
+    <div style="margin: 190px 20px">
         <h3>أدوية الفئة: {{ $subcategory->name }}</h3>
 
         @if ($subcategory->medicines->isEmpty())
@@ -31,7 +31,7 @@
                     </div>
                 @endforeach
             </div>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center mt-2 mb-4">
                 {{ $medicines->links() }}
             </div>
         @endif

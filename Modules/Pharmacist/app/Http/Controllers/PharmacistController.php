@@ -2,17 +2,21 @@
 
 namespace Modules\Pharmacist\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\User\Models\User;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Modules\Order\Services\OrderService;
 use Modules\Category\Services\CategoryService;
 use Modules\Medicine\Services\MedicineService;
-use Modules\User\Models\User;
+use Modules\Core\Models\Notification;
 
 class PharmacistController extends Controller
 {
     public function __construct(
         protected CategoryService $categoryService,
         protected MedicineService $medicineService,
+        protected OrderService $orderService,
     ) {}
 
     /**
@@ -73,35 +77,22 @@ class PharmacistController extends Controller
     {
         return view('pharmacist::create');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function myOrders()
     {
-        return view('pharmacist::show');
+        $user = Auth::user();
+        $orders = $this->orderService->getAllOrders($user);
+        return view('pharmacist::admin.myOrders', compact('orders'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function detailsOrders($id)
     {
-        return view('pharmacist::edit');
+        $order = $this->orderService->getOrderDetails($id);
+        return view('pharmacist::admin.details-order', compact('order'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+    public function notifications()
+    {
+        $notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(10)->get();
+        return view('pharmacist::admin.notification',compact('notifications'));
+    }
 }

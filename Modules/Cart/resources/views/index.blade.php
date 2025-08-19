@@ -1,127 +1,95 @@
 @extends('pharmacist::components.layouts.master')
 
-@section('css')
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        .quantity-btn {
-            padding: 2px 6px;
-            cursor: pointer;
-            margin: 0 2px;
-        }
-
-        .total-price {
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-align: right;
-            margin-top: 20px;
-        }
-    </style>
-@endsection
-
 @section('content')
-    <div class="container mt-4">
-        <h3>سلة المشتريات</h3>
+    <section class="cart-section">
+        <div class="cart-header">
+            <h2 class="cart-section-title">سلة المشتريات</h2>
+            <p class="section-subtitle">مراجعة طلبك وإتمام الشراء</p>
+        </div>
 
-        @if ($cartItems->isEmpty())
-            <p>السلة فارغة.</p>
-        @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>الدواء</th>
-                        <th>المورد</th>
-                        <th>السعر الفردي ($)</th>
-                        <th>الكمية</th>
-                        <th>السعر الإجمالي ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{-- تهيئة متغير لحساب المجموع الكلي --}}
-                    @php
-                        $grandTotal = 0;
-                    @endphp
-                <tbody>
-                    @foreach ($cartItems as $item)
-                        <tr data-id="{{ $item->id }}">
-                            <td>{{ $item->medicine->type }}</td>
-                            <td>{{ $item->supplier->workplace_name }}</td>
-                            <td class="price" data-price="{{ $item->medicine->net_dollar_new }}">
-                                {{ number_format($item->medicine->net_dollar_new, 2, '.', '') }}
-                            </td>
-                            <td>
-                                <button type="button" class="quantity-btn decrease">-</button>
-                                <input type="number" class="quantity-input" value="{{ $item->quantity }}" min="1"
-                                    style="width:50px;">
-                                <button type="button" class="quantity-btn increase">+</button>
-                            </td>
-                            <td class="item-total">
-                                {{ number_format($item->medicine->net_dollar_new * $item->quantity, 2, '.', '') }}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm delete-item"
-                                    data-id="{{ $item->id }}">حذف</button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
+        <div class="cart-items">
+            @if ($cartItems->isEmpty())
+            @else
+                @foreach ($cartItems as $item)
+                    <div class="cart-item" data-id="{{ $item->id }}">
+                        <div class="item-image"><i class="bi bi-capsule"></i></div>
 
-                </tbody>
-            </table>
+                        <div class="item-info">
+                            <h4>{{ $item->medicine->type }}</h4>
+                            <p class="item-description">{{ $item->supplier->workplace_name }}</p>
+                            <span class="item-price" data-price="{{ $item->medicine->net_dollar_new }}">
+                                {{ number_format($item->medicine->net_dollar_new, 2, '.', '') }} $
+                            </span>
+                        </div>
 
-            <div class="total-price">
-                المجموع الكلي: $<span id="total-price">{{ number_format($grandTotal, 2, '.', '') }}</span>
+                        <div class="item-actions">
+                            <button class="quantity-btn minus">-</button>
+                            <span class="quantity">{{ $item->quantity }}</span>
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+
+                        <button class="remove-item btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
+        @if (!$cartItems->isEmpty())
+            <div class="cart-summary cart-total">
+                <div class="summary-item cart-total"></div>
+                <span>المجموع الكلي:</span>
+                <b id="total-price" style="color: darkred"></b><b style="color: darkred">$</b>
             </div>
+            <form action="{{ route('orders.store') }}" method="POST">
+                @csrf
+                <div class="cart-actions mb-2">
+                    <button type="submit" class="checkout-btn" <i class="bi bi-check2-circle"></i> تأكيد الطلب
+                    </button>
+                </div>
+            </form>
         @endif
-    </div>
+    </section>
 @endsection
+
+
 @section('scripts')
     <script>
         function calculateTotal() {
             let total = 0;
-            document.querySelectorAll('tbody tr').forEach(row => {
-                const price = parseFloat(row.querySelector('.price').dataset.price);
-                const quantity = parseInt(row.querySelector('.quantity-input').value) || 1;
-                const itemTotal = price * quantity;
-                row.querySelector('.item-total').textContent = itemTotal.toFixed(2);
-                total += itemTotal;
+            document.querySelectorAll('.cart-item').forEach(item => {
+                const price = parseFloat(item.querySelector('.item-price').dataset.price);
+                const quantity = parseInt(item.querySelector('.quantity').textContent);
+                total += price * quantity;
             });
             document.getElementById('total-price').textContent = total.toFixed(2);
         }
 
-        // زيادة الكمية
-        document.querySelectorAll('.increase').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const input = row.querySelector('.quantity-input');
-                input.value = parseInt(input.value) + 1;
-                updateQuantityAjax(row.dataset.id, input.value, row);
-            });
-        });
+        // تحديث الكمية + Ajax
+        function updateQuantityAjax(id, quantity, itemEl) {
+            fetch(`/cart/update/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quantity
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        itemEl.querySelector('.quantity').textContent = quantity;
+                        calculateTotal();
+                        updateCartBadge(data.cart_count);
+                    }
+                });
+        }
 
-        // نقصان الكمية
-        document.querySelectorAll('.decrease').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const input = row.querySelector('.quantity-input');
-                if (parseInt(input.value) > 1) {
-                    input.value = parseInt(input.value) - 1;
-                    updateQuantityAjax(row.dataset.id, input.value, row);
-                }
-            });
-        });
-
-        // تحديث badge السلة في الهيدر
+        // تحديث الـ badge
         function updateCartBadge(count) {
             const badge = document.querySelector('.nav-item .badge');
             if (badge) {
@@ -133,12 +101,38 @@
             }
         }
 
+        // زيادة الكمية
+        document.querySelectorAll('.plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemEl = this.closest('.cart-item');
+                const id = itemEl.dataset.id;
+                const qtyEl = itemEl.querySelector('.quantity');
+                let quantity = parseInt(qtyEl.textContent) + 1;
+                qtyEl.textContent = quantity;
+                updateQuantityAjax(id, quantity, itemEl);
+            });
+        });
+
+        // نقصان الكمية
+        document.querySelectorAll('.minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemEl = this.closest('.cart-item');
+                const id = itemEl.dataset.id;
+                const qtyEl = itemEl.querySelector('.quantity');
+                let quantity = parseInt(qtyEl.textContent);
+                if (quantity > 1) {
+                    quantity -= 1;
+                    qtyEl.textContent = quantity;
+                    updateQuantityAjax(id, quantity, itemEl);
+                }
+            });
+        });
+
         // حذف المنتج
-        document.querySelectorAll('.delete-item').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const id = this.dataset.id;
-                const row = this.closest('tr');
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemEl = this.closest('.cart-item');
+                const id = itemEl.dataset.id;
 
                 Swal.fire({
                     title: 'هل أنت متأكد؟',
@@ -161,10 +155,9 @@
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
-                                    row.remove();
+                                    itemEl.remove();
                                     calculateTotal();
-                                    updateCartBadge(data.cart_count); // 🔹 تحديث badge
-
+                                    updateCartBadge(data.cart_count);
                                     Swal.fire('تم الحذف!', 'تم حذف المنتج من السلة.',
                                     'success');
                                 } else {
@@ -175,45 +168,6 @@
                 });
             });
         });
-
-        function updateQuantityAjax(id, quantity, row) {
-            fetch(`/cart/update/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    quantity: quantity
-                })
-            }).then(res => res.json()).then(data => {
-                if (data.success) {
-                    row.querySelector('.item-total').textContent = data.item_total;
-                    calculateTotal();
-                    updateCartBadge(data.cart_count);
-                }
-            });
-        }
-
-        function updateQuantityAjax(id, quantity, row) {
-            fetch(`/cart/update/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    quantity: quantity
-                })
-            }).then(res => res.json()).then(data => {
-                if (data.success) {
-                    row.querySelector('.item-total').textContent = data.item_total;
-                    calculateTotal();
-                }
-            });
-        }
 
         // حساب المجموع عند تحميل الصفحة
         calculateTotal();

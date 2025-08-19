@@ -12,6 +12,47 @@
   /**
    * Apply .scrolled class to the body as the page is scrolled down
    */
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdowns = document.querySelectorAll('.extended-dropdown-2');
+
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('a');
+        const menu = dropdown.querySelector('ul');
+
+        if (toggle && menu) {
+            // Function to handle opening/closing dropdown
+            toggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation(); // Prevents click from propagating to the document
+                dropdown.classList.toggle('dropdown-active');
+
+                // Close other dropdowns
+                dropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('dropdown-active');
+                    }
+                });
+            });
+
+            // Close dropdown when a link inside is clicked
+            const links = menu.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', function() {
+                    dropdown.classList.remove('dropdown-active');
+                });
+            });
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('dropdown-active');
+            }
+        });
+    });
+});
   function toggleScrolled() {
     const selectBody = document.querySelector('body');
     const selectHeader = document.querySelector('#header');
@@ -80,16 +121,7 @@
       window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
     }
   }
-  scrollTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
 
-  window.addEventListener('load', toggleScrollTop);
-  document.addEventListener('scroll', toggleScrollTop);
 
   /**
    * Initiate glightbox

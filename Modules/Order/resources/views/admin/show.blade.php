@@ -119,8 +119,6 @@
             </div>
             {{-- Status change buttons depending on role and order status --}}
             <div>
-
-
                 @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
                     <button class="btn btn-warning change-status-btn" data-order-id="{{ $order->id }}"
                         data-status="تم التأكيد">
@@ -306,7 +304,7 @@
                         (statusCell.find('small').text() || '') +
                         '</small>'
                     );
-
+                    location.reload();
                     Swal.fire({
                         icon: 'success',
                         title: 'تم تحديث الكمية وتحويل الحالة إلى مقبول',
