@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Core\Models\Notification;
 use Modules\Medicine\Models\Medicine;
 use Modules\Cart\Services\CartService;
+use Modules\Core\Services\CityService;
+use Modules\User\Services\UserService;
 use Modules\Order\Services\OrderService;
 use Modules\Category\Services\CategoryService;
 use Modules\Medicine\Services\MedicineService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Modules\User\Http\Requests\UpdateUserRequest;
 
 class PharmacistController extends Controller
 {
@@ -20,7 +23,9 @@ class PharmacistController extends Controller
         protected CategoryService $categoryService,
         protected MedicineService $medicineService,
         protected OrderService $orderService,
-        protected CartService $cartService
+        protected CartService $cartService,
+        protected CityService $cityService,
+        protected UserService $userService,
     ) {}
 
     /**
@@ -123,7 +128,7 @@ class PharmacistController extends Controller
 
         $cartItems = $this->cartService->getUserCartItems($user->id);
         $orders = $this->orderService->getAllOrders($user);
-        return view('pharmacist::admin.myOrders', compact('orders','cartItems'));
+        return view('pharmacist::admin.myOrders', compact('orders', 'cartItems'));
     }
 
     public function detailsOrders($id)
@@ -136,5 +141,26 @@ class PharmacistController extends Controller
     {
         $notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(10)->get();
         return view('pharmacist::admin.notification', compact('notifications'));
+    }
+
+    public function profile()
+    {
+        return view('pharmacist::admin.profile');
+    }
+    public function editProfile()
+    {
+        $user = Auth::user();
+        $cities = $this->cityService->getAllCitiesWithSubCities();
+
+        return view('pharmacist::admin.edit-profile', compact('user', 'cities'));
+    }
+
+    public function update_profile(UpdateUserRequest $request)
+    {
+        $user = Auth::user();
+
+        $this->userService->updateUser($user, $request->validated());
+
+        return redirect()->route('edit.profile.user')->with('success', 'تم تحديث بياناتك بنجاح');
     }
 }

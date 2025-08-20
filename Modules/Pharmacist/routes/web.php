@@ -20,4 +20,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('details.order');
     Route::get('/notifications', [PharmacistController::class, 'notifications'])
         ->name('notifications');
+    Route::get('/profile-user', [PharmacistController::class, 'profile'])
+        ->name('profile.user');
+    Route::get('/edit-profile-user', [PharmacistController::class, 'editProfile'])
+        ->name('edit.profile.user');
+    // Update profile
+    Route::patch('/profile-user/update', [PharmacistController::class, 'update_profile'])->name('profile.user.update');
 });

@@ -108,7 +108,7 @@
             $('#cities').select2({
                 tags: true,
                 tokenSeparators: [',', '،'],
-                width: '100%' 
+                width: '100%'
             });
         });
     </script>

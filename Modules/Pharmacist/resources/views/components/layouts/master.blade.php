@@ -28,6 +28,7 @@
     <link href="{{ asset('assets/css/header.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/search-section.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/cart.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/profile.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     @yield('css')

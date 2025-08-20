@@ -22,6 +22,7 @@
     {{-- dataTables --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+    
     @include('core::layouts.head')
 </head>
 
@@ -130,7 +131,7 @@
             });
         });
     </script>
-   
+
 
     @yield('scripts')
 </body>

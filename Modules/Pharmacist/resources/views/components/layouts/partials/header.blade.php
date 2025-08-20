@@ -73,22 +73,34 @@
 
             <li class="nav-item">
                 <a href="{{ route('my.orders') }}"
-                    class="nav-link {{ (request()->routeIs('my.orders') || request()->routeIs('details.order') || request()->routeIs('details.items')) ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('my.orders') || request()->routeIs('details.order') || request()->routeIs('details.items') ? 'active' : '' }}">
                     طلباتي
                 </a>
             </li>
         </ul>
 
-        <!-- الإشعارات -->
-        <a href="{{ route('notifications') }}" class="position-relative">
-            <i class="bi bi-bell fs-4" style="color: white"></i>
-            @if ($unreadCount > 0)
-                <span
-                    class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 px-2 rounded-circle">
-                    {{ $unreadCount }}
-                </span>
-            @endif
-        </a>
+        <!-- الإشعارات + الملف الشخصي -->
+        <div class="d-flex align-items-center gap-3">
+
+            <!-- الإشعارات -->
+            <a href="{{ route('notifications') }}" class="position-relative">
+                <i class="bi bi-bell fs-4" style="color: white"></i>
+                @if ($unreadCount > 0)
+                    <span
+                        class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 px-2 rounded-circle">
+                        {{ $unreadCount }}
+                    </span>
+                @endif
+            </a>
+
+            <!-- الملف الشخصي -->
+            <a href="{{ route('profile.user') }}">
+                <img alt="Profile" src="{{ Auth::user()->profile_photo_url }}" class="rounded-circle" width="35"
+                    height="35" style="cursor: pointer;">
+            </a>
+
+        </div>
+
     </div>
 
 </header>
