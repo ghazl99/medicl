@@ -4,12 +4,61 @@
     <section class="cart-section">
         <div class="cart-header">
             <h2 class="cart-section-title">جميع طلباتي</h2>
-            <p class="section-subtitle">مراجعة طلباتك</p>
         </div>
 
         <div class="cart-items">
             @if ($orders->isEmpty())
+                @hasanyrole('المشرف|صيدلي')
+                    @forelse ($cartItems->groupBy('supplier_id') as $supplierId => $supplierItems)
+                        <div class="cart-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="item-image me-5">
+                                    <i class="bi bi-clipboard-check fs-3"></i>
+                                </div>
+
+                                <div class="item-info me-3">
+                                    <h3>{{ $supplierItems->first()->supplier->name ?? 'غير معروف' }}</h3>
+
+                                    <span class="badge bg-danger">مسودة</span>
+                                </div>
+                            </div>
+
+                            <div class="item-actions">
+                                <a href="{{ route('details.items', $supplierItems->first()->supplier->id) }}"
+                                    class="btn btn-sm btn-outline-primary" title="عرض تفاصيل الطلب">
+                                    <i class="bi bi-card-list"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                    @endforelse
+                @endhasanyrole
             @else
+                @hasanyrole('المشرف|صيدلي')
+                    @forelse ($cartItems->groupBy('supplier_id') as $supplierId => $supplierItems)
+                        <div class="cart-item d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="item-image me-5">
+                                    <i class="bi bi-clipboard-check fs-3"></i>
+                                </div>
+
+                                <div class="item-info me-3">
+                                    <h3>{{ $supplierItems->first()->supplier->name ?? 'غير معروف' }}</h3>
+
+                                    <span class="badge bg-danger">مسودة</span>
+                                </div>
+                            </div>
+
+                            <div class="item-actions">
+                                <a href="{{ route('details.items', $supplierItems->first()->supplier->id) }}"
+                                    class="btn btn-sm btn-outline-primary" title="عرض تفاصيل الطلب">
+                                    <i class="bi bi-card-list"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                    @endforelse
+                @endhasanyrole
                 @foreach ($orders as $item)
                     <div class="cart-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
@@ -41,7 +90,8 @@
                         </div>
 
                         <div class="item-actions">
-                            <a href="{{ route('details.order', $item->id) }}" class="btn btn-sm btn-outline-primary" title="عرض تفاصيل الطلب">
+                            <a href="{{ route('details.order', $item->id) }}" class="btn btn-sm btn-outline-primary"
+                                title="عرض تفاصيل الطلب">
                                 <i class="bi bi-card-list"></i>
                             </a>
                         </div>

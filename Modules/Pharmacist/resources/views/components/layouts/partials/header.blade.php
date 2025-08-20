@@ -56,7 +56,7 @@
                     استكشاف
                 </a>
             </li>
-            @role('صيدلي')
+            {{-- @role('صيدلي')
                 <li class="nav-item position-relative">
                     <a href="{{ route('cart.index') }}"
                         class="nav-link {{ request()->routeIs('cart.index') ? 'active' : '' }}">
@@ -69,11 +69,11 @@
                     </a>
                 </li>
 
-            @endrole
+            @endrole --}}
 
             <li class="nav-item">
                 <a href="{{ route('my.orders') }}"
-                    class="nav-link {{ request()->routeIs('my.orders') ? 'active' : '' }}">
+                    class="nav-link {{ (request()->routeIs('my.orders') || request()->routeIs('details.order') || request()->routeIs('details.items')) ? 'active' : '' }}">
                     طلباتي
                 </a>
             </li>
@@ -89,14 +89,6 @@
                 </span>
             @endif
         </a>
-
-
-    </div>
-
-    <!-- Header Subtitle -->
-    <div class="header-subtitle text-center mt-2">
-        <p class="mb-1">تطبيق إدارة الصيدليات والبحث عن الأدوية</p>
-        <span class="medical-tag">🏥 طبي معتمد</span>
     </div>
 
 </header>

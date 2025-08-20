@@ -62,38 +62,41 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+        $supplierId = $request->input('supplier_id'); // جاي من الفورم
 
+        // جلب عناصر السلة الخاصة بهالمورد فقط
         $cartItems = CartItem::with(['medicine', 'supplier'])
             ->whereHas('cart', fn($q) => $q->where('user_id', $user->id))
+            ->where('supplier_id', $supplierId)
             ->get();
 
         if ($cartItems->isEmpty()) {
-            return redirect()->back()->with('error', 'السلة فارغة.');
+            return redirect()->back()->with('error', 'السلة فارغة لهذا المورد.');
         }
 
-        $itemsBySupplier = $cartItems->groupBy('supplier_id');
+        $lastOrder = null;
 
-        DB::transaction(function () use ($itemsBySupplier, $user) {
-            foreach ($itemsBySupplier as $supplierId => $items) {
-                $orderData = [
-                    'pharmacist_id' => $user->id,
-                    'supplier_id' => $supplierId,
-                    'status' => 'قيد الانتظار',
-                ];
+        DB::transaction(function () use ($cartItems, $user, $supplierId, &$lastOrder) {
+            $orderData = [
+                'pharmacist_id' => $user->id,
+                'supplier_id' => $supplierId,
+                'status' => 'قيد الانتظار',
+            ];
 
-                $rawData = [
-                    'medicines' => $items->pluck('medicine_id')->toArray(),
-                    'quantities' => $items->pluck('quantity')->toArray(),
-                ];
+            $rawData = [
+                'medicines' => $cartItems->pluck('medicine_id')->toArray(),
+                'quantities' => $cartItems->pluck('quantity')->toArray(),
+            ];
 
-                $this->orderService->storeOrder($orderData, $rawData);
-
-                CartItem::whereIn('id', $items->pluck('id'))->delete();
-            }
+            $lastOrder = $this->orderService->storeOrder($orderData, $rawData);
+            // حذف العناصر من السلة
+            CartItem::whereIn('id', $cartItems->pluck('id'))->delete();
         });
 
-        return redirect()->route('orders.index')->with('success', 'تم إضافة الطلب بنجاح.');
+        return redirect()->route('details.order', ['id' => $lastOrder->id]);
+
     }
+
 
     /**
      * Update order status.

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Modules\User\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Core\Models\Notification;
+use Modules\Medicine\Models\Medicine;
+use Modules\Cart\Services\CartService;
 use Modules\Order\Services\OrderService;
 use Modules\Category\Services\CategoryService;
 use Modules\Medicine\Services\MedicineService;
-use Modules\Core\Models\Notification;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PharmacistController extends Controller
 {
@@ -17,6 +20,7 @@ class PharmacistController extends Controller
         protected CategoryService $categoryService,
         protected MedicineService $medicineService,
         protected OrderService $orderService,
+        protected CartService $cartService
     ) {}
 
     /**
@@ -26,10 +30,46 @@ class PharmacistController extends Controller
     {
         $keyword = $request->input('search', null);
 
-        // جلب الأدوية المطابقة أو لا شيء إذا لم يكن هناك كلمة
-        $medicines = $this->medicineService->getAllMedicines($keyword);
-        return view('pharmacist::admin.home', compact('medicines', 'keyword'));
+        // استعلام أساسي مع الموردين
+        $query = Medicine::with('suppliers')
+            ->when($keyword, function ($q) use ($keyword) {
+                $q->where('type', 'like', "%$keyword%")
+                    ->orWhere('composition', 'like', "%$keyword%");
+            });
+
+        // جلب كل النتائج مؤقتاً لتطبيق الفلترة حسب توفر المورد
+        $allMedicines = $query->get()->filter(function ($medicine) {
+            return $medicine->suppliers->where('pivot.is_available', 1)->count() > 0;
+        })->values(); // إعادة ترقيم العناصر بعد الفلترة
+
+        // إعداد الـPagination بعد الفلترة
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 10;
+        $currentItems = $allMedicines->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $filteredMedicines = new LengthAwarePaginator(
+            $currentItems,
+            $allMedicines->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // دعم عرض الـAjax
+        if ($request->ajax()) {
+            return view('pharmacist::admin.medicines_list', [
+                'medicines' => $filteredMedicines,
+                'keyword' => $keyword
+            ])->render();
+        }
+
+        return view('pharmacist::admin.home', [
+            'medicines' => $filteredMedicines,
+            'keyword' => $keyword
+        ]);
     }
+
+
 
     public function getMainCategories()
     {
@@ -80,8 +120,10 @@ class PharmacistController extends Controller
     public function myOrders()
     {
         $user = Auth::user();
+
+        $cartItems = $this->cartService->getUserCartItems($user->id);
         $orders = $this->orderService->getAllOrders($user);
-        return view('pharmacist::admin.myOrders', compact('orders'));
+        return view('pharmacist::admin.myOrders', compact('orders','cartItems'));
     }
 
     public function detailsOrders($id)
@@ -93,6 +135,6 @@ class PharmacistController extends Controller
     public function notifications()
     {
         $notifications = Notification::where('user_id', Auth::user()->id)->latest()->take(10)->get();
-        return view('pharmacist::admin.notification',compact('notifications'));
+        return view('pharmacist::admin.notification', compact('notifications'));
     }
 }

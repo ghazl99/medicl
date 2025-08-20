@@ -16,12 +16,12 @@ class CartController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function detailsItemsBySupplier($supplier_id)
     {
         $userId = Auth::id();
         $cartItems = $this->cartService->getUserCartItems($userId);
 
-        return view('cart::index', compact('cartItems'));
+        return view('cart::index', compact('cartItems','supplier_id'));
     }
 
     public function updateQuantity(Request $request, $cartItemId)

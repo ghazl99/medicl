@@ -138,4 +138,9 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(CartItem::class, 'supplier_id');
     }
+
+    public function scopeAvailableSuppliers($query)
+    {
+        return $query->where('is_approved', true);
+    }
 }

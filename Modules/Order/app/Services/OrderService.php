@@ -144,7 +144,7 @@ class OrderService
 
     private function sendOrderNotification($fcmToken, $title, $body, $orderId, $recipientId)
     {
-        $url = route('orders.show', ['order' => $orderId]);
+        $url = route('details.order', ['id' => $orderId]);
         $this->sendFirebaseNotification(
             $title,
             $body,

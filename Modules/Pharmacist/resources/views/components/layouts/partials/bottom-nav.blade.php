@@ -20,8 +20,8 @@
         $unreadCount = $notifications->where('is_read', false)->count();
     @endphp
     <!-- Bottom Navbar يظهر فقط على الموبايل -->
-    <nav class="navbar navbar-light bg-light navbar-expand fixed-bottom d-xl-none border-top" style="border-radius:25px;">
-        <ul class="navbar-nav nav-justified w-100">
+    <nav class="navbar navbar-light bg-light navbar-expand fixed-bottom d-xl-none border-top" style="border-radius:25px;    padding-left: 25px;">
+        <ul class="navbar-nav nav-justified w-100" style="padding-right: 0;">
             <li class="nav-item">
                 <a href="{{ route('pharmacist.home') }}"
                     class="nav-link text-center {{ request()->routeIs('pharmacist.home') ? 'active' : '' }}">
@@ -37,7 +37,7 @@
                     <i class="bi bi-compass fs-5"></i><br>استكشاف
                 </a>
             </li>
-            @role('صيدلي')
+            {{-- @role('صيدلي')
                 <li class="nav-item position-relative">
                     <a href="{{ route('cart.index') }}"
                         class="nav-link text-center {{ request()->routeIs('cart.index') ? 'active' : '' }}">
@@ -49,7 +49,7 @@
                         @endif
                     </a>
                 </li>
-            @endrole
+            @endrole --}}
             @hasanyrole('مورد|المشرف')
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
@@ -59,7 +59,7 @@
                 </li>
             @endhasanyrole
             <li class="nav-item">
-                <a href="{{ route('my.orders') }}" class="nav-link text-center {{ (request()->routeIs('my.orders')|| request()->routeIs('details.order')) ? 'active' : '' }}">
+                <a href="{{ route('my.orders') }}" class="nav-link text-center {{ (request()->routeIs('my.orders') || request()->routeIs('details.order') || request()->routeIs('details.items')) ? 'active' : '' }}">
                     <i class="bi bi-bag-check fs-5"></i><br>طلباتي
                 </a>
             </li>

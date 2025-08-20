@@ -2,7 +2,7 @@
 @section('css')
 @endsection
 @section('content')
-    <div style="margin: 190px 20px">
+    <div style="margin: 75px 20px">
         <h3>أدوية الفئة: {{ $subcategory->name }}</h3>
 
         @if ($subcategory->medicines->isEmpty())

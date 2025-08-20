@@ -1,6 +1,6 @@
  #header {
      width: 100%;
-     min-height: 150px;
+     min-height: 120px;
      /* ارتفاع الهيدر أكبر */
      background-color: rgba(30, 91, 179, 0.8);
      backdrop-filter: blur(15px);
@@ -69,11 +69,12 @@
 
  .nav-link.active::before,
  .nav-link:hover {
-     width: 70%;
+     width: 60%;
  }
 
  .nav-link.active {
      color: #2c7be5;
+     margin: 0px 15px;
      background: rgba(44, 123, 229, 0.1);
 
  }

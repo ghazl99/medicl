@@ -6,7 +6,7 @@
     <br>
     <section id="portfolio" class="portfolio" dir="rtl">
         <!-- Section Title -->
-        <div class="container  mt-5">
+        <div class="container mt-2">
             <h1>الأصناف الرئيسية</h2>
                  <div class="isotope-layout" data-default-filter="*" data-layout="fitRows" data-sort="original-order">
 

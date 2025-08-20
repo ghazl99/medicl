@@ -3,7 +3,7 @@
 @section('content')
     <section id="portfolio" class="portfolio" dir="rtl">
         <!-- Section Title -->
-        <div class="container  mt-5">
+        <div class="container mt-2">
             <h1>{{ $category->name }}</h2>
                 @if ($category->children->isEmpty())
                     <p>لا توجد فئات فرعية.</p>

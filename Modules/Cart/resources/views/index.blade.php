@@ -1,16 +1,19 @@
 @extends('pharmacist::components.layouts.master')
 
 @section('content')
+    @php
+        $supplierItems = $cartItems->where('supplier_id', $supplier_id);
+    @endphp
     <section class="cart-section">
         <div class="cart-header">
-            <h2 class="cart-section-title">سلة المشتريات</h2>
-            <p class="section-subtitle">مراجعة طلبك وإتمام الشراء</p>
+            <h2 class="cart-section-title">جميع طلبات المسودة</h2>
+            <p class="section-subtitle">مراجعة طلبك من أدوية المورد
+                {{ $supplierItems->first()->supplier->name ?? 'غير معروف' }} </p>
         </div>
 
         <div class="cart-items">
-            @if ($cartItems->isEmpty())
-            @else
-                @foreach ($cartItems as $item)
+            @if ($supplierItems->count())
+                @foreach ($supplierItems as $item)
                     <div class="cart-item" data-id="{{ $item->id }}">
                         <div class="item-image"><i class="bi bi-capsule"></i></div>
 
@@ -33,17 +36,19 @@
                         </button>
                     </div>
                 @endforeach
+            @else
             @endif
         </div>
 
         @if (!$cartItems->isEmpty())
             <div class="cart-summary cart-total">
-                <div class="summary-item cart-total"></div>
                 <span>المجموع الكلي:</span>
                 <b id="total-price" style="color: darkred"></b><b style="color: darkred">$</b>
             </div>
             <form action="{{ route('orders.store') }}" method="POST">
                 @csrf
+                <input type="hidden" name="supplier_id" value="{{ $supplier_id }}">
+
                 <div class="cart-actions mb-2">
                     <button type="submit" class="checkout-btn" <i class="bi bi-check2-circle"></i> تأكيد الطلب
                     </button>
@@ -159,7 +164,7 @@
                                     calculateTotal();
                                     updateCartBadge(data.cart_count);
                                     Swal.fire('تم الحذف!', 'تم حذف المنتج من السلة.',
-                                    'success');
+                                        'success');
                                 } else {
                                     Swal.fire('خطأ!', 'تعذر حذف المنتج، حاول مجدداً.', 'error');
                                 }
