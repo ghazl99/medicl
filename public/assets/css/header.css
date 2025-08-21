@@ -1,6 +1,6 @@
  #header {
      width: 100%;
-     min-height: 120px;
+     min-height: 100px;
      /* ارتفاع الهيدر أكبر */
      background-color: rgba(30, 91, 179, 0.8);
      backdrop-filter: blur(15px);

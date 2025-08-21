@@ -1,5 +1,3 @@
-
-
 :root {
     /* Medical Color Palette */
     --primary: #2c7be5;
@@ -115,6 +113,7 @@
     --transition-normal: 250ms ease-in-out;
     --transition-slow: 350ms ease-in-out;
 }
+
 /* Enhanced Profile Styles */
 .profile-section {
     background: linear-gradient(135deg, var(--primary-dark) 0%, rgba(30, 91, 179, 0.8) 100%);
@@ -149,22 +148,29 @@
 .profile-avatar {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto var(--space-6);
     backdrop-filter: blur(10px);
-    border: 4px solid rgba(255,255,255,0.3);
+    border: 4px solid rgba(255, 255, 255, 0.3);
     position: relative;
     animation: float-medical 3s ease-in-out infinite;
     margin-top: var(--space-4);
 }
 
 @keyframes float-medical {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .profile-avatar::before {
@@ -183,14 +189,14 @@
 .profile-avatar i {
     font-size: 3.5rem;
     color: var(--text-inverse);
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .profile-info h3 {
     font-size: var(--font-size-3xl);
     font-weight: 800;
     margin-bottom: var(--space-2);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-info p {
@@ -229,7 +235,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left var(--transition-slow);
 }
 
@@ -366,4 +372,13 @@
 
 .profile-btn.premium i {
     color: var(--warning-dark);
+}
+
+.portfolio {
+    padding: 60px 35px;
+}
+
+.portfolio .content {
+
+    padding: 5px 0;
 }

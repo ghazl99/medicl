@@ -1,10 +1,7 @@
-
 @if ($medicines->isNotEmpty())
-        @foreach ($medicines as $medicine)
-            <div class="card h-100 mb-2">
-
+    @foreach ($medicines as $medicine)
+        <div class="card h-100 mb-2">
             @php
-
                 $name = $medicine->type;
                 $composition = $medicine->composition;
 
@@ -24,12 +21,11 @@
                     <small class="text-muted">التركيب: {!! $composition !!}</small>
                 </div>
             </a>
-                </div>
+        </div>
+    @endforeach
 
-        @endforeach
     <div class="d-flex justify-content-center mt-3 mb-4" id="medicines-pagination-links">
         {!! $medicines->links() !!}
     </div>
 @else
-    <p class="mt-3 text-danger">لا توجد أدوية متاحة حاليًا.</p>
 @endif
