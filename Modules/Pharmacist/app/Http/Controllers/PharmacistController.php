@@ -31,67 +31,67 @@ class PharmacistController extends Controller
     /**
      * Display the pharmacist home page.
      */
-   public function home(Request $request)
-{
-    $keyword = $request->input('search', null);
+    public function home(Request $request)
+    {
+        $keyword = $request->input('search', null);
 
-    // إذا لم يُدخل المستخدم كلمة بحث، أرسل صفحة فارغة بدون أدوية
-    if (!$keyword) {
-        $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            collect(), // مجموعة فارغة
-            0,         // عدد العناصر الكلي
-            10,        // عناصر لكل صفحة
-            1,         // الصفحة الحالية
-            ['path' => $request->url()]
+        // إذا لم يُدخل المستخدم كلمة بحث، أرسل صفحة فارغة بدون أدوية
+        if (!$keyword) {
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect(), // مجموعة فارغة
+                0,         // عدد العناصر الكلي
+                10,        // عناصر لكل صفحة
+                1,         // الصفحة الحالية
+                ['path' => $request->url()]
+            );
+
+            if ($request->ajax()) {
+                return view('pharmacist::admin.medicines_list', [
+                    'medicines' => $emptyPaginator,
+                    'keyword' => $keyword
+                ])->render();
+            }
+
+            return view('pharmacist::admin.home', [
+                'medicines' => $emptyPaginator,
+                'keyword' => $keyword
+            ]);
+        }
+
+        $query = Medicine::with('suppliers')
+            ->where(function ($q) use ($keyword) {
+                $q->where('type', 'like', "%$keyword%")
+                    ->orWhere('composition', 'like', "%$keyword%");
+            });
+
+        $allMedicines = $query->get()->filter(function ($medicine) {
+            return $medicine->suppliers->where('pivot.is_available', 1)->count() > 0;
+        })->values();
+
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 10;
+        $currentItems = $allMedicines->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $filteredMedicines = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems,
+            $allMedicines->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
         );
 
         if ($request->ajax()) {
             return view('pharmacist::admin.medicines_list', [
-                'medicines' => $emptyPaginator,
+                'medicines' => $filteredMedicines,
                 'keyword' => $keyword
             ])->render();
         }
 
         return view('pharmacist::admin.home', [
-            'medicines' => $emptyPaginator,
+            'medicines' => $filteredMedicines,
             'keyword' => $keyword
         ]);
     }
-
-    $query = Medicine::with('suppliers')
-        ->where(function($q) use ($keyword) {
-            $q->where('type', 'like', "%$keyword%")
-              ->orWhere('composition', 'like', "%$keyword%");
-        });
-
-    $allMedicines = $query->get()->filter(function ($medicine) {
-        return $medicine->suppliers->where('pivot.is_available', 1)->count() > 0;
-    })->values();
-
-    $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
-    $perPage = 10;
-    $currentItems = $allMedicines->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-    $filteredMedicines = new \Illuminate\Pagination\LengthAwarePaginator(
-        $currentItems,
-        $allMedicines->count(),
-        $perPage,
-        $currentPage,
-        ['path' => $request->url(), 'query' => $request->query()]
-    );
-
-    if ($request->ajax()) {
-        return view('pharmacist::admin.medicines_list', [
-            'medicines' => $filteredMedicines,
-            'keyword' => $keyword
-        ])->render();
-    }
-
-    return view('pharmacist::admin.home', [
-        'medicines' => $filteredMedicines,
-        'keyword' => $keyword
-    ]);
-}
 
 
 

@@ -157,30 +157,48 @@
     color: white;
 }
 
-.cart-items {
+.c-items {
     margin: var(--space-6) 0;
     padding: 0 var(--space-4);
     margin-top: var(--space-6);
 }
 
-.cart-item {
+.c-item {
     display: flex;
-    align-items: center;
-    gap: var(--space-4);
+    flex-direction: column; /* العمود الرئيسي */
+    gap: var(--space-3);
     padding: var(--space-6);
     border-radius: var(--radius-medical);
     margin-bottom: var(--space-4);
     box-shadow: var(--shadow-sm);
     border: 2px solid var(--border-light);
     transition: var(--transition-normal);
-    margin-top: var(--space-2);
 }
 
-.cart-item:hover {
+.c-item:hover {
     box-shadow: var(--shadow-lg);
     border-color: var(--primary);
     transform: translateY(-2px);
 }
+
+/* السطر الأول: الصورة والمعلومات */
+.item-main {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+/* السطر الثاني: أزرار الكمية والحذف */
+.item-actions-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+}
+
+
+
 
 .item-image {
     width: 64px;

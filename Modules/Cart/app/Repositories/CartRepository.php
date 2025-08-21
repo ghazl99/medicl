@@ -8,15 +8,26 @@ use Modules\Cart\Repositories\CartRepositoryInterface;
 
 class CartRepository implements CartRepositoryInterface
 {
+    // Get existing cart for user or create a new one
     public function getOrCreateUserCart(int $userId)
     {
-        return Cart::firstOrCreate(
-            ['user_id' => $userId]
-        );
+        return Cart::firstOrCreate(['user_id' => $userId]);
     }
 
+    // Add item to cart or increase quantity if already exists
     public function addItem(int $cartId, int $medicineId, int $supplierId, int $quantity)
     {
+        $existingItem = CartItem::where('cart_id', $cartId)
+            ->where('medicine_id', $medicineId)
+            ->where('supplier_id', $supplierId)
+            ->first();
+
+        if ($existingItem) {
+            $existingItem->quantity += $quantity;
+            $existingItem->save();
+            return $existingItem;
+        }
+
         return CartItem::create([
             'cart_id' => $cartId,
             'medicine_id' => $medicineId,
@@ -25,6 +36,7 @@ class CartRepository implements CartRepositoryInterface
         ]);
     }
 
+    // Get all items in a user's cart
     public function getUserCartItems(int $userId)
     {
         return CartItem::with(['medicine', 'supplier'])
@@ -32,6 +44,7 @@ class CartRepository implements CartRepositoryInterface
             ->get();
     }
 
+    // Update the quantity of a cart item
     public function updateQuantity($cartItemId, $quantity)
     {
         $cartItem = CartItem::findOrFail($cartItemId);
@@ -40,15 +53,14 @@ class CartRepository implements CartRepositoryInterface
         return $cartItem;
     }
 
+    // Delete an item from the cart and return remaining count
     public function deleteItem($cartItemId)
     {
         $cartItem = CartItem::with('cart')->findOrFail($cartItemId);
-
         $userId = $cartItem->cart->user_id;
 
         $cartItem->delete();
 
-        $cartCount = CartItem::whereHas('cart', fn($q) => $q->where('user_id', $userId))->count();
-        return $cartCount;
+        return CartItem::whereHas('cart', fn($q) => $q->where('user_id', $userId))->count();
     }
 }

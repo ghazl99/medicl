@@ -2,14 +2,18 @@
 
 namespace Modules\Medicine\Services;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Modules\Core\Traits\ImageTrait;
+use Modules\Core\Traits\Translatable;
 use Modules\Medicine\Models\Medicine;
+use Stichoza\GoogleTranslate\GoogleTranslate;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Medicine\Repositories\MedicineRepositoryInterface;
 
 class MedicineService
 {
-    use \Modules\Core\Traits\ImageTrait;
+    use ImageTrait, Translatable;
 
     protected MedicineRepositoryInterface $medicineRepository;
 
@@ -42,6 +46,27 @@ class MedicineService
         return $this->medicineRepository->findById($id);
     }
 
+    private function prepareUserData(array $data): array
+    {
+        $locale = app()->getLocale();
+
+        $translatedName = [
+            $locale => $data['type'],
+        ];
+
+        foreach ($this->otherLangs() as $lang) {
+            try {
+                $translatedName[$lang] = $this->autoGoogleTranslator($lang, $data['type']);
+            } catch (\Exception $e) {
+                Log::error("فشل ترجمة الاسم إلى [$lang]: " . $e->getMessage());
+                $translatedName[$lang] = $data['type'];
+            }
+        }
+        // dd($translatedName);
+        return array_merge($data, [
+            'type' => $translatedName,
+        ]);
+    }
     /**
      * Create a new medicine and assign it to supplier if applicable.
      */
@@ -50,9 +75,9 @@ class MedicineService
         DB::beginTransaction();
         $image = $data['image'] ?? null;
         unset($data['image']);
-
+        // $preparedData = $this->prepareUserData($data);
         $medicine = $this->medicineRepository->store($data);
-
+        // dd(GoogleTranslate::trans('artrofen 320', 'ar'));
         if (! $user) {
             throw new \Exception('المستخدم غير موجود أو غير مسجل الدخول.');
         }

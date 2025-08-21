@@ -21,7 +21,7 @@ class MedicineRepository implements MedicineRepositoryInterface
                 ->query(function ($query) use ($keyword) {
                     $query->with(['category', 'suppliers']);
                     $query->orWhereHas('category', function ($q) use ($keyword) {
-                        $q->where('name', 'like', '%'.$keyword.'%');
+                        $q->where('name', 'like', '%' . $keyword . '%');
                     });
                 });
         }
@@ -184,10 +184,10 @@ class MedicineRepository implements MedicineRepositoryInterface
      **/
     public function updateOffer(int $id, ?string $offer): bool
     {
-        $medicineUser = MedicineUser::findOrFail($id); // Find pivot model
-        $medicineUser->offer = $offer;
-
-        return $medicineUser->save(); // Save updated offer
+        $updated = DB::table('medicine_user')
+            ->where('id', $id) // أو استخدم الشرط المناسب حسب مفتاح الجدول
+            ->update(['offer' => $offer]); // Find pivot model
+        return $updated > 0; // Save updated offer
     }
 
     public function findWithAvailableSuppliers(int $id): ?Medicine

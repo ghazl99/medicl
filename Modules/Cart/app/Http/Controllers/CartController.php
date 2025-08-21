@@ -21,7 +21,7 @@ class CartController extends Controller
         $userId = Auth::id();
         $cartItems = $this->cartService->getUserCartItems($userId);
 
-        return view('cart::index', compact('cartItems','supplier_id'));
+        return view('cart::index', compact('cartItems', 'supplier_id'));
     }
 
     public function updateQuantity(Request $request, $cartItemId)
@@ -40,7 +40,7 @@ class CartController extends Controller
 
     public function deleteItem($cartItemId)
     {
-        $cartCount =$this->cartService->deleteItem($cartItemId);
+        $cartCount = $this->cartService->deleteItem($cartItemId);
 
         return response()->json([
             'success' => true,
@@ -74,13 +74,23 @@ class CartController extends Controller
                 $request->quantity
             );
 
+            // تحقق إذا كان الطلب AJAX
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'تمت إضافة المنتج إلى السلة بنجاح']);
+            }
+
             return redirect()->route('pharmacist.home')
                 ->with('success', 'تمت إضافة المنتج إلى السلة بنجاح');
         } catch (\Exception $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'حدث خطأ: ' . $e->getMessage()]);
+            }
+
             return redirect()->back()
                 ->with('error', 'حدث خطأ أثناء إضافة المنتج إلى السلة: ' . $e->getMessage());
         }
     }
+
 
 
     /**

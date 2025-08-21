@@ -12,43 +12,108 @@
         }
     </style>
 @endsection
+
 @section('content')
-    <div class="container mt-4">
-        <h3>{{ $medicine->type }}</h3>
-        <p>التركيب: {{ $medicine->composition }}</p>
-        <p>السعر :{{ $medicine->net_dollar_new }} $</p>
-        <p>عرض (الكمية): {{ $medicine->offer ?? 'لا يوجد عرض' }}</p>
-        @php
-            $image = $medicine->getFirstMediaUrl('medicine_images') ?: asset('assets/img/medicine.avif');
-        @endphp
-        <img src="{{ $image }}" width="150" alt="{{ $medicine->type }}" class="mb-3">
+    <section class="cart-section">
+        <div class="cart-header">
+            <h2 class="cart-section-title"> {{ $medicine->type }}</h2>
+            <p class="section-subtitle">{{ $medicine->composition }}</p>
+            <h3 class="text-white">{{ $medicine->net_dollar_new }} $</h3>
+        </div>
 
-        @if ($medicine->suppliers->isEmpty())
-            <p class="no-suppliers">لا يتوفر موردين لهذا الدواء</p>
-        @else
-            <form action="{{ route('cart.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="medicine_id" value="{{ $medicine->id }}">
-                <input type="hidden" name="price" value="{{ $medicine->net_dollar_new }}">
+        <div class="cart-items">
+            @php
+                $image = $medicine->getFirstMediaUrl('medicine_images') ?: asset('assets/img/medicine.avif');
+            @endphp
+            <img src="{{ $image }}" width="150" alt="{{ $medicine->type }}" class="mb-3">
 
-                <div class="mb-3">
-                    <label for="supplier_id">اختر المورد:</label>
-                    <select name="supplier_id" id="supplier_id" class="form-control" required>
-                        @foreach ($medicine->suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            @if ($medicine->suppliers->isEmpty())
+                <p class="no-suppliers">لا يتوفر موردين لهذا الدواء</p>
+            @else
+                @foreach ($medicine->suppliers as $supplier)
+                    <div class="cart-item" data-supplier-id="{{ $supplier->id }}">
+                        <div class="item-main">
+                        <div class="item-info">
+                            <p>{{ $supplier->name }}</p>
+                            <span class="item-price">{{ $supplier->pivot->offer ?? '' }}</span>
+                        </div>
 
-                <div class="mb-3">
-                    <label for="quantity">الكمية:</label>
-                    <input type="number" name="quantity" id="quantity" class="form-control" min="1" value="1"
-                        required>
-                </div>
-                @role('صيدلي')
-                    <button type="submit" class="btn btn-success">إضافة للسلة</button>
-                @endrole
-            </form>
-        @endif
-    </div>
+                        <div class="item-actions">
+                            <input type="number" name="quantity" min="1" value="1"
+                                class="form-control form-control-sm">
+                        </div>
+
+                        <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
+                            +
+                        </button>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </section>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.add-to-cart-mini');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const cartItem = button.closest('.cart-item');
+                    const supplierId = cartItem.dataset.supplierId;
+                    const quantity = cartItem.querySelector('input[name="quantity"]').value;
+                    const medicineId = {{ $medicine->id }};
+                    const price = {{ $medicine->net_dollar_new }};
+
+                    fetch('{{ route('cart.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                medicine_id: medicineId,
+                                supplier_id: supplierId,
+                                quantity: quantity,
+                                price: price
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'تمت الإضافة!',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطأ',
+                                    text: data.message ||
+                                        'حدث خطأ، يرجى المحاولة مرة أخرى.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطأ',
+                                text: 'حدث خطأ في الاتصال بالخادم.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        });
+                });
+            });
+        });
+    </script>
 @endsection

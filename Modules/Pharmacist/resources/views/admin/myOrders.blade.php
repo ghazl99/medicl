@@ -12,7 +12,7 @@
                     @forelse ($cartItems->groupBy('supplier_id') as $supplierId => $supplierItems)
                         <div class="cart-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <div class="item-image me-5">
+                                <div class="item-image me-3">
                                     <i class="bi bi-clipboard-check fs-3"></i>
                                 </div>
 
@@ -38,7 +38,7 @@
                     @forelse ($cartItems->groupBy('supplier_id') as $supplierId => $supplierItems)
                         <div class="cart-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <div class="item-image me-5">
+                                <div class="item-image me-3">
                                     <i class="bi bi-clipboard-check fs-3"></i>
                                 </div>
 
@@ -62,7 +62,7 @@
                 @foreach ($orders as $item)
                     <div class="cart-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <div class="item-image me-5">
+                            <div class="item-image me-3">
                                 <i class="bi bi-clipboard-check fs-3"></i>
                             </div>
 

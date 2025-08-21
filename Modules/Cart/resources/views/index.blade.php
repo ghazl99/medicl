@@ -1,5 +1,9 @@
 @extends('pharmacist::components.layouts.master')
+@section('css')
+<style>
 
+</style>
+@endsection
 @section('content')
     @php
         $supplierItems = $cartItems->where('supplier_id', $supplier_id);
@@ -11,29 +15,33 @@
                 {{ $supplierItems->first()->supplier->name ?? 'غير معروف' }} </p>
         </div>
 
-        <div class="cart-items">
+        <div class="c-items">
             @if ($supplierItems->count())
                 @foreach ($supplierItems as $item)
-                    <div class="cart-item" data-id="{{ $item->id }}">
-                        <div class="item-image"><i class="bi bi-capsule"></i></div>
+                    <div class="c-item" data-id="{{ $item->id }}">
+                        <div class="item-main">
+                            <div class="item-image"><i class="bi bi-capsule"></i></div>
 
-                        <div class="item-info">
-                            <h4>{{ $item->medicine->type }}</h4>
-                            <p class="item-description">{{ $item->supplier->workplace_name }}</p>
-                            <span class="item-price" data-price="{{ $item->medicine->net_dollar_new }}">
-                                {{ number_format($item->medicine->net_dollar_new, 2, '.', '') }} $
-                            </span>
+                            <div class="item-info">
+                                <h4>{{ $item->medicine->type }}</h4>
+                                <p class="item-description">{{ $item->supplier->workplace_name }}</p>
+                                <span class="item-price" data-price="{{ $item->medicine->net_dollar_new }}">
+                                    {{ number_format($item->medicine->net_dollar_new, 2, '.', '') }} $
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="item-actions">
-                            <button class="quantity-btn minus">-</button>
-                            <span class="quantity">{{ $item->quantity }}</span>
-                            <button class="quantity-btn plus">+</button>
-                        </div>
+                        <div class="item-actions-wrapper">
+                            <div class="item-actions">
+                                <button class="quantity-btn minus">-</button>
+                                <span class="quantity">{{ $item->quantity }}</span>
+                                <button class="quantity-btn plus">+</button>
+                            </div>
 
-                        <button class="remove-item btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                            <button class="remove-item btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 @endforeach
             @else
@@ -63,7 +71,7 @@
     <script>
         function calculateTotal() {
             let total = 0;
-            document.querySelectorAll('.cart-item').forEach(item => {
+            document.querySelectorAll('.c-item').forEach(item => {
                 const price = parseFloat(item.querySelector('.item-price').dataset.price);
                 const quantity = parseInt(item.querySelector('.quantity').textContent);
                 total += price * quantity;
@@ -109,7 +117,7 @@
         // زيادة الكمية
         document.querySelectorAll('.plus').forEach(btn => {
             btn.addEventListener('click', function() {
-                const itemEl = this.closest('.cart-item');
+                const itemEl = this.closest('.c-item');
                 const id = itemEl.dataset.id;
                 const qtyEl = itemEl.querySelector('.quantity');
                 let quantity = parseInt(qtyEl.textContent) + 1;
@@ -121,7 +129,7 @@
         // نقصان الكمية
         document.querySelectorAll('.minus').forEach(btn => {
             btn.addEventListener('click', function() {
-                const itemEl = this.closest('.cart-item');
+                const itemEl = this.closest('.c-item');
                 const id = itemEl.dataset.id;
                 const qtyEl = itemEl.querySelector('.quantity');
                 let quantity = parseInt(qtyEl.textContent);
@@ -136,7 +144,7 @@
         // حذف المنتج
         document.querySelectorAll('.remove-item').forEach(btn => {
             btn.addEventListener('click', function() {
-                const itemEl = this.closest('.cart-item');
+                const itemEl = this.closest('.c-item');
                 const id = itemEl.dataset.id;
 
                 Swal.fire({
