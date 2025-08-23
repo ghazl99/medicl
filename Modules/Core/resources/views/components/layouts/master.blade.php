@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - نظام إدارة الصيدليات</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap 4 RTL -->
     <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css">
@@ -60,22 +61,20 @@
     <!-- Bootstrap 4 rtl -->
     <script src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"></script>
 
-     {{-- SweetAlert --}}
+    {{-- SweetAlert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- رسائل الجلسة باستخدام Swal --}}
     <script>
         function getSwalThemeOptions() {
             const isDark = document.body.classList.contains('dark-theme');
-            return isDark ?
-                {
-                    background: '#141b2d',
-                    color: '#ffffff'
-                } :
-                {
-                    background: '#ffffff',
-                    color: '#000000'
-                };
+            return isDark ? {
+                background: '#141b2d',
+                color: '#ffffff'
+            } : {
+                background: '#ffffff',
+                color: '#000000'
+            };
         }
 
         window.addEventListener('load', function() {
@@ -105,38 +104,38 @@
         });
     </script>
 
-   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const body = document.body;
-        const toggleBtn = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('theme-icon');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const toggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('theme-icon');
 
-        // تحميل الوضع المحفوظ
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-theme');
-            body.classList.remove('light-theme');
-            themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
-        } else {
-            body.classList.add('light-theme');
-        }
-
-        // تبديل الوضع عند الضغط
-        toggleBtn.addEventListener('click', function () {
-            body.classList.toggle('dark-theme');
-            body.classList.toggle('light-theme');
-
-            // تبديل الأيقونة
-            if (body.classList.contains('dark-theme')) {
+            // تحميل الوضع المحفوظ
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-theme');
+                body.classList.remove('light-theme');
                 themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
-                localStorage.setItem('theme', 'dark');
             } else {
-                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars');
-                localStorage.setItem('theme', 'light');
+                body.classList.add('light-theme');
             }
+
+            // تبديل الوضع عند الضغط
+            toggleBtn.addEventListener('click', function() {
+                body.classList.toggle('dark-theme');
+                body.classList.toggle('light-theme');
+
+                // تبديل الأيقونة
+                if (body.classList.contains('dark-theme')) {
+                    themeIcon.classList.replace('bi-moon-stars', 'bi-sun-fill');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 
     @yield('scripts')

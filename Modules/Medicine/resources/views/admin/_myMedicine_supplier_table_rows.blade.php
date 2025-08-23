@@ -16,6 +16,7 @@
         </td>
 
         <td>{{ $medicine->type }}</td>
+        <td>{{ $medicine->type_ar }}</td>
         <td>{{ $medicine->composition }}</td>
         <td>{{ $medicine->form }}</td>
         <td>{{ $medicine->company }}</td>
@@ -27,8 +28,10 @@
             <textarea class="form-control note-input d-none" rows="2" placeholder="أدخل ملاحظة هنا">{{ $medicine->pivot->notes ?? '' }}</textarea>
         </td>
 
-        <td>{{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) : '-' }}</td>
-        <td>{{ $medicine->public_dollar_new !== null ? number_format($medicine->public_dollar_new, 2) : '-' }}</td>
+        <td class="net-cell" data-id="{{ $medicine->id ?? 'N/A' }}">
+            <span class="net-text">{{number_format($medicine->net_syp, 2)  }}</span>
+            <input type="text" class="form-control net-input d-none" value="{{ $medicine->net_syp ?? '' }}">
+        </td>
 
         <td class="text-center">
             <div class="mb-2">

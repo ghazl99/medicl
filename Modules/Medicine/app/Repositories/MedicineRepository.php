@@ -99,11 +99,9 @@ class MedicineRepository implements MedicineRepositoryInterface
     /**
      * Update a medicine.
      */
-    public function update(Medicine $medicine, array $data): Medicine
+    public function update(Medicine $medicine,  $data): Medicine
     {
-        $medicine->fill($data);
-        $medicine->save();
-
+        $medicine->update($data);
         return $medicine;
     }
 

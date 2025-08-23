@@ -31,7 +31,7 @@ class Medicine extends Model implements HasMedia
      */
     protected $fillable = [
         'category_id',
-        'type',
+        'type','type_ar',
         'composition',
         'form',
         'company',

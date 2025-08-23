@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('type',100)->nullable(); // الصنف
+            $table->string('type_ar',100);
             $table->text('composition')->nullable(); // التركيب
             $table->string('form')->nullable(); // الشكل
             $table->string('company')->nullable(); // الشركة

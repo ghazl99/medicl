@@ -9,9 +9,9 @@
                 @csrf
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="category_id">الصنف</label>
+                        <label for="category_id">النوع</label>
                         <select class="form-control" name="category_id" id="category_id" required>
-                            <option value="">اختر صنفًا</option>
+                            <option value="">اختر نوع الدواء</option>
                             @foreach ($categories as $category)
                                 @foreach ($category->children as $child)
                                     <option value="{{ $child->id }}"
@@ -40,8 +40,16 @@
                     <div class="col-md-6">
                         <label for="type" class="form-label">الصنف</label>
                         <input type="text" class="form-control " id="type" name="type"
-                            value="{{ old('type') }}" placeholder="ادخل تركيب الدواء" />
+                            value="{{ old('type') }}" placeholder="ادخل تركيب الدواء" required />
                         @error('type')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">الصنف باللغة العربية</label>
+                        <input type="text" class="form-control " id="type_ar" name="type_ar"
+                            value="{{ old('type_ar') }}" placeholder=" ادخل تركيب الدواء باللغة العربية" required />
+                        @error('type_ar')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
@@ -49,7 +57,7 @@
                     <div class="col-md-6">
                         <label for="composition" class="form-label">التركيب</label>
                         <input type="text" class="form-control" id="composition" name="composition"
-                            value="{{ old('composition') }}" placeholder="ادخل اسم الدواء" />
+                            value="{{ old('composition') }}" placeholder="ادخل اسم الدواء" required />
                         @error('composition')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -59,7 +67,7 @@
                     <div class="col-md-6">
                         <label for="form" class="form-label">الشكل</label>
                         <input type="text" class="form-control" id="form" name="form"
-                            value="{{ old('form') }}" placeholder="ادخل شكل الدواء" />
+                            value="{{ old('form') }}" placeholder="ادخل شكل الدواء" required/>
                         @error('form')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -69,7 +77,7 @@
                     <div class="col-md-6">
                         <label for="company" class="form-label">الشركة المصنعة</label>
                         <input type="text" class="form-control " id="company" name="company"
-                            value="{{ old('company') }}" placeholder="ادخل اسم الشركة" />
+                            value="{{ old('company') }}" placeholder="ادخل اسم الشركة" required/>
                         @error('company')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -120,7 +128,7 @@
                     <div class="col-md-6">
                         <label for="net_dollar_new" class="form-label">نت دولار </label>
                         <input type="number" step="0.01" class="form-control " id="net_dollar_new" name="net_dollar_new"
-                            value="{{ old('net_dollar_new') }}" placeholder="ادخل السعر" />
+                            value="{{ old('net_dollar_new') }}" placeholder="ادخل السعر" required/>
                         @error('net_dollar_new')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -130,7 +138,7 @@
                     <div class="col-md-6">
                         <label for="public_dollar_new" class="form-label">عموم دولار </label>
                         <input type="number" step="0.01" class="form-control" id="public_dollar_new"
-                            name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" />
+                            name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" required/>
                         @error('public_dollar_new')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror

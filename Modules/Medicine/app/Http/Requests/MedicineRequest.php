@@ -15,6 +15,7 @@ class MedicineRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
             'type' => 'nullable|string|max:255',
+            'type_ar'=> 'nullable|string|max:255',
             'composition' => 'nullable|string|max:255',
             'form' => 'nullable|string|max:255',
             'company' => 'nullable|string|max:255',

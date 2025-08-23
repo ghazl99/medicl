@@ -19,6 +19,12 @@
             @endif
         </td>
         <td>{{ $medicine->type }}</td>
+        <td class="editable-type-ar" data-medicine-id="{{ $medicine->id }}">
+            <span class="editable-text">{{ $medicine->type_ar ?? '—' }}</span>
+            <input type="text" class="edit-input form-control" value="{{ $medicine->type_ar }}"
+                style="display:none; width: 150px;" />
+        </td>
+
         <td>{{ $medicine->composition }}</td>
         <td>{{ $medicine->form }}</td>
         <td>{{ $medicine->company }}</td>

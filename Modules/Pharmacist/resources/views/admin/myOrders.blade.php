@@ -73,19 +73,19 @@
 
                                 @hasanyrole('المشرف|صيدلي')
                                     <h3>{{ $item->supplier->name }}</h3>
-
-                                    @if ($item->status == 'قيد الانتظار')
-                                        <span class="badge bg-primary">قيد الانتظار</span>
-                                    @elseif ($item->status == 'مرفوض جزئياً')
-                                        <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
-                                    @elseif ($item->status == 'تم التسليم')
-                                        <span class="badge bg-success">تم التسليم</span>
-                                    @elseif ($item->status == 'ملغي')
-                                        <span class="badge bg-danger">ملغي</span>
-                                    @else
-                                        <span class="badge bg-info">تم التأكيد</span>
-                                    @endif
                                 @endhasanyrole
+                                @if ($item->status == 'قيد الانتظار')
+                                    <span class="badge bg-primary">قيد الانتظار</span>
+                                @elseif ($item->status == 'مرفوض جزئياً')
+                                    <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
+                                @elseif ($item->status == 'تم التسليم')
+                                    <span class="badge bg-success">تم التسليم</span>
+                                @elseif ($item->status == 'ملغي')
+                                    <span class="badge bg-danger">ملغي</span>
+                                @else
+                                    <span class="badge bg-info">تم التأكيد</span>
+                                @endif
+
                             </div>
                         </div>
 

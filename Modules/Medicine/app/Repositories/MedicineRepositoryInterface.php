@@ -34,7 +34,7 @@ interface MedicineRepositoryInterface
     /**
      * Update an existing medicine's data.
      */
-    public function update(Medicine $medicine, array $data): Medicine;
+    public function update(Medicine $medicine,  $data): Medicine;
 
     /**
      * Delete a medicine by its ID.

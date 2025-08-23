@@ -111,7 +111,7 @@ class MedicineService
     /**
      * Update an existing medicine.
      */
-    public function updateMedicine(Medicine $medicine, array $data): Medicine
+    public function updateMedicine(Medicine $medicine,  $data): Medicine
     {
         return $this->medicineRepository->update($medicine, $data);
     }

@@ -135,6 +135,7 @@
                                     <th>النوع</th>
                                     <th>صورة المنتج</th>
                                     <th>الصنف</th>
+                                    <th>الصنف باللغة العربية</th>
                                     <th>التركيب</th>
                                     <th>الشكل</th>
                                     <th>الشركة</th>
@@ -199,6 +200,7 @@
                                 <th>النوع</th>
                                 <th>صورة المنتج</th>
                                 <th>الصنف</th>
+                                <th>الصنف باللغة العربية</th>
                                 <th>التركيب</th>
                                 <th>الشكل</th>
                                 <th>الشركة</th>
@@ -582,6 +584,69 @@
             });
 
             afterTableUpdate();
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // عند الضغط على الخلية القابلة للتحرير
+            $(document).on('click', '.editable-type-ar', function(e) {
+                e.stopPropagation();
+                let span = $(this).find('.editable-text');
+                let input = $(this).find('.edit-input');
+
+                span.hide();
+                input.show().focus();
+            });
+
+            // عند الخروج أو الضغط Enter
+            $(document).on('blur keypress', '.edit-input', function(e) {
+                if (e.type === 'blur' || e.which === 13) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    let input = $(this);
+                    let newValue = input.val().trim();
+                    let td = input.closest('.editable-type-ar');
+                    let span = td.find('.editable-text');
+                    let medicineId = td.data('medicine-id');
+
+                    // إذا ما تغيرت القيمة ما نعمل تحديث
+                    if (newValue === span.text().trim()) {
+                        input.hide();
+                        span.show();
+                        return;
+                    }
+
+                    // طلب AJAX لتحديث القيمة
+                    $.ajax({
+                        url: '/medicines/' + medicineId,
+                        type: 'POST', // Laravel يتطلب POST + _method = PUT
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            _method: 'PUT',
+                            type_ar: newValue
+                        },
+                        success: function(response) {
+                            span.text(newValue); // تحديث النص بعد نجاح العملية
+                        },
+                        error: function(xhr) {
+                            alert('حدث خطأ أثناء التحديث: ' + (xhr.responseJSON?.message ||
+                                'حاول مرة أخرى'));
+                        },
+                        complete: function() {
+                            input.hide();
+                            span.show();
+                        }
+                    });
+                }
+            });
         });
     </script>
 @endsection

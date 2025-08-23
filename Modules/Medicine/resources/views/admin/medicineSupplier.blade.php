@@ -125,6 +125,7 @@
                             <th>النوع</th>
                             <th>صورة المنتج</th>
                             <th>الصنف</th>
+                            <th>الصنف باللغة العربية</th>
                             <th>التركيب</th>
                             <th>الشكل</th>
                             <th>الشركة</th>
@@ -132,7 +133,6 @@
                             <!--<th>نت دولار حالي</th>-->
                             <!--<th>عموم دولار حالي</th>-->
                             <th>النت </th>
-                            <th>العموم </th>
                             <!--<th>نت سوري</th>-->
                             <!--<th>عموم سوري</th>-->
                             <!--<th>ملاحظات 2</th>-->
@@ -371,6 +371,68 @@
                             icon: 'error',
                             title: 'فشل الحفظ',
                             text: 'حدث خطأ أثناء تحديث العرض',
+                            confirmButtonText: 'موافق'
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // عند النقر على خلية net_syp
+            $(document).on('click', '.net-cell', function() {
+                $(this).find('.net-text').addClass('d-none');
+                $(this).find('.net-input').removeClass('d-none').focus();
+            });
+
+            // عند الخروج من حقل الإدخال
+            $(document).on('blur', '.net-input', function() {
+                saveNet($(this));
+            });
+
+            // عند الضغط على Enter
+            $(document).on('keypress', '.net-input', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $(this).blur(); // يحفز حدث blur ليتم الحفظ
+                }
+            });
+
+            function saveNet($input) {
+                const $td = $input.closest('.net-cell');
+                const medicineId = $td.data('id');
+                const newNet = $input.val();
+                const $span = $td.find('.net-text');
+
+                $.ajax({
+                    url: '/medicines/' + medicineId,
+                    method: 'POST',
+                    data: {
+                        net_syp: newNet,
+                        _method: 'PUT',
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $span.text(parseFloat(newNet).toFixed(2)).removeClass('d-none');
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم الحفظ',
+                            text: 'تم تحديث السعر بنجاح',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function() {
+                        $span.removeClass('d-none');
+                        $input.addClass('d-none');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل الحفظ',
+                            text: 'حدث خطأ أثناء تحديث السعر',
                             confirmButtonText: 'موافق'
                         });
                     }

@@ -266,15 +266,15 @@
                 </a>
             </li>
         @endhasanyrole
-        @hasanyrole('المشرف|مورد')
-            {{-- reports --}}
-            <li class="slide">
-                <a class="side-menu_item" href="#">
-                    <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>
-                    <span class="side-menu__label">تقارير المبيعات</span>
-                </a>
-            </li>
-        @endhasanyrole
+        <!--@hasanyrole('المشرف|مورد')-->
+        <!--    {{-- reports --}}-->
+        <!--    <li class="slide">-->
+        <!--        <a class="side-menu_item" href="#">-->
+        <!--            <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>-->
+        <!--            <span class="side-menu__label">تقارير المبيعات</span>-->
+        <!--        </a>-->
+        <!--    </li>-->
+        <!--@endhasanyrole-->
     </ul>
 </aside>
 <!-- main-sidebar -->

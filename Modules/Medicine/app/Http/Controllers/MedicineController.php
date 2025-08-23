@@ -176,24 +176,23 @@ class MedicineController extends Controller implements HasMiddleware
 
     // Update medicine data
     public function update(Request $request, $id)
-    {
+{
+    try {
         $medicine = $this->medicineService->getMedicineById($id);
 
         if (! $medicine) {
             abort(404, 'الدواء غير موجود.');
         }
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'manufacturer' => 'nullable|string|max:255',
-            'quantity_available' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0|decimal:0,2',
-        ]);
-
-        $this->medicineService->updateMedicine($medicine, $validatedData);
+        $data = $request->only('type_ar','net_syp');
+        $this->medicineService->updateMedicine($medicine, $data);
 
         return redirect()->route('medicines.index')->with('success', 'تم تحديث الدواء بنجاح.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
     }
+}
+
 
     // Delete medicine (not implemented)
     public function destroy($id) {}

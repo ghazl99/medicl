@@ -138,6 +138,11 @@
                         data-status="ملغي">
                         إلغاء الطلب
                     </button>
+                @elseif ($order->status == 'قيد الانتظار' && $userRole == 'صيدلي')
+                    <button class="btn btn-danger change-status-btn" data-order-id="{{ $order->id }}"
+                        data-status="ملغي">
+                        إلغاء الطلب
+                    </button>
                 @endif
             </div>
         </div>
