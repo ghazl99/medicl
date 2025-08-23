@@ -44,15 +44,6 @@ class CartRepository implements CartRepositoryInterface
             ->get();
     }
 
-    // Update the quantity of a cart item
-    public function updateQuantity($cartItemId, $quantity)
-    {
-        $cartItem = CartItem::findOrFail($cartItemId);
-        $cartItem->quantity = $quantity;
-        $cartItem->save();
-        return $cartItem;
-    }
-
     // Delete an item from the cart and return remaining count
     public function deleteItem($cartItemId)
     {
@@ -62,5 +53,16 @@ class CartRepository implements CartRepositoryInterface
         $cartItem->delete();
 
         return CartItem::whereHas('cart', fn($q) => $q->where('user_id', $userId))->count();
+    }
+    // Update the quantity or note of a cart item
+
+    public function update($id, array $data)
+    {
+        $cartItem = CartItem::findOrFail($id);
+
+        $cartItem->fill($data);
+        $cartItem->save();
+
+        return $cartItem;
     }
 }

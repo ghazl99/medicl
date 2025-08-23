@@ -47,6 +47,7 @@
                                         <tr>
                                             <th>اسم الدواء</th>
                                             <th>الكمية</th>
+                                            <th>ملاحظة</th>
                                             <th>سعر الوحدة (ل.س)</th>
                                             <th>الإجمالي (ل.س)</th>
                                             @if (
@@ -80,6 +81,7 @@
                                                         {{ $quantity }}
                                                     @endif
                                                 </td>
+                                                <td>{{ $medicine->pivot->note }}</td>
                                                 <td>{{ number_format($unitPrice, 2) }}</td>
                                                 <td>{{ number_format($subtotal, 2) }}</td>
 

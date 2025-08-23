@@ -86,6 +86,7 @@ class OrderController extends Controller
             $rawData = [
                 'medicines' => $cartItems->pluck('medicine_id')->toArray(),
                 'quantities' => $cartItems->pluck('quantity')->toArray(),
+                'notes' => $cartItems->pluck('note')->toArray(),
             ];
 
             $lastOrder = $this->orderService->storeOrder($orderData, $rawData);
@@ -122,10 +123,10 @@ class OrderController extends Controller
     public function rejectMedicine(Request $request, Order $order, Medicine $medicine)
     {
         $validated = $request->validate([
-            'note' => 'required|string|max:500',
+            'rejection_reason' => 'required|string|max:500',
         ]);
 
-        $this->orderService->rejectMedicineInOrder($order, $medicine, $validated['note']);
+        $this->orderService->rejectMedicineInOrder($order, $medicine, $validated['rejection_reason']);
 
         return redirect()->back()->with('success', 'تم رفض الدواء مع حفظ السبب');
     }

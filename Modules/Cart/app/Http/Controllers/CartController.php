@@ -24,13 +24,13 @@ class CartController extends Controller
         return view('cart::index', compact('cartItems', 'supplier_id'));
     }
 
-    public function updateQuantity(Request $request, $cartItemId)
+    public function updateQuantity(Request $request, $id)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $cartItem = $this->cartService->updateQuantity($cartItemId, $request->quantity);
+        $cartItem = $this->cartService->update($id, $request->quantity);
 
         return response()->json([
             'success' => true,
@@ -71,7 +71,8 @@ class CartController extends Controller
                 Auth::user()->id,
                 $request->medicine_id,
                 $request->supplier_id,
-                $request->quantity
+                $request->quantity,
+
             );
 
             // تحقق إذا كان الطلب AJAX
@@ -112,7 +113,29 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+
+    public function updateQuantityOrNote(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'nullable|integer|min:1',
+            'note' => 'nullable|string|max:255',
+        ]);
+
+        // Construct the data array based on the request
+        $data = $request->only(['quantity', 'note']);
+        
+        // Pass the data array to the service
+        $cartItem = $this->cartService->update($id, $data);
+
+        // ... rest of your code to return a JSON response
+        return response()->json([
+            'success' => true,
+            'quantity' => $cartItem->quantity,
+            'note' => $cartItem->note,
+        ]);
+    }
+
+
 
     /**
      * Remove the specified resource from storage.

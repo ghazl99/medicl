@@ -38,6 +38,7 @@ class OrderService
             $medicines = [];
             foreach ($rawData['medicines'] as $index => $medicineId) {
                 $quantity = $rawData['quantities'][$index] ?? null;
+                $note = $rawData['notes'][$index] ?? null;
 
                 if (!$medicineId || !$quantity) {
                     throw new \Exception('بيانات الدواء غير مكتملة.');
@@ -46,6 +47,7 @@ class OrderService
                 $medicines[] = [
                     'medicine_id' => $medicineId,
                     'quantity' => $quantity,
+                    'note'=>$note
                 ];
             }
 
@@ -54,6 +56,7 @@ class OrderService
             foreach ($medicines as $medicine) {
                 $order->medicines()->attach($medicine['medicine_id'], [
                     'quantity' => $medicine['quantity'],
+                    'note'=>$medicine['note']
                 ]);
             }
 
@@ -117,10 +120,10 @@ class OrderService
         return $this->orderRepository->find($id);
     }
 
-    public function rejectMedicineInOrder(Order $order, Medicine $medicine, $note)
+    public function rejectMedicineInOrder(Order $order, Medicine $medicine, $rejection_reason)
     {
-        $order = DB::transaction(function () use ($order, $medicine, $note) {
-            return $this->orderRepository->rejectMedicine($order, $medicine, $note);
+        $order = DB::transaction(function () use ($order, $medicine, $rejection_reason) {
+            return $this->orderRepository->rejectMedicine($order, $medicine, $rejection_reason);
         });
 
         if ($order->status === 'مرفوض جزئياً') {

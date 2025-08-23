@@ -90,7 +90,7 @@
                                             </button>
                                         @else
                                             <span class="badge bg-danger">مرفوض</span><br>
-                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                            <small>السبب: {{ $medicine->pivot->rejection_reason }}</small>
                                         @endif
                                     </td>
                                     {{-- Status display for pharmacist in partially rejected order --}}
@@ -98,7 +98,7 @@
                                     <td class="medicine-status" data-medicine-id="{{ $medicine->id }}">
                                         @if ($medicine->pivot->status == 'مرفوض')
                                             <span class="badge bg-danger">مرفوض</span><br>
-                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                            <small>السبب: {{ $medicine->pivot->rejection_reason }}</small>
                                         @else
                                             <span class="badge bg-success">مقبول</span><br>
                                             <small>{{ $medicine->pivot->note }}</small>
@@ -160,7 +160,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                     </div>
                     <div class="modal-body">
-                        <textarea name="note" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
+                        <textarea name="rejection_reason" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger">إرسال</button>

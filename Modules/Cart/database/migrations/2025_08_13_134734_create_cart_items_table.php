@@ -19,6 +19,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->unsignedInteger('quantity')->default(1);
+            $table->string('note',255);
             $table->timestamps();
         });
     }

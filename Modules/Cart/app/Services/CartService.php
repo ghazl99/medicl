@@ -21,13 +21,15 @@ class CartService
     {
         return $this->cartRepository->getUserCartItems($userId);
     }
-    public function updateQuantity($cartItemId, $quantity)
-    {
-        return $this->cartRepository->updateQuantity($cartItemId, $quantity);
-    }
+
 
     public function deleteItem($cartItemId)
     {
         return $this->cartRepository->deleteItem($cartItemId);
+    }
+
+    public function update($id, array $data)
+    {
+        return $this->cartRepository->update($id, $data);
     }
 }

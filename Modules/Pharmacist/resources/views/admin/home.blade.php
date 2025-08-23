@@ -15,7 +15,7 @@
         <p class="section-subtitle">ابحث عن الدواء المناسب لك بسرعة وسهولة</p>
         <div class="search-input-group input-group">
             <i class="bi bi-search search-icon"></i>
-            <input type="text" name="search" class="search-input" id="searchInput" placeholder="اكتب اسم الدواء أو المرض..."
+            <input type="text" name="search" class="search-input" id="searchInput" placeholder="اكتب اسم الدواء أو التركيب ..."
                 autocomplete="off">
         </div>
     </div>

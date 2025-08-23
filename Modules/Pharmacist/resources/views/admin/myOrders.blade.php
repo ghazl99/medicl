@@ -26,7 +26,7 @@
                             <div class="item-actions">
                                 <a href="{{ route('details.items', $supplierItems->first()->supplier->id) }}"
                                     class="btn btn-sm btn-outline-primary" title="عرض تفاصيل الطلب">
-                                    <i class="bi bi-card-list"></i>
+                                    <i class="bi bi-arrow-left"></i>
                                 </a>
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                             <div class="item-actions">
                                 <a href="{{ route('details.items', $supplierItems->first()->supplier->id) }}"
                                     class="btn btn-sm btn-outline-primary" title="عرض تفاصيل الطلب">
-                                    <i class="bi bi-card-list"></i>
+                                    <i class="bi bi-arrow-left"></i>
                                 </a>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                         <div class="item-actions">
                             <a href="{{ route('details.order', $item->id) }}" class="btn btn-sm btn-outline-primary"
                                 title="عرض تفاصيل الطلب">
-                                <i class="bi bi-card-list"></i>
+                                <i class="bi bi-arrow-left"></i>
                             </a>
                         </div>
                     </div>

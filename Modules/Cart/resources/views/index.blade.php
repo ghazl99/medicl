@@ -1,8 +1,8 @@
 @extends('pharmacist::components.layouts.master')
 @section('css')
-<style>
+    <style>
 
-</style>
+    </style>
 @endsection
 @section('content')
     @php
@@ -42,6 +42,20 @@
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
+
+                        <div class="note-section mt-2">
+                            @if ($item->note)
+                                <span class="note-text-display">{{ $item->note }}</span>
+                                <button class="btn btn-link btn-sm add-note-btn" type="button">تعديل الملاحظة</button>
+                            @else
+                                <button class="btn btn-link btn-sm add-note-btn" type="button">أضف ملاحظة</button>
+                            @endif
+
+                            <div class="note-input d-none mt-1">
+                                <textarea class="form-control note-text" rows="1" placeholder="اكتب ملاحظتك هنا">{{ $item->note }}</textarea>
+                                <button class="btn btn-primary btn-sm save-note-btn mt-1">حفظ الملاحظة</button>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
             @else
@@ -69,6 +83,7 @@
 
 @section('scripts')
     <script>
+        // حساب المجموع الكلي
         function calculateTotal() {
             let total = 0;
             document.querySelectorAll('.c-item').forEach(item => {
@@ -79,8 +94,8 @@
             document.getElementById('total-price').textContent = total.toFixed(2);
         }
 
-        // تحديث الكمية + Ajax
-        function updateQuantityAjax(id, quantity, itemEl) {
+        // تحديث عنصر السلة عبر AJAX
+        function updateCartItem(id, data, itemEl = null) {
             fetch(`/cart/update/${id}`, {
                     method: 'POST',
                     headers: {
@@ -88,30 +103,40 @@
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        quantity
-                    })
+                    body: JSON.stringify(data)
                 })
                 .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        itemEl.querySelector('.quantity').textContent = quantity;
+                .then(res => {
+                    if (res.success) {
+                        // تحديث الكمية
+                        if (res.quantity !== undefined && itemEl) {
+                            itemEl.querySelector('.quantity').textContent = res.quantity;
+                        }
+
+                        // تحديث الملاحظة
+                        if (res.note !== undefined && itemEl) {
+                            let noteDisplay = itemEl.querySelector('.note-text-display');
+                            let noteBtn = itemEl.querySelector('.add-note-btn');
+                            if (!noteDisplay) {
+                                noteDisplay = document.createElement('span');
+                                noteDisplay.classList.add('note-text-display');
+                                itemEl.querySelector('.note-section').prepend(noteDisplay);
+                            }
+                            noteDisplay.textContent = res.note;
+                            noteDisplay.classList.remove('d-none');
+                            noteBtn.textContent = res.note ? 'تعديل الملاحظة' : 'أضف ملاحظة';
+                            itemEl.querySelector('.note-input').classList.add('d-none');
+                        }
+
+                        // تحديث السعر الكلي
                         calculateTotal();
-                        updateCartBadge(data.cart_count);
+
+                        // تحديث عداد السلة إذا موجود
+                        if (res.cart_count !== undefined) updateCartBadge(res.cart_count);
+                    } else {
+                        Swal.fire('خطأ!', res.message || 'حدث خطأ', 'error');
                     }
                 });
-        }
-
-        // تحديث الـ badge
-        function updateCartBadge(count) {
-            const badge = document.querySelector('.nav-item .badge');
-            if (badge) {
-                if (count > 0) {
-                    badge.textContent = count;
-                } else {
-                    badge.remove();
-                }
-            }
         }
 
         // زيادة الكمية
@@ -119,10 +144,10 @@
             btn.addEventListener('click', function() {
                 const itemEl = this.closest('.c-item');
                 const id = itemEl.dataset.id;
-                const qtyEl = itemEl.querySelector('.quantity');
-                let quantity = parseInt(qtyEl.textContent) + 1;
-                qtyEl.textContent = quantity;
-                updateQuantityAjax(id, quantity, itemEl);
+                let quantity = parseInt(itemEl.querySelector('.quantity').textContent) + 1;
+                updateCartItem(id, {
+                    quantity
+                }, itemEl);
             });
         });
 
@@ -131,13 +156,33 @@
             btn.addEventListener('click', function() {
                 const itemEl = this.closest('.c-item');
                 const id = itemEl.dataset.id;
-                const qtyEl = itemEl.querySelector('.quantity');
-                let quantity = parseInt(qtyEl.textContent);
+                let quantity = parseInt(itemEl.querySelector('.quantity').textContent);
                 if (quantity > 1) {
                     quantity -= 1;
-                    qtyEl.textContent = quantity;
-                    updateQuantityAjax(id, quantity, itemEl);
+                    updateCartItem(id, {
+                        quantity
+                    }, itemEl);
                 }
+            });
+        });
+
+        // إظهار حقل الملاحظة
+        document.querySelectorAll('.add-note-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const noteSection = this.closest('.note-section').querySelector('.note-input');
+                noteSection.classList.toggle('d-none');
+            });
+        });
+
+        // حفظ الملاحظة
+        document.querySelectorAll('.save-note-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemEl = this.closest('.c-item');
+                const id = itemEl.dataset.id;
+                const noteText = itemEl.querySelector('.note-text').value;
+                updateCartItem(id, {
+                    note: noteText
+                }, itemEl);
             });
         });
 
@@ -170,9 +215,10 @@
                                 if (data.success) {
                                     itemEl.remove();
                                     calculateTotal();
-                                    updateCartBadge(data.cart_count);
+                                    if (data.cart_count !== undefined) updateCartBadge(data
+                                        .cart_count);
                                     Swal.fire('تم الحذف!', 'تم حذف المنتج من السلة.',
-                                        'success');
+                                    'success');
                                 } else {
                                     Swal.fire('خطأ!', 'تعذر حذف المنتج، حاول مجدداً.', 'error');
                                 }

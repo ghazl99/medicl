@@ -19,8 +19,8 @@ interface OrderRepositoryInterface
     // Update status of order by ID
     public function updateStatus($orderId, $status);
 
-    // Reject a medicine item in an order with a note
-    public function rejectMedicine(Order $order, Medicine $medicine, $note);
+    // Reject a medicine item in an order with a rejection_reason
+    public function rejectMedicine(Order $order, Medicine $medicine, $rejection_reason);
 
     // Update medicine quantity and status in an order
     public function updateMedicineQuantity(Order $order, Medicine $medicine, int $quantity);

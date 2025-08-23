@@ -31,22 +31,26 @@
                 <p class="no-suppliers">لا يتوفر موردين لهذا الدواء</p>
             @else
                 @foreach ($medicine->suppliers as $supplier)
-                    <div class="cart-item" data-supplier-id="{{ $supplier->id }}">
+                    <div class="c-item" data-supplier-id="{{ $supplier->id }}">
                         <div class="item-main">
-                        <div class="item-info">
-                            <p>{{ $supplier->name }}</p>
-                            <span class="item-price">{{ $supplier->pivot->offer ?? '' }}</span>
+                            <div class="item-info">
+                                <p>{{ $supplier->name }}</p>
+                                <span class="item-price">{{ $supplier->pivot->offer ?? '' }}</span>
+                            </div>
+
+                            <div class="item-actions">
+                                <input type="number" name="quantity" min="1" value="1"
+                                    class="form-control form-control-sm">
+                            </div>
+
+                            <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
+                                ✔
+                            </button>
+                        </div>
+                        <div class="item-actions-wrapper">
+                            <h6>{{ $supplier->pivot->notes ?? '' }}</h6>
                         </div>
 
-                        <div class="item-actions">
-                            <input type="number" name="quantity" min="1" value="1"
-                                class="form-control form-control-sm">
-                        </div>
-
-                        <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
-                            +
-                        </button>
-                        </div>
                     </div>
                 @endforeach
             @endif
@@ -61,7 +65,7 @@
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const cartItem = button.closest('.cart-item');
+                    const cartItem = button.closest('.c-item');
                     const supplierId = cartItem.dataset.supplierId;
                     const quantity = cartItem.querySelector('input[name="quantity"]').value;
                     const medicineId = {{ $medicine->id }};

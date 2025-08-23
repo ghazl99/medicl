@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('quantity');
             $table->enum('status', ['مقبول', 'مرفوض'])->default('مقبول');
             $table->string('note')->nullable();
-
+            $table->string('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

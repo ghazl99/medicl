@@ -44,11 +44,11 @@ class OrderRepository implements OrderRepositoryInterface
         return $order;
     }
 
-    public function rejectMedicine(Order $order, Medicine $medicine, $note): Order
+    public function rejectMedicine(Order $order, Medicine $medicine, $rejection_reason): Order
     {
         $order->medicines()->updateExistingPivot($medicine->id, [
             'status' => 'مرفوض',
-            'note' => $note
+            'rejection_reason' => $rejection_reason
         ]);
 
         if ($order->status === 'قيد الانتظار') {
