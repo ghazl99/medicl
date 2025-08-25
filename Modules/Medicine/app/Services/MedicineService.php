@@ -83,8 +83,11 @@ class MedicineService
         }
 
         if ($user->hasRole('مورد')) {
-            $user->medicines()->attach($medicine->id);
+            $user->medicines()->attach($medicine->id, [
+                'price' => $medicine->net_syp
+            ]);
         }
+
         if ($image) {
             // Upload with resize if size > 2048KB
             $this->uploadOrUpdateImageWithResize(
@@ -142,11 +145,11 @@ class MedicineService
     }
 
     /**
-     * Update notes on the pivot table between medicine and supplier.
+     * Update  the pivot table between medicine and supplier.
      */
-    public function updateNoteOnPivot(int $pivotId, ?string $notes): bool
+    public function updatePivotData(int $pivotId, array $data): bool
     {
-        return $this->medicineRepository->updateNoteOnPivot($pivotId, $notes);
+        return $this->medicineRepository->updatePivotData($pivotId, $data);
     }
 
     /**

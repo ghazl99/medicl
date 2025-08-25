@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Spatie\Permission\Contracts\Role;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -34,7 +35,10 @@ class AuthenticatedSessionController extends Controller
         $user->save();
 
         DB::commit();
+        if (Auth::user()->hasRole('مورد') || Auth::user()->hasRole('المشرف')) {
+                    return redirect()->route('dashboard');
 
+        }
         return redirect()->route('pharmacist.home');
     }
 

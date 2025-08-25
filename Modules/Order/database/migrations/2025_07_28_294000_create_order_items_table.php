@@ -20,6 +20,8 @@ return new class extends Migration
                 ->constrained('medicines')
                 ->onDelete('cascade');
             $table->unsignedInteger('quantity');
+            $table->bigInteger('offer_qty')->nullable();
+            $table->bigInteger('offer_free_qty')->nullable();
             $table->enum('status', ['مقبول', 'مرفوض'])->default('مقبول');
             $table->string('note')->nullable();
             $table->string('rejection_reason')->nullable();

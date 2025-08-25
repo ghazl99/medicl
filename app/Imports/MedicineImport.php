@@ -15,10 +15,10 @@ class MedicineImport implements ToModel, WithHeadingRow // ,ShouldQueue, WithChu
      */
     public function model(array $row)
     {
-        $categoryName = $row['الصنف'];
+        $categoryName = $row['الصنف الفرعي'];
 
         $parentCategory = Category::firstOrCreate(
-            ['name' => 'عام'], 
+            ['name' => $row['الصنف الرئيسي']],
             ['parent_id' => null]
         );
 

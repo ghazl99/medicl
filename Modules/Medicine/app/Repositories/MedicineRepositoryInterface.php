@@ -54,7 +54,7 @@ interface MedicineRepositoryInterface
     /**
      * Update notes in the pivot table by pivot ID.
      */
-    public function updateNoteOnPivot(int $id, ?string $notes): bool;
+    public function updatePivotData(int $id, array $data): bool;
 
     /**
      * Update the 'is_new' status and its start/end dates for a medicine.

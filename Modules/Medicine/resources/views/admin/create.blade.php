@@ -138,7 +138,7 @@
                     <div class="col-md-6">
                         <label for="public_dollar_new" class="form-label">عموم دولار </label>
                         <input type="number" step="0.01" class="form-control" id="public_dollar_new"
-                            name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" required/>
+                            name="public_dollar_new" value="{{ old('public_dollar_new') }}" placeholder="ادخل السعر" />
                         @error('public_dollar_new')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror

@@ -35,7 +35,8 @@ class OrderService
                 throw new \Exception('لا يمكن إنشاء الطلب بدون أدوية وكميات.');
             }
 
-            $medicines = [];
+            $order = $this->orderRepository->create($orderData);
+
             foreach ($rawData['medicines'] as $index => $medicineId) {
                 $quantity = $rawData['quantities'][$index] ?? null;
                 $note = $rawData['notes'][$index] ?? null;
@@ -44,19 +45,21 @@ class OrderService
                     throw new \Exception('بيانات الدواء غير مكتملة.');
                 }
 
-                $medicines[] = [
-                    'medicine_id' => $medicineId,
+                $medicine = Medicine::with(['suppliers' => function ($q) use ($orderData) {
+                    $q->where('user_id', $orderData['supplier_id']);
+                }])->find($medicineId);
+
+                $pivot = $medicine->suppliers->first()?->pivot;
+
+                $offerQty = $pivot->offer_qty ?? null;
+                $offerFreeQty = $pivot->offer_free_qty ?? null;
+
+                // هنا نخزن الكمية المدفوعة + بيانات العرض
+                $order->medicines()->attach($medicineId, [
                     'quantity' => $quantity,
-                    'note'=>$note
-                ];
-            }
-
-            $order = $this->orderRepository->create($orderData);
-
-            foreach ($medicines as $medicine) {
-                $order->medicines()->attach($medicine['medicine_id'], [
-                    'quantity' => $medicine['quantity'],
-                    'note'=>$medicine['note']
+                    'offer_qty' => $offerQty,
+                    'offer_free_qty' => $offerFreeQty,
+                    'note' => $note,
                 ]);
             }
 
@@ -75,6 +78,7 @@ class OrderService
             return $order;
         });
     }
+
 
     public function updateStatus($orderId, $status): Order
     {

@@ -95,7 +95,6 @@ class OrderController extends Controller
         });
 
         return redirect()->route('details.order', ['id' => $lastOrder->id]);
-
     }
 
 
@@ -151,8 +150,10 @@ class OrderController extends Controller
         }
 
         $this->orderService->updateMedicineQuantity($order, $medicine, $request->quantity);
-
-        return redirect()->back()->with('success', 'تم تحديث الكمية بنجاح');
+        return response()->json([
+            'success' => true,
+            'message' =>  'تم تحديث الكمية بنجاح'
+        ]);
     }
 
     /**

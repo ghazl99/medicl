@@ -19,7 +19,6 @@ class MedicineRepository implements MedicineRepositoryInterface
         if ($keyword) {
             $query = Medicine::search($keyword)
                 ->query(function ($query) use ($keyword) {
-                    $query->with(['category', 'suppliers']);
                     $query->orWhereHas('category', function ($q) use ($keyword) {
                         $q->where('name', 'like', '%' . $keyword . '%');
                     });
@@ -44,33 +43,26 @@ class MedicineRepository implements MedicineRepositoryInterface
     public function getMedicinesBySupplier(?string $keyword, $user)
     {
         if ($user->hasRole('مورد')) {
-            if ($keyword) {
-                $userMedicineIds = $user->medicines()->pluck('medicines.id');
+            // Start with the user's medicines query
+            $query = $user->medicines()->with(['category', 'suppliers']);
 
+            if ($keyword) {
+                // Use Scout to get the matching medicines
                 $searchResults = Medicine::search($keyword)->get();
 
-                $filtered = $searchResults->whereIn('id', $userMedicineIds);
+                // Pluck the IDs from the resulting collection
+                $medicineIds = $searchResults->pluck('id');
 
-                $perPage = 10;
-                $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
-                $currentItems = $filtered->slice(($currentPage - 1) * $perPage, $perPage)->values();
-                $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
-                    $currentItems,
-                    $filtered->count(),
-                    $perPage,
-                    $currentPage,
-                    ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
-                );
-
-                return $paginated;
+                // Now, filter the user's medicines query to only include those IDs
+                $query->whereIn('medicines.id', $medicineIds);
             }
 
-            return $user->medicines()->with(['category', 'suppliers'])->paginate(10);
+            // Paginate the final, filtered query
+            return $query->paginate(10);
         }
 
         return collect();
     }
-
     /**
      * Find a medicine by ID.
      */
@@ -93,7 +85,12 @@ class MedicineRepository implements MedicineRepositoryInterface
     public function syncMedicinesToSupplier(array $medicineIds, int $supplierId): void
     {
         $supplier = User::findOrFail($supplierId);
-        $supplier->medicines()->syncWithoutDetaching($medicineIds);
+        $pivotData = [];
+        foreach ($medicineIds as $medicineId) {
+            $medicine = Medicine::findOrFail($medicineId);
+            $pivotData[$medicineId] = ['price' => $medicine->net_syp];
+        }
+        $supplier->medicines()->syncWithoutDetaching($pivotData);
     }
 
     /**
@@ -138,19 +135,19 @@ class MedicineRepository implements MedicineRepositoryInterface
     }
 
     /**
-     * Update notes field on the pivot record.
+     * Update notes or price field on the pivot record.
      */
-    public function updateNoteOnPivot(int $id, ?string $notes): bool
+    public function updatePivotData(int $id, array $data): bool
     {
+        $data['updated_at'] = now();
+
         $affected = DB::table('medicine_user')
             ->where('id', $id)
-            ->update([
-                'notes' => $notes,
-                'updated_at' => now(),
-            ]);
+            ->update($data);
 
         return $affected > 0;
     }
+
 
     /**
      * Update the 'is_new' flag and new_start_date/new_end_date columns.

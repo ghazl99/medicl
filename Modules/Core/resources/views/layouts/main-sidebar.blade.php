@@ -180,6 +180,14 @@
 
 
         @hasanyrole('المشرف|مورد')
+            {{-- application --}}
+            <li class="slide mt-1">
+                <a class="side-menu_item" href="{{ route('pharmacist.home') }}">
+                    <i class="side-menu__icon bi bi-capsule-pill p-2"></i>
+                    <span class="side-menu__label">صيدليتي</span>
+                </a>
+            </li>
+
             {{-- dashboard --}}
             <li class="slide mt-1">
                 <a class="side-menu_item" href="{{ route('dashboard') }}">
@@ -266,15 +274,17 @@
                 </a>
             </li>
         @endhasanyrole
-        <!--@hasanyrole('المشرف|مورد')-->
-        <!--    {{-- reports --}}-->
-        <!--    <li class="slide">-->
-        <!--        <a class="side-menu_item" href="#">-->
-        <!--            <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>-->
-        <!--            <span class="side-menu__label">تقارير المبيعات</span>-->
-        <!--        </a>-->
-        <!--    </li>-->
-        <!--@endhasanyrole-->
+        <!--@hasanyrole('المشرف|مورد')
+    -->
+            <!--    {{-- reports --}}-->
+            <!--    <li class="slide">-->
+            <!--        <a class="side-menu_item" href="#">-->
+            <!--            <i class="side-menu__icon bi bi-bar-chart-line p-2" viewBox="0 0 24 24"></i>-->
+            <!--            <span class="side-menu__label">تقارير المبيعات</span>-->
+            <!--        </a>-->
+            <!--    </li>-->
+            <!--
+@endhasanyrole-->
     </ul>
 </aside>
 <!-- main-sidebar -->

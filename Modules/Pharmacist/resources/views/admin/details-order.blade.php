@@ -13,11 +13,10 @@
             <div class="card shadow-sm ">
                 <div class="card-body mb-10">
                     @role('صيدلي')
-                    <p class="mb-1"><strong>المورد:</strong> {{ $order->supplier->name }}</p>
+                        <p class="mb-1"><strong>المورد:</strong> {{ $order->supplier->name }}</p>
                     @endrole
                     @role('مورد')
-                    <p class="mb-1"><strong>الصيدلي/ة:</strong> {{ $order->pharmacist->name }}</p>
-
+                        <p class="mb-1"><strong>الصيدلي/ة:</strong> {{ $order->pharmacist->name }}</p>
                     @endrole
                     {{-- حالة الطلب --}}
                     <p class="mt-2">
@@ -47,6 +46,7 @@
                                         <tr>
                                             <th>اسم الدواء</th>
                                             <th>الكمية</th>
+                                            <th>الكمية مع العرض</th>
                                             <th>ملاحظة</th>
                                             <th>سعر الوحدة (ل.س)</th>
                                             <th>الإجمالي (ل.س)</th>
@@ -61,30 +61,49 @@
                                         @php $totalPrice = 0; @endphp
                                         @foreach ($order->medicines as $medicine)
                                             @php
-                                                $unitPrice = $medicine->net_syp ?? 0;
-                                                $quantity = $medicine->pivot->quantity;
-                                                $subtotal = $unitPrice * $quantity;
-                                                if ($medicine->pivot->status == 'مقبول') {
-                                                    $totalPrice += $subtotal;
-                                                }
+                                                $paidQty = $medicine->pivot->quantity;
+                                                $offerQty = $medicine->pivot->offer_qty ?? 0;
+                                                $offerFreeQty = $medicine->pivot->offer_free_qty ?? 0;
+
+                                                // حساب الكمية المجانية
+                                                $freeQty =
+                                                    $offerQty && $offerFreeQty
+                                                        ? floor($paidQty / $offerQty) * $offerFreeQty
+                                                        : 0;
+                                                $totalQty = $paidQty + $freeQty;
+
+                                                // جلب السعر من جدول الوسيط حسب المورد
+                                                $supplier = $medicine->suppliers
+                                                    ->where('id', $order->supplier_id)
+                                                    ->first();
+                                                $unitPrice = $supplier->pivot->price ?? 0;
+
+                                                $subtotal = $unitPrice * $paidQty;
+                                                $totalPrice += $subtotal;
                                             @endphp
                                             <tr>
                                                 <td>{{ $medicine->type }}</td>
                                                 <td>
-                                                    {{-- إذا الرفض جزئي والصيدلي ممكن يعدل الكمية --}}
+                                                    {{-- Editable quantity input if partially rejected and pharmacist role --}}
                                                     @if ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي' && $medicine->pivot->status == 'مرفوض')
                                                         <input type="number" min="0"
                                                             class="form-control quantity-input"
                                                             data-medicine-id="{{ $medicine->id }}"
-                                                            value="{{ $medicine->pivot->quantity }}">
+                                                            value="{{ $paidQty }}">
                                                     @else
-                                                        {{ $quantity }}
+                                                        {{ $paidQty }}
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $totalQty }}
+                                                    @if ($freeQty > 0)
+                                                        <small class="text-success">(+{{ $freeQty }} مجاناً)</small>
                                                     @endif
                                                 </td>
                                                 <td>{{ $medicine->pivot->note }}</td>
                                                 <td>{{ number_format($unitPrice, 2) }}</td>
                                                 <td>{{ number_format($subtotal, 2) }}</td>
-
+                                                {{-- Status column for supplier when order waiting --}}
                                                 @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
                                                     <td>
                                                         @if ($medicine->pivot->status != 'مرفوض')
@@ -96,21 +115,26 @@
                                                             </button>
                                                         @else
                                                             <span class="badge bg-danger">مرفوض</span><br>
-                                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                                            <small>السبب: {{ $medicine->pivot->rejection_reason }}</small>
                                                         @endif
                                                     </td>
+                                                    {{-- Status display for pharmacist in partially rejected order --}}
                                                 @elseif ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي')
                                                     <td class="medicine-status" data-medicine-id="{{ $medicine->id }}">
                                                         @if ($medicine->pivot->status == 'مرفوض')
                                                             <span class="badge bg-danger">مرفوض</span><br>
-                                                            <small>السبب: {{ $medicine->pivot->note }}</small>
+                                                            <small>السبب: {{ $medicine->pivot->rejection_reason }}</small>
                                                         @else
-                                                            <span class="badge bg-success">مقبول</span>
+                                                            <span class="badge bg-success">مقبول</span><br>
+                                                            <small>{{ $medicine->pivot->note }}</small>
                                                         @endif
                                                     </td>
+                                                @else
+                                                    <td></td>
                                                 @endif
                                             </tr>
                                         @endforeach
+
                                     </tbody>
                                 </table>
                             </div>
@@ -157,8 +181,7 @@
             </div>
         </div>
     </section>
-
-    <!-- مودال سبب الرفض -->
+    <!-- Reject reason modal -->
     <div class="modal fade" id="rejectMedicineModal" tabindex="-1" aria-labelledby="rejectMedicineModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -171,7 +194,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                     </div>
                     <div class="modal-body">
-                        <textarea name="note" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
+                        <textarea name="rejection_reason" class="form-control" placeholder="أدخل سبب الرفض..." required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger">إرسال</button>

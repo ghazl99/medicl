@@ -33,8 +33,8 @@ Route::middleware(['auth', 'approved'])->group(function () {
     // Display medicine image via media id
     Route::get('/medicines/image/{media}', [MedicineController::class, 'showImage'])->name('medicines.image');
 
-    // AJAX route to update note on medicine_user pivot
-    Route::post('/medicine-user/{id}/update-note', [MedicineController::class, 'updateNote']);
+    // AJAX route to update medicine_user pivot
+    Route::post('/medicine-user/{id}/update-pivot', [MedicineController::class, 'updatePivot']);
 
     Route::post('/medicines/{medicine}/toggle-new', [MedicineController::class, 'toggleNewStatus'])
         ->name('medicines.toggle-new');
@@ -42,5 +42,4 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('/medicines-new', [MedicineController::class, 'newMedicines'])->name('medicines.new');
 
     Route::post('/medicine-user/{id}/update-offer', [MedicineController::class, 'updateOffer']);
-
 });

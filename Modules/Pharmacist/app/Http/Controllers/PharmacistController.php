@@ -61,8 +61,11 @@ class PharmacistController extends Controller
         $query = Medicine::with('suppliers')
             ->where(function ($q) use ($keyword) {
                 $q->where('type', 'like', "%$keyword%")
-                    ->orWhere('composition', 'like', "%$keyword%");
+                    ->orWhere('type_ar', 'like', "%$keyword%")
+                    ->orWhere('composition', 'like', "%$keyword%")
+                    ->orWhere('company', 'like', "%$keyword%");
             });
+
 
         $allMedicines = $query->get()->filter(function ($medicine) {
             return $medicine->suppliers->where('pivot.is_available', 1)->count() > 0;

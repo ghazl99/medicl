@@ -147,7 +147,10 @@ class MedicineController extends Controller implements HasMiddleware
 
         $this->medicineService->assignMedicinesToSupplier($medicineIds, $supplier_id);
 
-        return redirect()->back()->with('success', 'تم ربط الأدوية بالمورد بنجاح');
+        return response()->json([
+            'success' => true,
+            'message' => 'تم ربط الأدوية بالمورد بنجاح'
+        ]);
     }
 
     // Show single medicine
@@ -176,22 +179,22 @@ class MedicineController extends Controller implements HasMiddleware
 
     // Update medicine data
     public function update(Request $request, $id)
-{
-    try {
-        $medicine = $this->medicineService->getMedicineById($id);
+    {
+        try {
+            $medicine = $this->medicineService->getMedicineById($id);
 
-        if (! $medicine) {
-            abort(404, 'الدواء غير موجود.');
+            if (! $medicine) {
+                abort(404, 'الدواء غير موجود.');
+            }
+
+            $data = $request->only('type_ar', 'price');
+            $this->medicineService->updateMedicine($medicine, $data);
+
+            return redirect()->route('medicines.index')->with('success', 'تم تحديث الدواء بنجاح.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $data = $request->only('type_ar','net_syp');
-        $this->medicineService->updateMedicine($medicine, $data);
-
-        return redirect()->route('medicines.index')->with('success', 'تم تحديث الدواء بنجاح.');
-    } catch (\Exception $e) {
-        return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
     }
-}
 
 
     // Delete medicine (not implemented)
@@ -210,22 +213,30 @@ class MedicineController extends Controller implements HasMiddleware
         }
     }
 
-    // Update pivot note for supplier-medicine
-    public function updateNote(Request $request, $pivotId)
+    // Update pivot note or price for supplier-medicine
+    public function updatePivot(Request $request, $pivotId)
     {
-        $request->validate([
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        try {
+            $request->validate([
+                'notes' => 'nullable|string|max:1000',
+                'price' => 'nullable|numeric',
+                'offer_qty' => 'nullable|numeric',
+                'offer_free_qty' => 'nullable|numeric',
+            ]);
 
-        $notes = $request->input('notes') ?? '';
-        $updated = $this->medicineService->updateNoteOnPivot($pivotId, $notes);
+            $data = $request->only(['notes', 'price', 'offer_qty', 'offer_free_qty']);
+            $updated = $this->medicineService->updatePivotData($pivotId, $data);
 
-        if ($updated) {
-            return response()->json(['status' => 'success']);
+            if ($updated) {
+                return response()->json(['status' => 'success']);
+            }
+
+            return response()->json(['status' => 'error'], 500);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        return response()->json(['status' => 'error'], 500);
     }
+
 
     /**
      * Toggle the 'new' status with start and end dates.

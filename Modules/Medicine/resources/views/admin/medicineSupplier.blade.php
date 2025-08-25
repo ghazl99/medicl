@@ -165,6 +165,33 @@
         <!-- Modal Caption (Image Text) -->
         <div id="caption"></div>
     </div>
+    <!-- Modal للعرض -->
+    <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="offerModalLabel">تعديل العرض</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق">X</button>
+                </div>
+                <div class="modal-body">
+                    <form id="offer-form">
+                        @csrf
+                        <input type="hidden" id="offer_pivot_id">
+                        <div class="mb-3">
+                            <label for="offer_qty" class="form-label">الكمية المطلوبة للشراء</label>
+                            <input type="number" class="form-control" id="offer_qty" name="offer_qty" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="offer_free_qty" class="form-label">الكمية المجانية</label>
+                            <input type="number" class="form-control" id="offer_free_qty" name="offer_free_qty"
+                                min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">حفظ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('scripts')
     <script>
@@ -249,195 +276,111 @@
             // لأن bindImageModalEvents() تقوم بذلك عند تحميل الصفحة وعند تحديث الجدول
         });
     </script>
+
     <script>
-        $(document).ready(function() {
-            // عند الضغط على أي مكان في خلية الملاحظة (td)
-            $(document).on('click', '.note-cell', function() {
-                // إخفاء النص
-                $(this).find('.note-text').addClass('d-none');
-                // إظهار حقل الإدخال وتركيزه
-                $(this).find('.note-input').removeClass('d-none').focus();
-            });
+        function savePivotData(pivotId, data, onSuccess) {
+            data._token = '{{ csrf_token() }}';
 
-            // عند فقدان التركيز من حقل الإدخال
-            $(document).on('blur', '.note-input', function() {
-                saveNote($(this));
-            });
-
-            // عند الضغط على زر Enter داخل حقل الإدخال
-            $(document).on('keypress', '.note-input', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $(this).blur(); // يحفز حدث blur ليتم الحفظ
+            $.ajax({
+                url: `/medicine-user/${pivotId}/update-pivot`,
+                method: 'POST',
+                data: data,
+                success: function() {
+                    if (onSuccess) onSuccess();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الحفظ',
+                        text: 'تم تحديث البيانات بنجاح',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل الحفظ',
+                        text: 'حدث خطأ أثناء التحديث',
+                        confirmButtonText: 'موافق'
+                    });
                 }
             });
+        }
 
-            // دالة لحفظ الملاحظة عبر AJAX
-            function saveNote($input) {
-                const $td = $input.closest('.note-cell');
-                const medicineUserId = $td.data('id'); // الحصول على معرف الدواء من data-id
-                const newNote = $input.val();
-                const $span = $td.find('.note-text');
-                console.log('medicineUserId:', medicineUserId);
-
-                $.ajax({
-                    url: `/medicine-user/${medicineUserId}/update-note`,
-                    method: 'POST',
-                    data: {
-                        notes: newNote,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // تحديث النص وعرضه
-                        $span.text(newNote).removeClass('d-none');
-                        // إخفاء حقل الإدخال
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'تم الحفظ',
-                            text: 'تم تحديث الملاحظة بنجاح',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    },
-                    error: function() {
-                        // في حالة الخطأ، إظهار النص وإخفاء الإدخال
-                        $span.removeClass('d-none');
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'فشل الحفظ',
-                            text: 'حدث خطأ أثناء تحديث الملاحظة',
-                            confirmButtonText: 'موافق'
-                        });
-                    }
-                });
-            }
+        // تعديل الملاحظات
+        $(document).on('click', '.note-cell', function() {
+            $(this).find('.note-text').addClass('d-none');
+            $(this).find('.note-input').removeClass('d-none').focus();
         });
 
-        $(document).ready(function() {
-            // عند النقر على خلية العرض
-            $(document).on('click', '.offer-cell', function() {
-                $(this).find('.offer-text').addClass('d-none');
-                $(this).find('.offer-input').removeClass('d-none').focus();
+        $(document).on('blur', '.note-input', function() {
+            const $td = $(this).closest('td');
+            const pivotId = $td.data('id');
+            const newValue = $(this).val();
+            const $span = $td.find('.note-text');
+
+            savePivotData(pivotId, {
+                notes: newValue
+            }, function() {
+                $span.text(newValue).removeClass('d-none');
+                $td.find('.note-input').addClass('d-none');
             });
-
-            // عند الخروج من حقل الإدخال
-            $(document).on('blur', '.offer-input', function() {
-                saveOffer($(this));
-            });
-
-            // عند الضغط على Enter
-            $(document).on('keypress', '.offer-input', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $(this).blur();
-                }
-            });
-
-            function saveOffer($input) {
-                const $td = $input.closest('.offer-cell');
-                const medicineUserId = $td.data('id');
-                const newOffer = $input.val();
-                const $span = $td.find('.offer-text');
-
-                $.ajax({
-                    url: `/medicine-user/${medicineUserId}/update-offer`,
-                    method: 'POST',
-                    data: {
-                        offer: newOffer,
-                        _token: '{{ csrf_token() }}'
-                    },
-
-                    success: function(response) {
-                        $span.text(newOffer).removeClass('d-none');
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'تم الحفظ',
-                            text: 'تم تحديث العرض بنجاح',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    },
-                    error: function() {
-                        $span.removeClass('d-none');
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'فشل الحفظ',
-                            text: 'حدث خطأ أثناء تحديث العرض',
-                            confirmButtonText: 'موافق'
-                        });
-                    }
-                });
-            }
         });
-    </script>
-    <script>
-        $(document).ready(function() {
-            // عند النقر على خلية net_syp
-            $(document).on('click', '.net-cell', function() {
-                $(this).find('.net-text').addClass('d-none');
-                $(this).find('.net-input').removeClass('d-none').focus();
+
+        // تعديل السعر
+        $(document).on('click', '.net-cell', function() {
+            $(this).find('.net-text').addClass('d-none');
+            $(this).find('.net-input').removeClass('d-none').focus();
+        });
+
+        $(document).on('blur', '.net-input', function() {
+            const $td = $(this).closest('td');
+            const pivotId = $td.data('id');
+            const newValue = $(this).val();
+            const $span = $td.find('.net-text');
+
+            savePivotData(pivotId, {
+                price: newValue !== '' ? parseFloat(newValue) : null
+            }, function() {
+                $span.text(newValue).removeClass('d-none');
+                $td.find('.net-input').addClass('d-none');
             });
+        });
 
-            // عند الخروج من حقل الإدخال
-            $(document).on('blur', '.net-input', function() {
-                saveNet($(this));
-            });
+        // فتح المودال لتعديل العرض
+        $(document).on('click', '.offer-cell', function() {
+            const pivotId = $(this).data('id');
+            const offerText = $(this).find('.offer-text').text().trim();
 
-            // عند الضغط على Enter
-            $(document).on('keypress', '.net-input', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $(this).blur(); // يحفز حدث blur ليتم الحفظ
-                }
-            });
-
-            function saveNet($input) {
-                const $td = $input.closest('.net-cell');
-                const medicineId = $td.data('id');
-                const newNet = $input.val();
-                const $span = $td.find('.net-text');
-
-                $.ajax({
-                    url: '/medicines/' + medicineId,
-                    method: 'POST',
-                    data: {
-                        net_syp: newNet,
-                        _method: 'PUT',
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        $span.text(parseFloat(newNet).toFixed(2)).removeClass('d-none');
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'تم الحفظ',
-                            text: 'تم تحديث السعر بنجاح',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    },
-                    error: function() {
-                        $span.removeClass('d-none');
-                        $input.addClass('d-none');
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'فشل الحفظ',
-                            text: 'حدث خطأ أثناء تحديث السعر',
-                            confirmButtonText: 'موافق'
-                        });
-                    }
-                });
+            let offer_qty = '';
+            let offer_free_qty = '';
+            if (offerText.includes('+')) {
+                const parts = offerText.split('+');
+                offer_qty = parseInt(parts[0]) || '';
+                offer_free_qty = parseInt(parts[1]) || '';
             }
+
+            $('#offer_pivot_id').val(pivotId);
+            $('#offer_qty').val(offer_qty);
+            $('#offer_free_qty').val(offer_free_qty);
+
+            $('#offerModal').modal('show');
+        });
+
+        // حفظ العرض
+        $('#offer-form').on('submit', function(e) {
+            e.preventDefault();
+            const pivotId = $('#offer_pivot_id').val();
+            const offer_qty = $('#offer_qty').val();
+            const offer_free_qty = $('#offer_free_qty').val();
+
+            savePivotData(pivotId, {
+                offer_qty,
+                offer_free_qty
+            }, function() {
+                $(`.offer-cell[data-id="${pivotId}"] .offer-text`).text(`${offer_qty}+${offer_free_qty}`);
+                $('#offerModal').modal('hide');
+            });
         });
     </script>
 @endsection

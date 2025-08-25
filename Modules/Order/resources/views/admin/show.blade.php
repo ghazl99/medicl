@@ -57,13 +57,20 @@
                         @php $totalPrice = 0; @endphp
                         @foreach ($order->medicines as $medicine)
                             @php
-                                $unitPrice = $medicine->net_syp ?? 0;
-                                $quantity = $medicine->pivot->quantity;
-                                $subtotal = $unitPrice * $quantity;
-                                // Sum total price only if medicine is accepted
-                                if ($medicine->pivot->status == 'مقبول') {
-                                    $totalPrice += $subtotal;
-                                }
+                                $paidQty = $medicine->pivot->quantity;
+                                $offerQty = $medicine->pivot->offer_qty ?? 0;
+                                $offerFreeQty = $medicine->pivot->offer_free_qty ?? 0;
+
+                                // حساب الكمية المجانية
+                                $freeQty = $offerQty && $offerFreeQty ? floor($paidQty / $offerQty) * $offerFreeQty : 0;
+                                $totalQty = $paidQty + $freeQty;
+
+                                // جلب السعر من جدول الوسيط حسب المورد
+                                $supplier = $medicine->suppliers->where('id', $order->supplier_id)->first();
+                                $unitPrice = $supplier->pivot->price ?? 0;
+
+                                $subtotal = $unitPrice * $paidQty;
+                                $totalPrice += $subtotal;
                             @endphp
                             <tr>
                                 <td>{{ $medicine->type }}</td>
@@ -71,21 +78,27 @@
                                     {{-- Editable quantity input if partially rejected and pharmacist role --}}
                                     @if ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي' && $medicine->pivot->status == 'مرفوض')
                                         <input type="number" min="0" class="form-control quantity-input"
-                                            data-medicine-id="{{ $medicine->id }}" value="{{ $medicine->pivot->quantity }}">
+                                            data-medicine-id="{{ $medicine->id }}" value="{{ $paidQty }}">
                                     @else
-                                        {{ $quantity }}
+                                        {{ $paidQty }}
                                     @endif
                                 </td>
-
+                                <td>
+                                    {{ $totalQty }}
+                                    @if ($freeQty > 0)
+                                        <small class="text-success">(+{{ $freeQty }} مجاناً)</small>
+                                    @endif
+                                </td>
+                                <td>{{ $medicine->pivot->note }}</td>
                                 <td>{{ number_format($unitPrice, 2) }}</td>
                                 <td>{{ number_format($subtotal, 2) }}</td>
-
                                 {{-- Status column for supplier when order waiting --}}
                                 @if ($order->status == 'قيد الانتظار' && $userRole == 'مورد')
                                     <td>
                                         @if ($medicine->pivot->status != 'مرفوض')
                                             <button class="btn btn-sm btn-outline-danger btn-reject-medicine"
-                                                data-medicine-id="{{ $medicine->id }}" data-order-id="{{ $order->id }}">
+                                                data-medicine-id="{{ $medicine->id }}"
+                                                data-order-id="{{ $order->id }}">
                                                 رفض مع سبب
                                             </button>
                                         @else

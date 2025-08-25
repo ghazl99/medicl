@@ -40,7 +40,5 @@
 
     </tr>
 @empty
-    <tr>
-        <td class="text-center">لا توجد أدوية مطابقة لبحثك.</td>
-    </tr>
+        <h3 class="text-center">لا توجد أدوية مطابقة لبحثك.</h3>
 @endforelse

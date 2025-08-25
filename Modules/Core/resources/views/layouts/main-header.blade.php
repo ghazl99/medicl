@@ -3,13 +3,13 @@
     <div class="container-fluid">
         <div class="main-header-left ">
             <div class="responsive-logo">
-                <a href="{{ url('/' . ($page = 'index')) }}"><img src="{{ URL::asset('assets/img/capsule.png') }}"
+                <a href="#"><img src="{{ URL::asset('assets/img/capsule.png') }}"
                         class="logo-1" alt="logo"></a>
-                <a href="{{ url('/' . ($page = 'index')) }}"><img
+                <a href="#"><img
                         src="{{ URL::asset('assets/img/brand/logo-white.png') }}" class="dark-logo-1" alt="logo"></a>
-                <a href="{{ url('/' . ($page = 'index')) }}"><img src="{{ URL::asset('assets/img/capsule.png') }}"
+                <a href="#"><img src="{{ URL::asset('assets/img/capsule.png') }}"
                         class="logo-2" alt="logo"></a>
-                <a href="{{ url('/' . ($page = 'index')) }}"><img src="{{ URL::asset('assets/img/capsule.png') }}"
+                <a href="#"><img src="{{ URL::asset('assets/img/capsule.png') }}"
                         class="dark-logo-2" alt="logo"></a>
             </div>
             <div class="app-sidebar__toggle" data-toggle="sidebar">

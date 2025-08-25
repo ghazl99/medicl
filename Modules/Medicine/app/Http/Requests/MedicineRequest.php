@@ -20,8 +20,6 @@ class MedicineRequest extends FormRequest
             'form' => 'nullable|string|max:255',
             'company' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:500',
-            'net_dollar_old' => 'nullable|numeric|min:0',
-            'public_dollar_old' => 'nullable|numeric|min:0',
             'net_dollar_new' => 'nullable|numeric|min:0',
             'public_dollar_new' => 'nullable|numeric|min:0',
             'net_syp' => 'nullable|numeric|min:0',

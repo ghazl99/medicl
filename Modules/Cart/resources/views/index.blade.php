@@ -18,16 +18,33 @@
         <div class="c-items">
             @if ($supplierItems->count())
                 @foreach ($supplierItems as $item)
-                    <div class="c-item" data-id="{{ $item->id }}">
+                    @php
+                        $pivot = $item->medicine->suppliers()->where('user_id', $item->supplier_id)->first()?->pivot;
+
+                        // حساب الكمية مع العرض
+                        $paidQty = $item->quantity;
+                        $freeQty = 0;
+                        if ($pivot && $pivot->offer_qty && $pivot->offer_free_qty) {
+                            $freeQty = floor($paidQty / $pivot->offer_qty) * $pivot->offer_free_qty;
+                        }
+                        $totalQty = $paidQty + $freeQty;
+                    @endphp
+
+                    <div class="c-item" data-id="{{ $item->id }}" data-price="{{ $pivot->price ?? 0 }}"
+                        data-offer-qty="{{ $pivot->offer_qty ?? 0 }}" data-offer-free-qty="{{ $pivot->offer_free_qty ?? 0 }}">
                         <div class="item-main">
                             <div class="item-image"><i class="bi bi-capsule"></i></div>
-
                             <div class="item-info">
                                 <h4>{{ $item->medicine->type }}</h4>
                                 <p class="item-description">{{ $item->supplier->workplace_name }}</p>
-                                <span class="item-price" data-price="{{ $item->medicine->net_dollar_new }}">
-                                    {{ number_format($item->medicine->net_dollar_new, 2, '.', '') }} $
-                                </span>
+
+                                @if ($pivot)
+                                    <span class="item-price">
+                                        {{ number_format($pivot->price, 2, '.', '') }} $
+                                    </span>
+                                @endif
+
+                                <div class="offer-text text-success mt-1 d-none"></div>
                             </div>
                         </div>
 
@@ -37,24 +54,7 @@
                                 <span class="quantity">{{ $item->quantity }}</span>
                                 <button class="quantity-btn plus">+</button>
                             </div>
-
-                            <button class="remove-item btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-
-                        <div class="note-section mt-2">
-                            @if ($item->note)
-                                <span class="note-text-display">{{ $item->note }}</span>
-                                <button class="btn btn-link btn-sm add-note-btn" type="button">تعديل الملاحظة</button>
-                            @else
-                                <button class="btn btn-link btn-sm add-note-btn" type="button">أضف ملاحظة</button>
-                            @endif
-
-                            <div class="note-input d-none mt-1">
-                                <textarea class="form-control note-text" rows="1" placeholder="اكتب ملاحظتك هنا">{{ $item->note }}</textarea>
-                                <button class="btn btn-primary btn-sm save-note-btn mt-1">حفظ الملاحظة</button>
-                            </div>
+                            <button class="remove-item btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                 @endforeach
@@ -87,12 +87,63 @@
         function calculateTotal() {
             let total = 0;
             document.querySelectorAll('.c-item').forEach(item => {
-                const price = parseFloat(item.querySelector('.item-price').dataset.price);
+                const price = parseFloat(item.dataset.price);
                 const quantity = parseInt(item.querySelector('.quantity').textContent);
+
+                // فقط الكمية المدفوعة تدخل بالحساب
                 total += price * quantity;
             });
             document.getElementById('total-price').textContent = total.toFixed(2);
         }
+
+        function updateOffer(itemEl) {
+            const offerQty = parseInt(itemEl.dataset.offerQty);
+            const offerFreeQty = parseInt(itemEl.dataset.offerFreeQty);
+            const quantity = parseInt(itemEl.querySelector('.quantity').textContent);
+            const offerText = itemEl.querySelector('.offer-text');
+
+            if (offerQty > 0 && offerFreeQty > 0 && quantity >= offerQty) {
+                const freeQty = Math.floor(quantity / offerQty) * offerFreeQty;
+                const totalQty = quantity + freeQty;
+                offerText.textContent = `اشتريت ${quantity} وحصلت على ${freeQty} مجاناً (الإجمالي: ${totalQty})`;
+                offerText.classList.remove('d-none');
+            } else {
+                offerText.classList.add('d-none');
+            }
+        }
+
+        document.querySelectorAll('.plus, .minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemEl = this.closest('.c-item');
+                const id = itemEl.dataset.id;
+                let quantity = parseInt(itemEl.querySelector('.quantity').textContent);
+
+                if (this.classList.contains('plus')) {
+                    quantity++;
+                } else if (this.classList.contains('minus') && quantity > 1) {
+                    quantity--;
+                }
+
+                itemEl.querySelector('.quantity').textContent = quantity;
+
+                // تحديث العرض
+                updateOffer(itemEl);
+
+                // تحديث السعر الكلي
+                calculateTotal();
+
+                // استدعاء API للتخزين إذا بدك
+                // updateCartItem(id, { quantity }, itemEl);
+            });
+        });
+
+        // حساب السعر والعروض عند تحميل الصفحة
+        document.querySelectorAll('.c-item').forEach(itemEl => {
+            updateOffer(itemEl);
+        });
+        calculateTotal();
+
+
 
         // تحديث عنصر السلة عبر AJAX
         function updateCartItem(id, data, itemEl = null) {
@@ -139,32 +190,7 @@
                 });
         }
 
-        // زيادة الكمية
-        document.querySelectorAll('.plus').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const itemEl = this.closest('.c-item');
-                const id = itemEl.dataset.id;
-                let quantity = parseInt(itemEl.querySelector('.quantity').textContent) + 1;
-                updateCartItem(id, {
-                    quantity
-                }, itemEl);
-            });
-        });
 
-        // نقصان الكمية
-        document.querySelectorAll('.minus').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const itemEl = this.closest('.c-item');
-                const id = itemEl.dataset.id;
-                let quantity = parseInt(itemEl.querySelector('.quantity').textContent);
-                if (quantity > 1) {
-                    quantity -= 1;
-                    updateCartItem(id, {
-                        quantity
-                    }, itemEl);
-                }
-            });
-        });
 
         // إظهار حقل الملاحظة
         document.querySelectorAll('.add-note-btn').forEach(btn => {
@@ -218,7 +244,7 @@
                                     if (data.cart_count !== undefined) updateCartBadge(data
                                         .cart_count);
                                     Swal.fire('تم الحذف!', 'تم حذف المنتج من السلة.',
-                                    'success');
+                                        'success');
                                 } else {
                                     Swal.fire('خطأ!', 'تعذر حذف المنتج، حاول مجدداً.', 'error');
                                 }

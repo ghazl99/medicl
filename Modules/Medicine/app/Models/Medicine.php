@@ -36,8 +36,6 @@ class Medicine extends Model implements HasMedia
         'form',
         'company',
         'note',
-        'net_dollar_old',
-        'public_dollar_old',
         'net_dollar_new',
         'public_dollar_new',
         'net_syp',
@@ -66,7 +64,7 @@ class Medicine extends Model implements HasMedia
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'order_items', 'medicine_id', 'order_id')
-            ->withPivot(['quantity', 'status', 'note','rejection_reason'])
+            ->withPivot(['quantity', 'status', 'note','rejection_reason','offer_qty','offer_free_qty'])
             ->withTimestamps();
     }
 
@@ -77,7 +75,7 @@ class Medicine extends Model implements HasMedia
                 'id',
                 'is_available',
                 'notes',
-                'offer'
+                'price','offer_qty','offer_free_qty'
             )
             ->withTimestamps();
     }
@@ -102,6 +100,7 @@ class Medicine extends Model implements HasMedia
 
         return [
             'type' => $this->type,
+            'type_ar'=>$this->type_ar,
             'composition' => $this->composition,
             'form' => $this->form,
             'company' => $this->company,

@@ -2,7 +2,7 @@
 @section('css')
 @endsection
 @section('content')
-    <div style="margin: 75px 20px">
+    <div style="margin: 40px 50px">
         <h3>أدوية الفئة: {{ $subcategory->name }}</h3>
 
         @if ($subcategory->medicines->isEmpty())
@@ -20,6 +20,7 @@
                                 style="height:150px; object-fit:cover;">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $medicine->type }}</h5>
+                                <p>{{ $medicine->type_ar }}</p>
                                 <p class="mb-1">التركيب: {{ $medicine->composition }}</p>
                                 <p class="mb-1">الشركة: {{ $medicine->company }}</p>
                                 <p class="mb-1">السعر:

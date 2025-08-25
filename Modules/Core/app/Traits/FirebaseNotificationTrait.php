@@ -59,7 +59,7 @@ trait FirebaseNotificationTrait
             $notification = FirebaseNotification::create($title, $body, asset('assets/img/capsule.png'));
 
             $message = CloudMessage::new()
-                // ->withNotification($notification)
+                ->withNotification($notification)
                 ->toToken($fcmToken);
 
             if ($data) {

@@ -50,7 +50,7 @@
 
                     {{-- اسم مكان العمل --}}
                     <div class="col-md-6">
-                        <label for="workplace_name" class="form-label">اسم الموردة</label>
+                        <label for="workplace_name" class="form-label">اسم @role('صيدلي')صيدلي /صيدلانية@endrole المورد/ة</label>
                         <input type="text" class="form-control @error('workplace_name') is-invalid @enderror"
                             id="workplace_name" name="workplace_name"
                             value="{{ old('workplace_name', $user->workplace_name) }}" placeholder="اسم الموردة أو الشركة"

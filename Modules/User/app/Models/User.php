@@ -100,7 +100,7 @@ class User extends Authenticatable implements HasMedia
                 'id',
                 'is_available',
                 'notes',
-                'offer',
+                'price','offer_qty','offer_free_qty'
             ])
             ->withTimestamps();
     }

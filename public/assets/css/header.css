@@ -1,12 +1,12 @@
  #header {
      width: 100%;
-     min-height: 100px;
+      min-height: 70px;
      /* ارتفاع الهيدر أكبر */
      background-color: rgba(30, 91, 179, 0.8);
      backdrop-filter: blur(15px);
      -webkit-backdrop-filter: blur(15px);
-     border-bottom-left-radius: 2rem;
-     border-bottom-right-radius: 2rem;
+     border-bottom-left-radius: 1.5rem;
+     border-bottom-right-radius: 1.5rem;
      padding: 0.5rem 1rem;
      z-index: 1030;
      display: flex;

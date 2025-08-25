@@ -18,7 +18,6 @@
         <div class="cart-header">
             <h2 class="cart-section-title"> {{ $medicine->type }}</h2>
             <p class="section-subtitle">{{ $medicine->composition }}</p>
-            <h3 class="text-white">{{ $medicine->net_dollar_new }} $</h3>
         </div>
 
         <div class="cart-items">
@@ -34,19 +33,29 @@
                     <div class="c-item" data-supplier-id="{{ $supplier->id }}">
                         <div class="item-main">
                             <div class="item-info">
-                                <p>{{ $supplier->name }}</p>
-                                <span class="item-price">{{ $supplier->pivot->offer ?? '' }}</span>
-                            </div>
+                                <p>{{ $supplier->name }}  </p>
+                                @if ($supplier->pivot->offer_qty && $supplier->pivot->offer_free_qty)
+                                    <span class="item-price">
+                                        {{ $supplier->pivot->offer_qty }} شراء + {{ $supplier->pivot->offer_free_qty }}
+                                        مجاني
+                                    </span><br>
+                                @endif
 
-                            <div class="item-actions">
-                                <input type="number" name="quantity" min="1" value="1"
-                                    class="form-control form-control-sm">
                             </div>
+                                                            <span class="item-price">{{ $supplier->pivot->price ?? '' }} $</span>
 
-                            <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
-                                ✔
-                            </button>
+                            @role('صيدلي')
+                                <div class="item-actions">
+                                    <input type="number" name="quantity" min="1" value="1"
+                                        class="form-control form-control-sm">
+                                </div>
+
+                                <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
+                                    ✔
+                                </button>
+                            @endrole
                         </div>
+
                         <div class="item-actions-wrapper">
                             <h6>{{ $supplier->pivot->notes ?? '' }}</h6>
                         </div>
