@@ -33,6 +33,15 @@ class OrderController extends Controller
     }
 
     /**
+     * Display a listing of delivered orders according to user role.
+     */
+    public function archive()
+    {
+        $user = Auth::user();
+        $orders = $this->orderService->getArchivedOrders($user);
+        return view('order::admin.archive', compact('orders'));
+    }
+    /**
      * Fetch medicines by supplier (AJAX).
      */
     public function getMedicinesBySupplier($id)

@@ -10,6 +10,9 @@ interface OrderRepositoryInterface
     // Get orders list based on user role
     public function index($user);
 
+    // Get delivered orders list
+    public function getArchivedOrders($user);
+
     // Create new order with given data
     public function create(array $data): Order;
 

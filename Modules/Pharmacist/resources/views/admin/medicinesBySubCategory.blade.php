@@ -19,7 +19,7 @@
                             <img src="{{ $image }}" class="card-img-top" alt="{{ $medicine->type }}"
                                 style="height:150px; object-fit:cover;">
                             <div class="card-body">
-                                <h5 class="card-title">{{ $medicine->type }}</h5>
+                                <h5 class="card-title">{{ $medicine->type }}( {{ $medicine->type_ar }} )</h5>
                                 <p>{{ $medicine->type_ar }}</p>
                                 <p class="mb-1">التركيب: {{ $medicine->composition }}</p>
                                 <p class="mb-1">الشركة: {{ $medicine->company }}</p>

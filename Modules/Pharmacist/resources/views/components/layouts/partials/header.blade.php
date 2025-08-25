@@ -50,7 +50,9 @@
                     class="nav-link {{ request()->routeIs('main.categories') ||
                     request()->routeIs('sub.categories') ||
                     request()->routeIs('sub.categories.medicines') ||
-                    request()->routeIs('new.medicines')
+                    request()->routeIs('new.medicines') ||
+                    request()->routeIs('new.offers') ||
+                    request()->routeIs('new.offer.details')
                         ? 'active'
                         : '' }}">
                     استكشاف

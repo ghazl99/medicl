@@ -88,7 +88,7 @@ class MedicineRepository implements MedicineRepositoryInterface
         $pivotData = [];
         foreach ($medicineIds as $medicineId) {
             $medicine = Medicine::findOrFail($medicineId);
-            $pivotData[$medicineId] = ['price' => $medicine->net_syp];
+            $pivotData[$medicineId] = ['price' => $medicine->net_dollar_new];
         }
         $supplier->medicines()->syncWithoutDetaching($pivotData);
     }

@@ -6,7 +6,7 @@ use Modules\Offer\Models\Offer;
 
 interface OfferRepository
 {
-    public function allOffers($user);
+    public function allOffers($user = null);
 
     public function store(array $data);
 

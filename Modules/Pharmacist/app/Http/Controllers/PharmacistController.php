@@ -4,6 +4,7 @@ namespace Modules\Pharmacist\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Modules\User\Models\User;
+use Modules\Offer\Models\Offer;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Core\Models\Notification;
@@ -11,6 +12,7 @@ use Modules\Medicine\Models\Medicine;
 use Modules\Cart\Services\CartService;
 use Modules\Core\Services\CityService;
 use Modules\User\Services\UserService;
+use Modules\Offer\Services\OfferService;
 use Modules\Order\Services\OrderService;
 use Modules\Category\Services\CategoryService;
 use Modules\Medicine\Services\MedicineService;
@@ -26,6 +28,8 @@ class PharmacistController extends Controller
         protected CartService $cartService,
         protected CityService $cityService,
         protected UserService $userService,
+        protected OfferService $offerService,
+
     ) {}
 
     /**
@@ -96,10 +100,6 @@ class PharmacistController extends Controller
         ]);
     }
 
-
-
-
-
     public function getMainCategories()
     {
         $categories = $this->categoryService->getAllcategories();
@@ -131,6 +131,23 @@ class PharmacistController extends Controller
         $medicines = $this->medicineService->getNewMedicines();
         return view('pharmacist::admin.newMedicines', compact('medicines'));
     }
+
+    public function offers()
+    {
+        $offers = $this->offerService->getAll();
+        return view('pharmacist::admin.offers', compact('offers'));
+    }
+
+    public function showOffer(Offer $offer)
+    {
+        $offer = $this->offerService->details($offer);
+
+        if (! $offer) {
+            abort(404, 'العرض غير موجود');
+        }
+
+        return view('pharmacist::admin.offer-details', compact('offer'));
+    }
     /**
      * Display a listing of the resource.
      */
@@ -154,7 +171,15 @@ class PharmacistController extends Controller
         $orders = $this->orderService->getAllOrders($user);
         return view('pharmacist::admin.myOrders', compact('orders', 'cartItems'));
     }
-
+    /**
+     * Display a listing of delivered orders according to user role.
+     */
+    public function archive()
+    {
+        $user = Auth::user();
+        $orders = $this->orderService->getArchivedOrders($user);
+        return view('pharmacist::admin.archive', compact('orders'));
+    }
     public function detailsOrders($id)
     {
         $order = $this->orderService->getOrderDetails($id);

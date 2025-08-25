@@ -55,7 +55,12 @@ class Order extends Model
     public function medicines()
     {
         return $this->belongsToMany(Medicine::class, 'order_items')
-            ->withPivot(['quantity', 'status', 'note','rejection_reason','offer_qty','offer_free_qty'])
+            ->withPivot(['quantity', 'status', 'note', 'rejection_reason', 'offer_qty', 'offer_free_qty'])
             ->withTimestamps();
+    }
+
+    public function scopeDelivered($query)
+    {
+        return $query->where('status', 'تم التسليم');
     }
 }

@@ -16,7 +16,7 @@
 @section('content')
     <section class="cart-section">
         <div class="cart-header">
-            <h2 class="cart-section-title"> {{ $medicine->type }}</h2>
+            <h2 class="cart-section-title"> {{ $medicine->type }}( {{ $medicine->type_ar }} )</h2>
             <p class="section-subtitle">{{ $medicine->composition }}</p>
         </div>
 
@@ -33,7 +33,7 @@
                     <div class="c-item" data-supplier-id="{{ $supplier->id }}">
                         <div class="item-main">
                             <div class="item-info">
-                                <p>{{ $supplier->name }}  </p>
+                                <p>{{ $supplier->name }} </p>
                                 @if ($supplier->pivot->offer_qty && $supplier->pivot->offer_free_qty)
                                     <span class="item-price">
                                         {{ $supplier->pivot->offer_qty }} شراء + {{ $supplier->pivot->offer_free_qty }}
@@ -42,7 +42,8 @@
                                 @endif
 
                             </div>
-                                                            <span class="item-price">{{ $supplier->pivot->price ?? '' }} $</span>
+
+                            <span class="item-price">{{ number_format($supplier->pivot->price, 2) ?? '' }} $</span>
 
                             @role('صيدلي')
                                 <div class="item-actions">

@@ -13,10 +13,11 @@ class OfferService
 
     public function __construct(protected OfferRepository $offerRepository) {}
 
-    public function getAll($user)
+    public function getAll($user = null)
     {
         return $this->offerRepository->allOffers($user);
     }
+
 
     public function store(array $data)
     {

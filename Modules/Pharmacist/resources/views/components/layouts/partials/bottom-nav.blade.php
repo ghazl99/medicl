@@ -33,7 +33,9 @@
                     class="nav-link text-center {{ (request()->routeIs('main.categories') ||
                                                     request()->routeIs('sub.categories') ||
                                                     request()->routeIs('sub.categories.medicines') ||
-                                                    request()->routeIs('new.medicines'))? 'active' : '' }}">
+                                                    request()->routeIs('new.medicines') || request()->routeIs('new.offers')
+                                                    || request()->routeIs('new.offer.details'))
+                                                    ? 'active' : '' }}">
                     <i class="bi bi-compass fs-5"></i><br>استكشاف
                 </a>
             </li>

@@ -78,11 +78,7 @@
                                     <span class="badge bg-primary">قيد الانتظار</span>
                                 @elseif ($item->status == 'مرفوض جزئياً')
                                     <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
-                                @elseif ($item->status == 'تم التسليم')
-                                    <span class="badge bg-success">تم التسليم</span>
-                                @elseif ($item->status == 'ملغي')
-                                    <span class="badge bg-danger">ملغي</span>
-                                @else
+                                @elseif ($item->status == 'تم التأكيد')
                                     <span class="badge bg-info">تم التأكيد</span>
                                 @endif
 
@@ -101,6 +97,12 @@
         </div>
         <div class="d-flex justify-content-center mt-2 mb-4">
             {{ $orders->links() }}
+        </div>
+
+        {{-- قسم الأرشيف (تم التسليم فقط) --}}
+        <div class="cart-items">
+                <a href="{{ route('myorders.archive') }}" class="btn btn-outline-success mb-3">الأرشيف</a>
+
         </div>
     </section>
 @endsection

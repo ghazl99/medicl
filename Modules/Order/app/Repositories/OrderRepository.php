@@ -11,18 +11,35 @@ class OrderRepository implements OrderRepositoryInterface
     public function index($user)
     {
         if ($user->hasRole('المشرف')) {
-            return Order::with(['pharmacist', 'supplier'])->latest()->paginate(10);
+            return Order::where('status', '!=', 'ملغي')->with(['pharmacist', 'supplier'])->latest()->paginate(10);
         } elseif ($user->hasRole('صيدلي')) {
-            return Order::with('supplier')
+            return Order::where('status', '!=', 'ملغي')->with('supplier')
                 ->where('pharmacist_id', $user->id)->latest()
                 ->paginate(10);
         } elseif ($user->hasRole('مورد')) {
-            return Order::with('pharmacist')
+            return Order::where('status', '!=', 'ملغي')->with('pharmacist')
                 ->where('supplier_id', $user->id)
                 ->latest()
                 ->paginate(10);
         }
 
+        return collect();
+    }
+
+    public function getArchivedOrders($user)
+    {
+        if ($user->hasRole('المشرف')) {
+            return Order::delivered()->with(['pharmacist', 'supplier'])->latest()->paginate(10);
+        } elseif ($user->hasRole('صيدلي')) {
+            return Order::delivered()->with('supplier')
+                ->where('pharmacist_id', $user->id)->latest()
+                ->paginate(10);
+        } elseif ($user->hasRole('مورد')) {
+            return Order::delivered()->with('pharmacist')
+                ->where('supplier_id', $user->id)
+                ->latest()
+                ->paginate(10);
+        }
         return collect();
     }
 

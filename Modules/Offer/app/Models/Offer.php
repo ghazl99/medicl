@@ -10,7 +10,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Offer extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +27,10 @@ class Offer extends Model implements HasMedia
         'offer_start_date' => 'date',
         'offer_end_date' => 'date',
     ];
+    public function scopeActive($query)
+    {
+        return $query->whereDate('offer_end_date', '>=', now());
+    }
 
     public function supplier()
     {

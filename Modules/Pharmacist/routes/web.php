@@ -26,4 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('edit.profile.user');
     // Update profile
     Route::patch('/profile-user/update', [PharmacistController::class, 'update_profile'])->name('profile.user.update');
+    Route::get('/archive-myorders', [PharmacistController::class, 'archive'])->name('myorders.archive');
+    Route::get('/new-offers', [PharmacistController::class, 'offers'])->name('new.offers');
+    Route::get('/new-offer-details/{offer}', [PharmacistController::class, 'showOffer'])
+        ->name('new.offer.details');
 });

@@ -38,9 +38,6 @@ class Medicine extends Model implements HasMedia
         'note',
         'net_dollar_new',
         'public_dollar_new',
-        'net_syp',
-        'public_syp',
-        'price_change_percentage',
         'is_new',
         'new_start_date',
         'new_end_date',
@@ -48,12 +45,8 @@ class Medicine extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'net_dollar_old' => 'decimal:2',
-        'public_dollar_old' => 'decimal:2',
         'net_dollar_new' => 'decimal:2',
         'public_dollar_new' => 'decimal:2',
-        'net_syp' => 'decimal:2',
-        'public_syp' => 'decimal:2',
     ];
 
     /**

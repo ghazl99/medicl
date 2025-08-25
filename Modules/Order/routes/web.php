@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Order\Http\Controllers\OrderController;
 
-Route::middleware(['auth', 'verified', 'approved'])->group(function () {
+Route::middleware(['auth', 'approved'])->group(function () {
     // Resource routes for orders (index, create, store, show, edit, update, destroy)
     Route::resource('orders', OrderController::class)->names('orders');
 
@@ -22,4 +22,6 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // Update the quantity of a medicine in an order
     Route::patch('/orders/{order}/medicines/{medicine}/update-quantity', [OrderController::class, 'updateMedicineQuantity'])
         ->name('orders.update-medicine-quantity');
+
+    Route::get('/archive-orders', [OrderController::class, 'archive'])->name('orders.archive');
 });

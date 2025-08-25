@@ -33,13 +33,8 @@ class MedicineImport implements ToModel, WithHeadingRow // ,ShouldQueue, WithChu
             'form' => $row['الشكل'],
             'company' => $row['الشركة'],
             'note' => $row['ملاحظات'],
-            'net_dollar_old' => $row['نت دولار حالي'],
-            'public_dollar_old' => $row['عموم دولار حالي'],
             'net_dollar_new' => $row['النت دولار الجديد'],
             'public_dollar_new' => $row['العموم دولار الجديد'],
-            'net_syp' => $row['نت سوري'],
-            'public_syp' => $row['عموم سوري'],
-            'price_change_percentage' => $row['نسبة الغلاء او الرخص'] ?? null,
         ]);
     }
 

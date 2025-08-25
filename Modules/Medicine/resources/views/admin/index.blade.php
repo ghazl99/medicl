@@ -3,13 +3,14 @@
 @section('css')
     <style>
         /* ==========================
-           Image Modal Styling
-        =========================== */
+               Image Modal Styling
+            =========================== */
         .myImg {
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
         }
+
         .myImg:hover {
             opacity: 0.7;
         }
@@ -53,8 +54,13 @@
         }
 
         @keyframes zoom {
-            from { transform: scale(0) }
-            to { transform: scale(1) }
+            from {
+                transform: scale(0)
+            }
+
+            to {
+                transform: scale(1)
+            }
         }
 
         /* Close button for modal */
@@ -67,6 +73,7 @@
             font-weight: bold;
             transition: 0.3s;
         }
+
         .close_myModal:hover,
         .close_myModal:focus {
             color: #bbb;
@@ -75,7 +82,9 @@
         }
 
         @media only screen and (max-width: 700px) {
-            .modal-content-img { width: 100%; }
+            .modal-content-img {
+                width: 100%;
+            }
         }
     </style>
 @endsection
@@ -85,8 +94,8 @@
     <div class="card">
         @role('مورد')
             <!-- ==========================
-                 Supplier Medicines Table
-            =========================== -->
+                         Supplier Medicines Table
+                    =========================== -->
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="text-right">إدارة الأدوية</h3>
                 <a href="{{ route('medicines.create') }}" class="btn btn-primary">إضافة دواء</a>
@@ -128,7 +137,9 @@
                                 </tr>
                             </thead>
                             <tbody id="medicines-table-body">
-                                @include('medicine::admin._medicines_supplier_table_rows', compact('medicines', 'supplierMedicineIds'))
+                                @include(
+                                    'medicine::admin._medicines_supplier_table_rows',
+                                    compact('medicines', 'supplierMedicineIds'))
                             </tbody>
                         </table>
 
@@ -145,11 +156,10 @@
                     </form>
                 </div>
             </div>
-
         @else
             <!-- ==========================
-                 Admin / Supervisor Medicines Table
-            =========================== -->
+                         Admin / Supervisor Medicines Table
+                    =========================== -->
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="text-right">جميع الأدوية</h3>
 
@@ -213,11 +223,12 @@
     </div>
 
     <!-- ==========================
-         Modals
-    =========================== -->
+             Modals
+        =========================== -->
 
     <!-- Import Excel Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form action="{{ route('medicines.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -231,7 +242,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="file">اختر ملف الإكسل للاستيراد:</label>
-                            <input type="file" name="file" id="file" accept=".xls,.xlsx,.csv" class="form-control @error('file') is-invalid @enderror" required>
+                            <input type="file" name="file" id="file" accept=".xls,.xlsx,.csv"
+                                class="form-control @error('file') is-invalid @enderror" required>
                             @error('file')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -253,7 +265,8 @@
     </div>
 
     <!-- New Status Modal -->
-    <div class="modal fade" id="newStatusModal" tabindex="-1" aria-labelledby="newStatusModalLabel" aria-hidden="true">
+    <div class="modal fade" id="newStatusModal" tabindex="-1" aria-labelledby="newStatusModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <form id="new-status-form">
                 <div class="modal-content">
@@ -266,7 +279,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="new_start_date" class="form-label">تاريخ بداية الحالة الجديدة</label>
-                            <input type="date" class="form-control" id="new_start_date" name="new_start_date" required>
+                            <input type="date" class="form-control" id="new_start_date" name="new_start_date"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="new_end_date" class="form-label">تاريخ نهاية الحالة الجديدة</label>
@@ -329,7 +343,9 @@
                     },
                     error: function(xhr, status, error) {
                         console.error("AJAX Error:", status, error);
-                        $('#medicines-table-body').html(`<tr><td colspan="11" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`);
+                        $('#medicines-table-body').html(
+                            `<tr><td colspan="11" class="text-center text-danger">حدث خطأ أثناء تحميل البيانات.</td></tr>`
+                            );
                         $('#medicines-pagination-links').empty();
                     }
                 });
@@ -355,7 +371,9 @@
             attachImageModalListeners();
 
             closeModalBtn.onclick = () => imageModal.style.display = "none";
-            imageModal.onclick = (event) => { if (event.target === imageModal) imageModal.style.display = "none"; }
+            imageModal.onclick = (event) => {
+                if (event.target === imageModal) imageModal.style.display = "none";
+            }
 
             /* ==========================
                Medicines Selection (Supplier)
@@ -363,17 +381,26 @@
             const STORAGE_KEY = 'selectedMedicineIds{{ Auth::user()->id }}';
             let selectedMedicineIds = new Set(@json($supplierMedicineIds ?? []).map(id => id.toString()));
 
-            function saveSelectedToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify([...selectedMedicineIds])); }
+            function saveSelectedToStorage() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify([...selectedMedicineIds]));
+            }
+
             function updateCheckboxStates() {
                 $('input[name="medicines[]"]').each(function() {
                     $(this).prop('checked', selectedMedicineIds.has($(this).val().toString()));
                 });
             }
+
             function updateSelectAllCheckbox() {
                 const all = $('input[name="medicines[]"]');
-                $('#select-all').prop('checked', all.length && all.length === $('input[name="medicines[]"]:checked').length);
+                $('#select-all').prop('checked', all.length && all.length === $('input[name="medicines[]"]:checked')
+                    .length);
             }
-            function afterTableUpdate() { updateCheckboxStates(); updateSelectAllCheckbox(); }
+
+            function afterTableUpdate() {
+                updateCheckboxStates();
+                updateSelectAllCheckbox();
+            }
 
             $(document).on('change', 'input[name="medicines[]"]', function() {
                 const val = $(this).val().toString();
@@ -385,7 +412,8 @@
                 const checked = $(this).is(':checked');
                 $('input[name="medicines[]"]').each(function() {
                     $(this).prop('checked', checked);
-                    checked ? selectedMedicineIds.add($(this).val().toString()) : selectedMedicineIds.delete($(this).val().toString());
+                    checked ? selectedMedicineIds.add($(this).val().toString()) :
+                        selectedMedicineIds.delete($(this).val().toString());
                 });
                 saveSelectedToStorage();
             });
@@ -393,14 +421,23 @@
             $('#medicines-selection-form').on('submit', function(e) {
                 e.preventDefault();
                 $('#all_selected_medicines').val([...selectedMedicineIds].join(','));
-                if (!selectedMedicineIds.size) { alert('يرجى اختيار دواء واحد على الأقل.'); return; }
+                if (!selectedMedicineIds.size) {
+                    alert('يرجى اختيار دواء واحد على الأقل.');
+                    return;
+                }
 
                 $.ajax({
                     url: $(this).attr('action'),
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        if (response.success) Swal.fire({ icon: 'success', title: 'نجاح', text: response.message, timer: 1500, showConfirmButton: false });
+                        if (response.success) Swal.fire({
+                            icon: 'success',
+                            title: 'نجاح',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     },
                     error: () => Swal.fire('حدث خطأ', 'حاول مرة أخرى', 'error')
                 });
@@ -414,27 +451,41 @@
                 e.stopPropagation();
                 const span = $(this).find('.editable-text');
                 const input = $(this).find('.edit-input');
-                span.hide(); input.show().focus();
+                span.hide();
+                input.show().focus();
             });
 
             $(document).on('blur keypress', '.edit-input', function(e) {
                 if (e.type === 'blur' || e.which === 13) {
-                    e.preventDefault(); e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                     const input = $(this);
                     const newValue = input.val().trim();
                     const td = input.closest('.editable-type-ar');
                     const span = td.find('.editable-text');
                     const medicineId = td.data('medicine-id');
 
-                    if (newValue === span.text().trim()) { input.hide(); span.show(); return; }
+                    if (newValue === span.text().trim()) {
+                        input.hide();
+                        span.show();
+                        return;
+                    }
 
                     $.ajax({
                         url: '/medicines/' + medicineId,
                         type: 'POST',
-                        data: { _token: $('meta[name="csrf-token"]').attr('content'), _method: 'PUT', type_ar: newValue },
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            _method: 'PUT',
+                            type_ar: newValue
+                        },
                         success: () => span.text(newValue),
-                        error: xhr => alert('حدث خطأ أثناء التحديث: ' + (xhr.responseJSON?.message || 'حاول مرة أخرى')),
-                        complete: () => { input.hide(); span.show(); }
+                        error: xhr => alert('حدث خطأ أثناء التحديث: ' + (xhr.responseJSON
+                            ?.message || 'حاول مرة أخرى')),
+                        complete: () => {
+                            input.hide();
+                            span.show();
+                        }
                     });
                 }
             });
@@ -447,7 +498,10 @@
 
             $(document).on('click', '.toggle-new-status', function() {
                 selectedMedicineId = $(this).data('medicine-id');
-                if ($(this).text().trim() === 'جديد') { Swal.fire('الدواء بالفعل جديد.'); return; }
+                if ($(this).text().trim() === 'جديد') {
+                    Swal.fire('الدواء بالفعل جديد.');
+                    return;
+                }
                 newStatusModal.show();
             });
 
@@ -455,13 +509,22 @@
                 e.preventDefault();
                 const startDate = $('#new_start_date').val();
                 const endDate = $('#new_end_date').val();
-                if (!startDate || !endDate) { Swal.fire('يرجى تعبئة التواريخ بشكل صحيح.', '', 'warning'); return; }
+                if (!startDate || !endDate) {
+                    Swal.fire('يرجى تعبئة التواريخ بشكل صحيح.', '', 'warning');
+                    return;
+                }
 
                 $.ajax({
                     url: '/medicines/' + selectedMedicineId + '/toggle-new',
                     method: 'POST',
-                    data: { _token: '{{ csrf_token() }}', is_new: 1, new_start_date: startDate, new_end_date: endDate },
-                    success: res => res.success ? location.reload() : Swal.fire('حدث خطأ أثناء التحديث.', '', 'error'),
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        is_new: 1,
+                        new_start_date: startDate,
+                        new_end_date: endDate
+                    },
+                    success: res => res.success ? location.reload() : Swal.fire(
+                        'حدث خطأ أثناء التحديث.', '', 'error'),
                     error: () => Swal.fire('حدث خطأ أثناء الاتصال بالسيرفر.', '', 'error')
                 });
             });

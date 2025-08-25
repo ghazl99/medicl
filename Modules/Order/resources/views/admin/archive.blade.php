@@ -39,16 +39,8 @@
                                     <td>{{ $order->supplier->name }}</td>
                                 @endhasanyrole
                                 <td style="color: white">
-                                    @if ($order->status == 'قيد الانتظار')
-                                        <span class="badge bg-primary">قيد الانتظار</span>
-                                    @elseif ($order->status == 'مرفوض جزئياً')
-                                        <span class="badge bg-warning text-dark">مرفوض جزئياً</span>
-                                    @elseif ($order->status == 'تم التسليم')
+                                    @if ($order->status == 'تم التسليم')
                                         <span class="badge bg-success">تم التسليم</span>
-                                    @elseif ($order->status == 'ملغي')
-                                        <span class="badge bg-danger">ملغي</span>
-                                    @else
-                                        <span class="badge bg-info">تم التأكيد</span>
                                     @endif
                                 </td>
                                 <td>
@@ -63,8 +55,6 @@
                 <div class="d-flex justify-content-center mt-4">
                     {{ $orders->links() }}
                 </div>
-                <a href="{{ route('orders.archive') }}" class="btn btn-outline-success mb-3">الأرشيف</a>
-
             </div>
         </div>
     </div>

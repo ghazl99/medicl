@@ -27,6 +27,11 @@ class OrderService
         return $this->orderRepository->index($user);
     }
 
+    public function getArchivedOrders($user)
+    {
+        return $this->orderRepository->getArchivedOrders($user);
+    }
+
     public function storeOrder(array $orderData, array $rawData): Order
     {
         return DB::transaction(function () use ($orderData, $rawData) {

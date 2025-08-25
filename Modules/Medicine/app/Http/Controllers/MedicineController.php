@@ -115,8 +115,6 @@ class MedicineController extends Controller implements HasMiddleware
     {
         try {
             $validatedData = $request->validated();
-            $validatedData['net_syp'] = $validatedData['net_dollar_new'] ?? null;
-            $validatedData['public_syp'] = $validatedData['public_dollar_new'] ?? null;
             $user = Auth::user();
             $this->medicineService->createMedicine($validatedData, $user);
 

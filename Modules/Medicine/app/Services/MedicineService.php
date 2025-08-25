@@ -84,7 +84,7 @@ class MedicineService
 
         if ($user->hasRole('مورد')) {
             $user->medicines()->attach($medicine->id, [
-                'price' => $medicine->net_syp
+                'price' => $medicine->net_dollar_new
             ]);
         }
 

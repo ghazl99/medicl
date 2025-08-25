@@ -102,27 +102,6 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                    <!-- نت دولار حالي -->
-                    {{-- <div class="col-md-6">
-                        <label for="net_dollar_old" class="form-label">نت دولار حالي</label>
-                        <input type="number" step="0.01"
-                            class="form-control " id="net_dollar_old"
-                            name="net_dollar_old" value="{{ old('net_dollar_old') }}" placeholder="ادخل السعر" />
-                        @error('net_dollar_old')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
-
-                    <!-- عموم دولار حالي -->
-                    {{-- <div class="col-md-6">
-                        <label for="public_dollar_old" class="form-label">عموم دولار حالي</label>
-                        <input type="number" step="0.01"
-                            class="form-control " id="public_dollar_old"
-                            name="public_dollar_old" value="{{ old('public_dollar_old') }}" placeholder="ادخل السعر" />
-                        @error('public_dollar_old')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
 
                     <!-- نت دولار جديد -->
                     <div class="col-md-6">
@@ -144,42 +123,6 @@
                         @enderror
                     </div>
 
-                    <!-- نت سوري -->
-                    {{-- <div class="col-md-6">
-                        <label for="net_syp" class="form-label">نت سوري</label>
-                        <input type="number" step="0.01" class="form-control "
-                            id="net_syp" name="net_syp" value="{{ old('net_syp') }}"
-                            placeholder="ادخل السعر بالليرة السورية" />
-                        @error('net_syp')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
-
-                    <!-- عموم سوري -->
-                    {{-- <div class="col-md-6">
-                        <label for="public_syp" class="form-label">عموم سوري</label>
-                        <input type="number" step="0.01"
-                            class="form-control" id="public_syp"
-                            name="public_syp" value="{{ old('public_syp') }}"
-                            placeholder="ادخل السعر بالليرة السورية" />
-                        @error('public_syp')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
-
-
-
-                    <!-- نسبة تغير السعر -->
-                    {{-- <div class="col-md-6">
-                        <label for="price_change_percentage" class="form-label">نسبة تغير السعر (%)</label>
-                        <input type="number" step="0.01"
-                            class="form-control"
-                            id="price_change_percentage" name="price_change_percentage"
-                            value="{{ old('price_change_percentage') }}" placeholder="مثال: 12.5" />
-                        @error('price_change_percentage')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div> --}}
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-sm mt-4">إضافة الدواء</button>
