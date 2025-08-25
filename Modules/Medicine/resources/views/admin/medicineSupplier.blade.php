@@ -165,7 +165,6 @@
         <!-- Modal Caption (Image Text) -->
         <div id="caption"></div>
     </div>
-    <!-- Modal للعرض -->
     <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -192,14 +191,36 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="modalInput" class="form-control">
+                    <input type="hidden" id="modalCellId">
+                    <input type="hidden" id="modalType">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveModal">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('scripts')
     <script>
         $(document).ready(function() {
-            // وظيفة البحث الديناميكي والترقيم
+
+            // ==========================
+            // بحث ديناميكي وترقيم الصفحات
+            // ==========================
             function fetchMedicines(page = 1, searchQuery = '') {
                 $.ajax({
-                    url: "{{ route('my-medicines') }}", // تأكد أن هذا هو المسار الصحيح لوحدة التحكم الخاصة بك
+                    url: "{{ route('my-medicines') }}",
                     method: 'GET',
                     data: {
                         page: page,
@@ -208,8 +229,7 @@
                     success: function(response) {
                         $('#medicines-table-body').html(response.html);
                         $('#pagination-links').html(response.pagination);
-                        // أعد ربط وظيفة المودال بعد تحديث المحتوى
-                        bindImageModalEvents();
+                        bindImageModalEvents(); // إعادة ربط المودالات
                     },
                     error: function(xhr) {
                         console.error("حدث خطأ أثناء جلب البيانات:", xhr);
@@ -217,17 +237,13 @@
                 });
             }
 
-            // عند الكتابة في حقل البحث
             let searchTimeout;
             $('#medicine-search-input').on('keyup', function() {
                 clearTimeout(searchTimeout);
                 let searchQuery = $(this).val();
-                searchTimeout = setTimeout(function() {
-                    fetchMedicines(1, searchQuery); // ابدأ دائمًا من الصفحة الأولى عند البحث
-                }, 300); // تأخير 300 مللي ثانية لمنع الطلبات المتعددة عند الكتابة السريعة
+                searchTimeout = setTimeout(() => fetchMedicines(1, searchQuery), 300);
             });
 
-            // عند النقر على روابط الترقيم
             $(document).on('click', '#pagination-links .pagination a', function(e) {
                 e.preventDefault();
                 let page = $(this).attr('href').split('page=')[1];
@@ -235,152 +251,129 @@
                 fetchMedicines(page, searchQuery);
             });
 
-            // وظيفة ربط أحداث فتح المودال للصور
+            // ==========================
+            // مودال الصور
+            // ==========================
             function bindImageModalEvents() {
                 const modal = document.getElementById("myModal");
                 const modalImg = document.getElementById("img01");
                 const captionText = document.getElementById("caption");
                 const closeBtn = document.getElementsByClassName("close_myModal")[0];
 
-                const images = document.querySelectorAll(
-                    '.myImg'); // استخدام .myImg بدلاً من #myImg لربط جميع الصور
-
-                images.forEach(img => {
+                document.querySelectorAll('.myImg').forEach(img => {
                     img.onclick = function() {
                         modal.style.display = "block";
                         modalImg.src = this.src;
                         captionText.innerHTML = this.alt || "";
-                    }
+                    };
                 });
 
                 closeBtn.onclick = function() {
                     modal.style.display = "none";
                 }
-
                 modal.onclick = function(event) {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-                    }
+                    if (event.target === modal) modal.style.display = "none";
                 }
             }
-
-            // استدعاء وظيفة ربط المودال عند تحميل الصفحة لأول مرة
             bindImageModalEvents();
 
-            // تحديد الكل - هذا الكود يجب أن يكون داخل $(document).ready()
-            $('#select-all').click(function() {
-                $('input[name="medicines[]"]').prop('checked', this.checked);
-            });
-
-            // لا تحتاج إلى جلب عناصر الصور وربط الأحداث هنا مرة أخرى
-            // لأن bindImageModalEvents() تقوم بذلك عند تحميل الصفحة وعند تحديث الجدول
-        });
-    </script>
-
-    <script>
-        function savePivotData(pivotId, data, onSuccess) {
-            data._token = '{{ csrf_token() }}';
-
-            $.ajax({
-                url: `/medicine-user/${pivotId}/update-pivot`,
-                method: 'POST',
-                data: data,
-                success: function() {
-                    if (onSuccess) onSuccess();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'تم الحفظ',
-                        text: 'تم تحديث البيانات بنجاح',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'فشل الحفظ',
-                        text: 'حدث خطأ أثناء التحديث',
-                        confirmButtonText: 'موافق'
-                    });
-                }
-            });
-        }
-
-        // تعديل الملاحظات
-        $(document).on('click', '.note-cell', function() {
-            $(this).find('.note-text').addClass('d-none');
-            $(this).find('.note-input').removeClass('d-none').focus();
-        });
-
-        $(document).on('blur', '.note-input', function() {
-            const $td = $(this).closest('td');
-            const pivotId = $td.data('id');
-            const newValue = $(this).val();
-            const $span = $td.find('.note-text');
-
-            savePivotData(pivotId, {
-                notes: newValue
-            }, function() {
-                $span.text(newValue).removeClass('d-none');
-                $td.find('.note-input').addClass('d-none');
-            });
-        });
-
-        // تعديل السعر
-        $(document).on('click', '.net-cell', function() {
-            $(this).find('.net-text').addClass('d-none');
-            $(this).find('.net-input').removeClass('d-none').focus();
-        });
-
-        $(document).on('blur', '.net-input', function() {
-            const $td = $(this).closest('td');
-            const pivotId = $td.data('id');
-            const newValue = $(this).val();
-            const $span = $td.find('.net-text');
-
-            savePivotData(pivotId, {
-                price: newValue !== '' ? parseFloat(newValue) : null
-            }, function() {
-                $span.text(newValue).removeClass('d-none');
-                $td.find('.net-input').addClass('d-none');
-            });
-        });
-
-        // فتح المودال لتعديل العرض
-        $(document).on('click', '.offer-cell', function() {
-            const pivotId = $(this).data('id');
-            const offerText = $(this).find('.offer-text').text().trim();
-
-            let offer_qty = '';
-            let offer_free_qty = '';
-            if (offerText.includes('+')) {
-                const parts = offerText.split('+');
-                offer_qty = parseInt(parts[0]) || '';
-                offer_free_qty = parseInt(parts[1]) || '';
+            // ==========================
+            // حفظ البيانات عبر AJAX
+            // ==========================
+            function savePivotData(pivotId, data, onSuccess) {
+                data._token = '{{ csrf_token() }}';
+                $.ajax({
+                    url: `/medicine-user/${pivotId}/update-pivot`,
+                    method: 'POST',
+                    data: data,
+                    success: function() {
+                        if (onSuccess) onSuccess();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم الحفظ',
+                            text: 'تم تحديث البيانات بنجاح',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل الحفظ',
+                            text: 'حدث خطأ أثناء التحديث',
+                            confirmButtonText: 'موافق'
+                        });
+                    }
+                });
             }
 
-            $('#offer_pivot_id').val(pivotId);
-            $('#offer_qty').val(offer_qty);
-            $('#offer_free_qty').val(offer_free_qty);
+            // ==========================
+            // مودال الملاحظات والسعر
+            // ==========================
+            let currentCell = null;
 
-            $('#offerModal').modal('show');
-        });
-
-        // حفظ العرض
-        $('#offer-form').on('submit', function(e) {
-            e.preventDefault();
-            const pivotId = $('#offer_pivot_id').val();
-            const offer_qty = $('#offer_qty').val();
-            const offer_free_qty = $('#offer_free_qty').val();
-
-            savePivotData(pivotId, {
-                offer_qty,
-                offer_free_qty
-            }, function() {
-                $(`.offer-cell[data-id="${pivotId}"] .offer-text`).text(`${offer_qty}+${offer_free_qty}`);
-                $('#offerModal').modal('hide');
+            $(document).on('click', '.note-cell, .net-cell', function() {
+                currentCell = $(this);
+                const currentValue = currentCell.find('.editable-text').text().trim();
+                $('#modalInput').val(currentValue);
+                $('#modalCellId').val(currentCell.data('id'));
+                $('#modalType').val(currentCell.hasClass('note-cell') ? 'note-cell' : 'net-cell');
+                $('#editModal').modal('show');
             });
+
+            $('#saveModal').on('click', function() {
+                const newValue = $('#modalInput').val();
+                const pivotId = $('#modalCellId').val();
+                const cellType = $('#modalType').val();
+
+                let data = {};
+                if (cellType === 'note-cell') data.notes = newValue;
+                else if (cellType === 'net-cell') data.price = parseFloat(newValue) || null;
+
+                savePivotData(pivotId, data, function() {
+                    currentCell.find('.editable-text').text(newValue);
+                    $('#editModal').modal('hide');
+                });
+            });
+
+            // ==========================
+            // مودال تعديل العرض
+            // ==========================
+            $(document).on('click', '.offer-cell', function() {
+                const pivotId = $(this).data('id');
+                const offerText = $(this).find('.offer-text').text().trim();
+
+                let offer_qty = '';
+                let offer_free_qty = '';
+                if (offerText.includes('+')) {
+                    const parts = offerText.split('+');
+                    offer_qty = parseInt(parts[0]) || '';
+                    offer_free_qty = parseInt(parts[1]) || '';
+                }
+
+                $('#offer_pivot_id').val(pivotId);
+                $('#offer_qty').val(offer_qty);
+                $('#offer_free_qty').val(offer_free_qty);
+                $('#offerModal').modal('show');
+            });
+
+            $('#offer-form').on('submit', function(e) {
+                e.preventDefault();
+                const pivotId = $('#offer_pivot_id').val();
+                const offer_qty = $('#offer_qty').val();
+                const offer_free_qty = $('#offer_free_qty').val();
+
+                savePivotData(pivotId, {
+                    offer_qty,
+                    offer_free_qty
+                }, function() {
+                    $(`.offer-cell[data-id="${pivotId}"] .offer-text`).text(
+                        `${offer_qty}+${offer_free_qty}`);
+                    $('#offerModal').modal('hide');
+                });
+            });
+
         });
     </script>
 @endsection

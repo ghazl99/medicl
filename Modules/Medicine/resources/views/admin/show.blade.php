@@ -29,40 +29,49 @@
             @if ($medicine->suppliers->isEmpty())
                 <p class="no-suppliers">لا يتوفر موردين لهذا الدواء</p>
             @else
-                @foreach ($medicine->suppliers as $supplier)
+                @forelse ($medicine->suppliers->where('pivot.is_available', 1) as $supplier)
                     <div class="c-item" data-supplier-id="{{ $supplier->id }}">
-                        <div class="item-main">
-                            <div class="item-info">
-                                <p>{{ $supplier->name }} </p>
+                        <!-- السطر الأول: الاسم والسعر -->
+                        <div class="item-main d-flex justify-content-between align-items-center mb-1">
+                            <p class="mb-0">{{ $supplier->name }}</p>
+                            <span class="item-price mb-0">{{ number_format($supplier->pivot->price, 2) ?? '' }} $</span>
+                        </div>
+
+                        <!-- السطر الثاني: الملاحظة -->
+                        @if ($supplier->pivot->notes)
+                            <div class="item-actions-wrapper mb-1">
+                                <h6 class="mb-0">{{ $supplier->pivot->notes }}</h6>
+                            </div>
+                        @endif
+
+                        <!-- السطر الثالث: العرض، حقل الكمية، زر الإضافة -->
+                        <div class="item-main d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2 flex-grow-1">
+                                <!-- العرض إذا وجد -->
                                 @if ($supplier->pivot->offer_qty && $supplier->pivot->offer_free_qty)
                                     <span class="item-price">
-                                        {{ $supplier->pivot->offer_qty }} شراء + {{ $supplier->pivot->offer_free_qty }}
-                                        مجاني
-                                    </span><br>
+                                        {{ $supplier->pivot->offer_qty }} + {{ $supplier->pivot->offer_free_qty }}
+                                    </span>
+                                @else
+                                    <span class="item-price">&nbsp;</span> <!-- مكان فاضي إذا ما في عرض -->
                                 @endif
 
-                            </div>
-
-                            <span class="item-price">{{ number_format($supplier->pivot->price, 2) ?? '' }} $</span>
-
-                            @role('صيدلي')
-                                <div class="item-actions">
+                                <!-- حقل الكمية -->
+                                @role('صيدلي')
                                     <input type="number" name="quantity" min="1" value="1"
                                         class="form-control form-control-sm">
-                                </div>
+                                @endrole
+                            </div>
 
-                                <button type="button" class="btn btn-success btn-sm add-to-cart-mini">
-                                    ✔
-                                </button>
+                            <!-- زر الإضافة دايمًا بالنهاية -->
+                            @role('صيدلي')
+                                <button type="button" class="btn btn-success btn-sm add-to-cart-mini">✔</button>
                             @endrole
                         </div>
-
-                        <div class="item-actions-wrapper">
-                            <h6>{{ $supplier->pivot->notes ?? '' }}</h6>
-                        </div>
-
                     </div>
-                @endforeach
+                @empty
+                    <p class="no-suppliers">الدوا غير متوفر</p>
+                @endforelse
             @endif
         </div>
     </section>

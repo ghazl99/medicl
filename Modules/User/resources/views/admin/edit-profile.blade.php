@@ -6,7 +6,7 @@
     <br>
     <div class="card">
         <div class="card-body">
-            <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">تعديل بيانات الشخصية</h2>
+            <h2 class="mb-4" style="color: var(--main-color); font-weight: 700;">تعديل بياناتي الشخصية</h2>
 
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf
@@ -50,7 +50,15 @@
 
                     {{-- اسم مكان العمل --}}
                     <div class="col-md-6">
-                        <label for="workplace_name" class="form-label">اسم @role('صيدلي')صيدلي /صيدلانية@endrole المورد/ة</label>
+                        <label for="workplace_name" class="form-label">
+                            @if (auth()->user()->hasRole('صيدلي'))
+                                اسم الصيدلية
+                            @elseif(auth()->user()->hasRole('مورد'))
+                                اسم الشركة
+                            @else
+                                الاسم
+                            @endif
+                        </label>
                         <input type="text" class="form-control @error('workplace_name') is-invalid @enderror"
                             id="workplace_name" name="workplace_name"
                             value="{{ old('workplace_name', $user->workplace_name) }}" placeholder="اسم الموردة أو الشركة"

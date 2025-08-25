@@ -21,16 +21,13 @@
         <td>{{ $medicine->form }}</td>
         <td>{{ $medicine->company }}</td>
 
-        <td class="note-cell" data-id="{{ $medicine->pivot->id ?? 'pivot id not set' }}">
-            <span class="note-text" style="min-height:1.5em; display:inline-block; cursor:pointer;">
-                {{ $medicine->pivot->notes ?? '' }}
-            </span>
-            <textarea class="form-control note-input d-none" rows="2" placeholder="أدخل ملاحظة هنا">{{ $medicine->pivot->notes ?? '' }}</textarea>
+        <!-- ملاحظات -->
+        <td class="note-cell" data-id="{{ $medicine->pivot->id }}">
+            <span class="editable-text">{{ $medicine->pivot->notes ?? ' ' }}</span>
         </td>
 
-        <td class="net-cell" data-id="{{ $medicine->pivot->id ?? 'N/A' }}">
-            <span class="net-text">{{ number_format($medicine->pivot->price, 2) }}</span>
-            <input type="text" class="form-control net-input d-none" value="{{ $medicine->pivot->price ?? '' }}">
+        <td class="net-cell" data-id="{{ $medicine->pivot->id }}">
+            <span class="editable-text">{{ number_format($medicine->pivot->price, 2) }}</span>
         </td>
 
         <td class="text-center">
@@ -60,9 +57,8 @@
         <td class="offer-cell" data-id="{{ $medicine->pivot->id ?? 'N/A' }}">
             <span class="offer-text">
                 @if ($medicine->pivot->offer_qty && $medicine->pivot->offer_free_qty)
-                    {{ $medicine->pivot->offer_qty }} شراء + {{ $medicine->pivot->offer_free_qty }} مجاني
+                    {{ $medicine->pivot->offer_qty }}  + {{ $medicine->pivot->offer_free_qty }} 
                 @else
-                    اضغط للتعديل
                 @endif
             </span>
         </td>

@@ -43,8 +43,8 @@
                         <tr>
                             <th>اسم الدواء</th>
                             <th>الكمية</th>
-                            <th>سعر الوحدة (ل.س)</th>
-                            <th>السعر الكلي (ل.س)</th>
+                            <th>سعر الوحدة </th>
+                            <th>السعر الكلي </th>
                             {{-- Show status column only if conditions match --}}
                             @if (
                                 ($order->status == 'قيد الانتظار' && $userRole == 'مورد') ||
@@ -128,7 +128,7 @@
             <div class="text-end mt-3">
                 <strong>السعر النهائي للطلبية: </strong>
                 {{-- Total price styled with dark red and bold --}}
-                <h3 style="color: #8B0000; font-weight: 700;">{{ number_format($totalPrice, 2) }} ل.س</h3>
+                <h3 style="color: #8B0000; font-weight: 700;">{{ number_format($totalPrice, 2) }} $</h3>
             </div>
             {{-- Status change buttons depending on role and order status --}}
             <div>
@@ -295,7 +295,7 @@
                 total += subtotal;
             });
             // Update total price display
-            $('.text-end h3').text(total.toFixed(2) + ' ل.س');
+            $('.text-end h3').text(total.toFixed(2) + '$');
         }
 
         // On quantity input change (after user finishes typing), send AJAX to update DB

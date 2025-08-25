@@ -20,13 +20,8 @@ return new class extends Migration
             $table->string('form')->nullable(); // الشكل
             $table->string('company')->nullable(); // الشركة
             $table->text('note')->nullable(); // ملاحظات
-            $table->decimal('net_dollar_old', 10, 2)->nullable(); // نت دولار حالي
-            $table->decimal('public_dollar_old', 10, 2)->nullable(); // عموم دولار حالي
             $table->decimal('net_dollar_new', 10, 2)->nullable(); // النت دولار الجديد
             $table->decimal('public_dollar_new', 10, 2)->nullable(); // العموم دولار الجديد
-            $table->decimal('net_syp', 10, 2)->nullable(); // نت سوري
-            $table->decimal('public_syp', 10, 2)->nullable(); // عموم سوري
-            $table->string('price_change_percentage')->nullable();
             $table->string('description')->nullable();
             $table->boolean('is_new')->default(false);
             $table->date('new_start_date')->nullable();

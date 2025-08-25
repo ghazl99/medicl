@@ -48,8 +48,8 @@
                                             <th>الكمية</th>
                                             <th>الكمية مع العرض</th>
                                             <th>ملاحظة</th>
-                                            <th>سعر الوحدة (ل.س)</th>
-                                            <th>الإجمالي (ل.س)</th>
+                                            <th>سعر الوحدة </th>
+                                            <th>الإجمالي </th>
                                             @if (
                                                 ($order->status == 'قيد الانتظار' && $userRole == 'مورد') ||
                                                     ($order->status == 'مرفوض جزئياً' && $userRole == 'صيدلي'))
@@ -145,7 +145,7 @@
                     <div class="text-end mt-3">
                         <h5 class="fw-bold">السعر النهائي:</h5>
                         <h3 style="color:#f43636; font-weight:700;">
-                            {{ number_format($totalPrice, 2) }} ل.س
+                            {{ number_format($totalPrice, 2) }} $
                         </h3>
                     </div>
 
@@ -278,7 +278,7 @@
                 let subtotal = parseFloat(subtotalText.replace(/,/g, '')) || 0;
                 total += subtotal;
             });
-            $('.text-end h3').text(total.toFixed(2) + ' ل.س');
+            $('.text-end h3').text(total.toFixed(2) + '$');
         }
 
         // إرسال التغيير إلى السيرفر عند انتهاء التعديل

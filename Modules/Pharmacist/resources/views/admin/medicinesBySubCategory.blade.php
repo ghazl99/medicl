@@ -27,7 +27,11 @@
                                     {{ $medicine->net_dollar_new !== null ? number_format($medicine->net_dollar_new, 2) . '$' : '-' }}
                                 </p>
                                 <p class="mb-0 text-truncate">الشكل:{{ $medicine->form }}</p>
+
                             </div>
+                            <a href="{{ route('medicines.show', $medicine) }}" class="btn btn-primary mt-2 w-100">
+                                اطلب
+                            </a>
                         </div>
                     </div>
                 @endforeach
